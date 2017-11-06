@@ -8,6 +8,31 @@
     targetElem.innerHTML = html;
   };
 
+  var appear = function(selector, interval) {
+    $(selector).removeClass("gone");
+    setTimeout(function() {
+      $(selector).css({
+        "opacity": 1,
+        "-webkit-transition": "opacity " + Number(interval) / 1000 + "s ease",
+        "-moz-transition": "opacity " + Number(interval) / 1000 + "s ease",
+        "transition": "opacity " + Number(interval) / 1000 + "s ease"
+      });
+    }, 10);
+  };
+
+  var disappear = function(selector, interval) {
+    $(selector).css({
+      "opacity": 0,
+      "-webkit-transition": "opacity " + Number(interval) / 1000 + "s ease",
+      "-moz-transition": "opacity " + Number(interval) / 1000 + "s ease",
+      "transition": "opacity " + Number(interval) / 1000 + "s ease"
+    });
+    setTimeout(function() {
+      $(selector).addClass("gone");
+    }, Number(interval) + 10);
+
+  };
+
   // document.addEventListener("DOMContentLoaded", function(event) {
   //   if (history.state != null) {
   //     if (history.state.state != null) {
@@ -86,6 +111,19 @@
   //     }
   //   }
   // };
+
+  PRM.signIn = function() {
+    disappear($(".login-screen"), 500);
+    setTimeout(function() {
+      appear($(".loader"), 500);
+    }, 500);
+    setTimeout(function() { //after unsuccesful login, with prompt
+      disappear($(".loader"), 500);
+      setTimeout(function() {
+        appear($(".login-screen"), 500);
+      }, 500);
+    }, 3000);
+  };
 
   global.$PRM = PRM;
 })(window);
