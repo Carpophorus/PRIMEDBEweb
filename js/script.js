@@ -138,6 +138,20 @@
       disappear($(".loader"), 500);
       setTimeout(function() {
         appear($(".login-screen"), 500);
+        $.confirm({
+          title: 'ГРЕШКА',
+          content: 'Појавила се грешка приликом пријаве на систем. Проверите своје креденцијале и покушајте поново.<br><br>Контактирајте системске администраторе уколико се овај проблем често дешава.',
+          theme: 'supervan',
+          backgroundDismiss: 'true',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-prm',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
       }, 500);
     }, 3000);
   };

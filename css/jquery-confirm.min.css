@@ -910,7 +910,7 @@ body[class*=jconfirm-no-scroll-] {
 .jconfirm.jconfirm-supervan .jconfirm-box div.jconfirm-title-c {
   text-align: center;
   color: white;
-  font-size: 3.5vh;
+  font-size: 4vh !important;
   font-weight: normal;
   font-family: 'Russo One', sans-serif;
 }
