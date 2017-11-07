@@ -262,7 +262,7 @@ header {
 }
 
 #main-content {
-  min-height: 92vh;
+  min-height: 100vh;
   position: relative;
   padding-top: 8vh;
 }

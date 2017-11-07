@@ -172,6 +172,12 @@
 
   PRM.loadPage = function(n) {
     //
+    disappear($("#switchbox"), 500);
+    appear($(".loader"), 500);
+    setTimeout(function() {
+      appear($("#switchbox"), 500);
+      disappear($(".loader"), 500);
+    }, 2500); //this delay only simulating network response
   };
 
   global.$PRM = PRM;
