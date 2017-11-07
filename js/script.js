@@ -156,5 +156,23 @@
     }, 3000);
   };
 
+  PRM.navi = function(n, e) {
+    if (!$(".navbar-toggler").hasClass("collapsed"))
+      $(".navbar-toggler").click();
+    if ($(e).hasClass("active"))
+      return;
+    $(".nav-item").removeClass("active");
+    $(e).addClass("active");
+    disappear($(".mobile-navi-helper"), 500);
+    setTimeout(function() {
+      appear($(".mnh-" + n), 500);
+    }, 510);
+    PRM.loadPage(n);
+  };
+
+  PRM.loadPage = function(n) {
+    //
+  };
+
   global.$PRM = PRM;
 })(window);

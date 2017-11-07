@@ -1,0 +1,19 @@
+<div class="loader gone">
+  <div class="loader-inner"></div>
+</div>
+<div class="login-screen">
+  <div class="login-background hidden-sm-down"></div>
+  <div class="login-logo"></div>
+  <div class="login-title">РГЗ&nbsp;-&nbsp;еПримедбе</div>
+  <div class="row">
+    <div class="col-2 col-md-4"></div>
+    <div class="col-8 col-md-4" id="login-form" method="post">
+      <input id="username" onkeydown="if (event.keyCode == 13) $PRM.signIn();" class="open-sans-dark-normal" type="text" name="username" placeholder="корисничко име" onfocus="this.placeholder = ''" onblur="this.placeholder = 'корисничко име'">
+      <br>
+      <input id="password" onkeydown="if (event.keyCode == 13) $PRM.signIn();" class="open-sans-dark-normal" type="password" name="password" placeholder="лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'лозинка'">
+      <br>
+      <button id="login-button" type="submit" onclick="$PRM.signIn();">ПРИЈАВА</button>
+    </div>
+    <div class="col-2 col-md-4"></div>
+  </div>
+</div>

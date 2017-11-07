@@ -20,7 +20,7 @@ body {
   overflow-x: hidden;
   overflow-y: hidden;
   font-family: 'Open Sans', sans-serif;
-  color: #FFFBF8;
+  color: white;
   background-color: #333;
   font-size: 2.5vh;
   position: relative;
@@ -36,8 +36,8 @@ a, a:hover, a:focus, a:visited {
 
 button, button:hover, button:focus {
   cursor: pointer;
-  border: 0;
-  outline: 0;
+  border: 0 !important;
+  outline: 0 !important;
   color: inherit;
   background-color: transparent;
   padding: 0 !important;
@@ -64,7 +64,7 @@ input {
   width: 15vh;
   height: 15vh;
   position: absolute;
-  border: 1.5vh solid #FFFBF8;
+  border: 1.5vh solid white;
   left: 0;
   right: 0;
   top: 0;
@@ -118,12 +118,6 @@ input {
   }
 }
 
-#main-content {
-  position: relative;
-  width: 100%;
-  min-height: 92vh;
-}
-
 .login-screen {
   position: absolute;
   width: 100%;
@@ -161,7 +155,7 @@ input {
   position: absolute;
   top: 30vh;
   width: 100%;
-  color: #FFFBF8;
+  color: white;
   font-family: 'Russo One', sans-serif;
   font-size: 4vh;
 }
@@ -176,7 +170,7 @@ input {
   width: 100%;
   margin-bottom: 5vh;
   text-align: center;
-  background-color: #FFFBF8;
+  background-color: white;
 }
 
 #login-form button {
@@ -184,16 +178,102 @@ input {
   line-height: 7vh;
   width: 100%;
   margin-top: 4vh;
-  color: #FFFBF8;
+  color: white;
   background-color: #333;
 }
 
 #login-form button:hover {
   color: #333;
-  background-color: #FFFBF8;
+  background-color: white;
+}
+
+header {
+  width: 100%;
+  height: 8vh;
+  background-color: #CC5505;
+  font-family: 'Russo One', sans-serif;
+  font-size: 3vh;
+  line-height: 8vh;
+  position: fixed;
+  -webkit-box-shadow: 0 0 3vh 0.5vh black;
+  -moz-box-shadow: 0 0 3vh 0.5vh black;
+  box-shadow: 0 0 3vh 0.5vh black;
+  z-index: 1000;
+  color: black;
+}
+
+.navbar {
+  padding: 0;
+  -webkit-box-shadow: 0 0.5vh 3vh black;
+  -moz-box-shadow: 0 0.5vh 3vh black;
+  box-shadow: 0 0.5vh 3vh black;
+}
+
+.navbar-brand {
+  position: absolute;
+  width: 10vh;
+  height: 10vh;
+  left: 5%;
+  top: 1vh;
+  border-radius: 100vh;
+  -webkit-box-shadow: 0 1vh 3vh black;
+  -moz-box-shadow: 0 1vh 3vh black;
+  box-shadow: 0 1vh 3vh black;
+  z-index: 1001;
+  background: url('../img/logo.svg') no-repeat;
+  background-size: cover;
+}
+
+.mobile-navi-helper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 8vh;
+  font-size: 4vh;
+  opacity: 0;
+}
+
+.mnh-1 {
+  opacity: 1;
+}
+
+.navbar-toggler {
+  width: 10vh;
+  height: 8vh;
+  right: 0;
+  line-height: 8vh;
+  font-size: 4vh;
+}
+
+.nav-link {
+  text-align: center;
+  padding: 0 5vh !important;
+  cursor: pointer;
+  min-width: 20vw;
+  -webkit-transition: color 0.5s ease;
+  -moz-transition: color 0.5s ease;
+  transition: color 0.5s ease;
+}
+
+.navbar-nav>.active, .navbar-nav>li:hover {
+  color: white;
+}
+
+#main-content {
+  min-height: 92vh;
+  position: relative;
+  padding-top: 8vh;
 }
 
 @media (max-width: 991.5px) {
+  .navbar-collapse {
+    margin-top: 8vh;
+    background-color: #CC5505;
+    -webkit-box-shadow: inset 0 3vh 3vh -2.5vh black;
+    -moz-box-shadow: inset 0 3vh 3vh -2.5vh black;
+    box-shadow: inset 0 3vh 3vh -2.5vh black;
+  }
   .jconfirm .jconfirm-box .jconfirm-buttons button.btn-white-prm {
     background-color: white;
     color: #333

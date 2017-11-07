@@ -45,25 +45,35 @@
 </head>
 
 <body>
-  <div class="loader gone">
-    <div class="loader-inner"></div>
-  </div>
-  <div class="login-screen">
-    <div class="login-background hidden-sm-down"></div>
-    <div class="login-logo"></div>
-    <div class="login-title">РГЗ&nbsp;-&nbsp;еПримедбе</div>
-    <div class="row">
-      <div class="col-2 col-md-4"></div>
-      <div class="col-8 col-md-4" id="login-form" method="post">
-        <input id="username" onkeydown="if (event.keyCode == 13) $PRM.signIn();" class="open-sans-dark-normal" type="text" name="username" placeholder="корисничко име" onfocus="this.placeholder = ''" onblur="this.placeholder = 'корисничко име'">
-        <br>
-        <input id="password" onkeydown="if (event.keyCode == 13) $PRM.signIn();" class="open-sans-dark-normal" type="password" name="password" placeholder="лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'лозинка'">
-        <br>
-        <button id="login-button" type="submit" onclick="$PRM.signIn();">ПРИЈАВА</button>
+  <header>
+    <nav class="navbar navbar-toggleable-md">
+      <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fa fa-bars"></i>
+      </button>
+      <div class="navbar-brand"></div>
+      <div class="mobile-navi-helper mnh-1 hidden-lg-up"><i class="fa fa-ticket"></i></div>
+      <div class="mobile-navi-helper mnh-2 hidden-lg-up gone"><i class="fa fa-bar-chart"></i></div>
+      <div class="mobile-navi-helper mnh-3 hidden-lg-up gone"><i class="fa fa-print"></i></div>
+      <div class="mobile-navi-helper mnh-4 hidden-lg-up gone"><i class="fa fa-user-circle-o"></i></div>
+      <div class="collapse navbar-collapse" id="navbar-content">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active" onclick="$PRM.navi(1, this);">
+            <div class="nav-link"><i class="fa fa-ticket"></i>&nbsp;&nbsp;&nbsp;ПРИМЕДБЕ</div>
+          </li>
+          <li class="nav-item" onclick="$PRM.navi(2, this);">
+            <div class="nav-link"><i class="fa fa-bar-chart"></i>&nbsp;&nbsp;&nbsp;СТАТИСТИКА</div>
+          </li>
+          <li class="nav-item" onclick="$PRM.navi(3, this);">
+            <div class="nav-link"><i class="fa fa-print"></i>&nbsp;&nbsp;&nbsp;ИЗВЕШТАЈИ</div>
+          </li>
+          <li class="nav-item" onclick="$PRM.navi(4, this);">
+            <div class="nav-link"><i class="fa fa-user-circle-o"></i>&nbsp;&nbsp;&nbsp;ПРОФИЛ</div>
+          </li>
+        </ul>
       </div>
-      <div class="col-2 col-md-4"></div>
-    </div>
-  </div>
+    </nav>
+  </header>
+  <div id="main-content"></div>
 </body>
 
 </html>
