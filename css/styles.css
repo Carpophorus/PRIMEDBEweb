@@ -40,12 +40,12 @@ button, button:hover, button:focus {
   outline: 0;
   color: inherit;
   background-color: transparent;
-  padding: 0;
+  padding: 0 !important;
   border-radius: 100vh;
   font-family: 'Russo One', sans-serif;
-  -webkit-transition: color 0.5s ease, background-color 0.5s ease;
-  -moz-transition: color 0.5s ease, background-color 0.5s ease;
-  transition: color 0.5s ease, background-color 0.5s ease;
+  -webkit-transition: color 0.5s ease, background-color 0.5s ease !important;
+  -moz-transition: color 0.5s ease, background-color 0.5s ease !important;
+  transition: color 0.5s ease, background-color 0.5s ease !important;
 }
 
 select, select:hover, select:focus {
@@ -191,6 +191,33 @@ input {
 #login-form button:hover {
   color: #333;
   background-color: #FFFBF8;
+}
+
+@media (max-width: 991.5px) {
+  .jconfirm .jconfirm-box .jconfirm-buttons button.btn-white-prm {
+    background-color: white;
+    color: #333
+  }
+  .jconfirm .jconfirm-box .jconfirm-buttons button.btn-orange-prm {
+    background-color: #CC5505;
+    color: white
+  }
+  .jconfirm .jconfirm-box .jconfirm-buttons button.btn-blue-prm {
+    background-color: #057CCC;
+    color: white
+  }
+  .jconfirm .jconfirm-box .jconfirm-buttons button.btn-red-prm {
+    background-color: #CC0519;
+    color: white
+  }
+  .jconfirm .jconfirm-box .jconfirm-buttons button.btn-yellow-prm {
+    background-color: #CCB905;
+    color: white
+  }
+  .jconfirm .jconfirm-box .jconfirm-buttons button.btn-green-prm {
+    background-color: #05CC55;
+    color: white
+  }
 }
 
 @media (min-width: 1px) {

@@ -113,6 +113,23 @@
   // };
 
   PRM.signIn = function() {
+    if ($("#username").val() == "" || $("#password").val() == "") {
+      $.confirm({
+        title: 'ГРЕШКА',
+        content: 'Морате унети и корисничко име и шифру.',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      return;
+    }
     disappear($(".login-screen"), 500);
     setTimeout(function() {
       appear($(".loader"), 500);
