@@ -175,6 +175,76 @@
     disappear($("#switchbox"), 500);
     appear($(".loader"), 500);
     setTimeout(function() {
+      insertHtml("#switchbox", ``);
+    }, 500);
+    setTimeout(function() {
+      if (n == 2) {
+        var html = `
+          <div class="row">
+            <div class="col-lg-6 col-12" id="chart"></div>
+            <div class="col-lg-6 col-12" id="stats">
+              <div class="stat row">
+                <div class="col-7 col-sm-8 stat-toc">Укупно:&nbsp;......................................................................................................................................................................................................</div>
+                <div class="col-2 col-sm-2 stat-num stat-white">` + 66 + `</div>
+                <div class="col-3 col-sm-2 stat-desc">примедби</div>
+              </div>
+              <div class="stat row">
+                <div class="col-7 col-sm-8 stat-toc">Без&nbsp;одговора:&nbsp;......................................................................................................................................................................................................</div>
+                <div class="col-2 col-sm-2 stat-num stat-red">` + 14 + `</div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 14 / 66).toFixed(2) + `%)</div>
+              </div>
+              <div class="stat row">
+                <div class="col-7 col-sm-8 stat-toc">Непрослеђених:&nbsp;......................................................................................................................................................................................................</div>
+                <div class="col-2 col-sm-2 stat-num stat-blue">` + 5 + `</div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 5 / 66).toFixed(2) + `%)</div>
+              </div>
+              <div class="stat row">
+                <div class="col-7 col-sm-8 stat-toc">На&nbsp;чекању:&nbsp;......................................................................................................................................................................................................</div>
+                <div class="col-2 col-sm-2 stat-num stat-yellow">` + 7 + `</div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 7 / 66).toFixed(2) + `%)</div>
+              </div>
+              <div class="stat row">
+                <div class="col-7 col-sm-8 stat-toc">Одговорено:&nbsp;......................................................................................................................................................................................................</div>
+                <div class="col-2 col-sm-2 stat-num stat-green">` + 40 + `</div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 40 / 66).toFixed(2) + `%)</div>
+              </div>
+            </div>
+          </div>
+        `;
+        insertHtml("#switchbox", html);
+        var chart = new Chartist.Pie("#chart", {
+          series: [14, 5, 7, 40],
+          labels: [0, 0, 0, 0]
+        }, {
+          donut: true,
+          showLabel: false
+        });
+        chart.on('draw', function(data) {
+          if (data.type === 'slice') {
+            var pathLength = data.element._node.getTotalLength();
+            data.element.attr({
+              'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+            });
+            var animationDefinition = {
+              'stroke-dashoffset': {
+                id: 'anim' + data.index,
+                dur: 500,
+                from: -pathLength + 'px',
+                to: '0px',
+                easing: Chartist.Svg.Easing.easeOutQuint,
+                fill: 'freeze'
+              }
+            };
+            if (data.index !== 0) {
+              animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+            }
+            data.element.attr({
+              'stroke-dashoffset': -pathLength + 'px'
+            });
+            data.element.animate(animationDefinition, false);
+          }
+        });
+      }
       appear($("#switchbox"), 500);
       disappear($(".loader"), 500);
     }, 2500); //this delay only simulating network response
