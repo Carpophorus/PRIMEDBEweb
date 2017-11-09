@@ -22,7 +22,7 @@ body {
   font-family: 'Open Sans', sans-serif;
   color: white;
   background-color: #333;
-  font-size: 2.5vh;
+  font-size: 2.2vh;
   position: relative;
   height: 100vh;
   width: 100%;
@@ -213,7 +213,7 @@ header {
   position: absolute;
   width: 10vh;
   height: 10vh;
-  left: 5%;
+  left: calc(9.722222% - 4.5vh);
   top: 1vh;
   border-radius: 100vh;
   -webkit-box-shadow: 0 1vh 3vh black;
@@ -270,6 +270,7 @@ header {
 #switchbox {
   height: 100%;
   overflow-y: auto;
+  position: relative;
 }
 
 #chart {
@@ -318,6 +319,117 @@ header {
 
 .stat-green {
   color: #05CC55;
+}
+
+#searchbar {
+  height: 8vh;
+  line-height: 8vh;
+  padding-right: 1vh;
+  width: calc(100% - 1vh);
+  position: relative;
+}
+
+#searchbar .col-1 {
+  padding: 1vh 0 0 1vh;
+}
+
+#search-criteria, #two-buttons {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  -webkit-transition: width 1s ease, opacity 0.5s ease;
+  -moz-transition: width 1s ease, opacity 0.5s ease;
+  transition: width 1s ease, opacity 0.5s ease;
+}
+
+#search-criteria {
+  right: 8.333333%;
+}
+
+#two-buttons {
+  left: 0;
+}
+
+#search-criteria {
+  /*opacity: 0;*/
+  width: 0;
+  opacity: 0;
+}
+
+#search-button-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#searchbar .col-ninth, #searchbar .col-outertwelvth, #searchbar .col-outertwelvthhalf, #searchbar .col-tenoutertwelvths {
+  padding: 1vh 0 0 1vh;
+  height: 100%;
+  width: 10.606060%;
+  float: left;
+}
+
+#searchbar .col-outertwelvth {
+  width: 9.090909%;
+  float: right;
+}
+
+#searchbar .col-outertwelvthhalf {
+  width: 4.545454%;
+}
+
+#searchbar .col-ninth>input, #searchbar .col-ninth>select {
+  width: 100%;
+  height: 7vh;
+  text-align: center;
+  background-color: #444;
+}
+
+#searchbar .col-ninth>select {
+  color: #777;
+}
+
+#searchbar .col-ninth>select>option {
+  color: white;
+}
+
+#searchbar .col-ninth>select>option:first-child {
+  color: #777;
+}
+
+#searchbar button {
+  width: 100%;
+  height: 7vh;
+  border-radius: 100vh;
+  background-color: #CC5505;
+  font-size: 2.7vh;
+  line-height: 7.3vh;
+  margin-top: 0.75vh;
+}
+
+#searchbar button:hover {
+  background-color: white;
+  color: #333;
+}
+
+#table {
+  min-height: 77vh;
+  line-height: 7vh;
+  border-bottom: 1px solid #CC5505;
+}
+
+#pagination {
+  height: 7vh;
+  line-height: 7vh;
+}
+
+#table-header {
+  color: #CC5505;
+  border-bottom: 1px solid #CC5505;
+}
+
+#table-header, .table-row {
+  height: 7vh;
 }
 
 @media (max-width: 991.5px) {

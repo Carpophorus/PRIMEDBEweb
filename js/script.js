@@ -250,5 +250,56 @@
     }, 2500); //this delay only simulating network response
   };
 
+  PRM.searchbarSelectChanged = function(e) {
+    $(e).css({
+      "color": "white"
+    });
+    $("#clear-searchboxes i").addClass("fa-eraser").removeClass("fa-times");
+  };
+
+  PRM.searchButtonClicked = function() {
+    if ($("#search-criteria").width() == 0) {
+      $("#two-buttons").css({
+        "width": "0",
+        "opacity": "0"
+      });
+      $("#search-criteria").css({
+        "width": "100%",
+        "opacity": "1"
+      });
+    } else {
+      $("#search-criteria").css({
+        "width": "0",
+        "opacity": "0"
+      });
+      $("#two-buttons").css({
+        "width": "100%",
+        "opacity": "1"
+      });
+      //perform search
+    }
+  };
+
+  PRM.clearButtonClicked = function() {
+    if ($("#clear-searchboxes i").hasClass("fa-eraser")) {
+      $("#searchbar input").val("");
+      $("#searchbar option").prop("selected", false);
+      $("#searchbar option:first-child").prop("selected", true);
+      $("#searchbar select").css({
+        "color": "#777"
+      });
+      $("#clear-searchboxes i").removeClass("fa-eraser").addClass("fa-times");
+    } else {
+      $("#search-criteria").css({
+        "width": "0",
+        "opacity": "0"
+      });
+      $("#two-buttons").css({
+        "width": "100%",
+        "opacity": "1"
+      });
+    }
+  };
+
   global.$PRM = PRM;
 })(window);

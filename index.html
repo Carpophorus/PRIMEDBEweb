@@ -55,8 +55,7 @@
       <div class="navbar-brand"></div>
       <div class="mobile-navi-helper mnh-1 hidden-lg-up"><i class="fa fa-ticket"></i></div>
       <div class="mobile-navi-helper mnh-2 hidden-lg-up gone"><i class="fa fa-bar-chart"></i></div>
-      <div class="mobile-navi-helper mnh-3 hidden-lg-up gone"><i class="fa fa-print"></i></div>
-      <div class="mobile-navi-helper mnh-4 hidden-lg-up gone"><i class="fa fa-user-circle-o"></i></div>
+      <div class="mobile-navi-helper mnh-3 hidden-lg-up gone"><i class="fa fa-user-circle-o"></i></div>
       <div class="collapse navbar-collapse" id="navbar-content">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active" onclick="$PRM.navi(1, this);">
@@ -66,9 +65,6 @@
             <div class="nav-link"><i class="fa fa-bar-chart"></i>&nbsp;&nbsp;&nbsp;СТАТИСТИКА</div>
           </li>
           <li class="nav-item" onclick="$PRM.navi(3, this);">
-            <div class="nav-link"><i class="fa fa-print"></i>&nbsp;&nbsp;&nbsp;ИЗВЕШТАЈИ</div>
-          </li>
-          <li class="nav-item" onclick="$PRM.navi(4, this);">
             <div class="nav-link"><i class="fa fa-user-circle-o"></i>&nbsp;&nbsp;&nbsp;ПРОФИЛ</div>
           </li>
         </ul>
@@ -80,7 +76,60 @@
       <div class="loader-inner"></div>
     </div>
     <div id="switchbox">
-
+      <div id="searchbar" class="row">
+        <div id="search-criteria" class="col-11">
+          <div class="col-ninth"><input id="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'"></div>
+          <div class="col-ninth"><input id="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'"></div>
+          <div class="col-ninth"><input id="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'"></div>
+          <div class="col-ninth"><input id="name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'"></div>
+          <div class="col-ninth"><input id="mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'"></div>
+          <div class="col-ninth"><input id="phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'"></div>
+          <div class="col-ninth">
+            <select id="office" onchange="$PRM.searchbarSelectChanged(this);">
+              <option value="0" disabled selected hidden>служба</option>
+              <option value="1">Ада</option>
+              <option value="2">Нови Београд</option>
+              <option value="3">Осечина</option>
+              <option value="4">Житорађа</option>
+            </select>
+          </div>
+          <div class="col-ninth">
+            <select id="status" onchange="$PRM.searchbarSelectChanged(this);">
+              <option value="0" disabled selected hidden>статус</option>
+              <option value="1">Непрослеђен</option>
+              <option value="2">Прослеђен</option>
+              <option value="3">Готов</option>
+            </select>
+          </div>
+          <div class="col-ninth">
+            <select id="response" onchange="$PRM.searchbarSelectChanged(this);">
+              <option value="0" disabled selected hidden>одговор</option>
+              <option value="1">На чекању</option>
+              <option value="2">Одговорено</option>
+              <option value="3">Нема одговора</option>
+            </select>
+          </div>
+          <div class="col-outertwelvthhalf">
+            <button id="clear-searchboxes" onclick="$PRM.clearButtonClicked();"><i class="fa fa-times"></i></button>
+          </div>
+        </div>
+        <div id="two-buttons" class="col-11">
+          <div class="col-outertwelvth">
+            <button id="search"><i class="fa fa-print"></i></button>
+          </div>
+          <div class="col-outertwelvth">
+            <button id="search"><i class="fa fa-refresh"></i></button>
+          </div>
+        </div>
+        <div id="search-button-container" class="col-1">
+          <button id="search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
+      <div id="table">
+        <div id="table-header" class="row"></div>
+        <div class="table-row row"></div>
+      </div>
+      <div id="pagination"></div>
     </div>
   </div>
 </body>

@@ -8,11 +8,11 @@
   <div class="row">
     <div class="col-2 col-md-4"></div>
     <div class="col-8 col-md-4" id="login-form" method="post">
-      <input id="username" onkeydown="if (event.keyCode == 13) $PRM.signIn();" class="open-sans-dark-normal" type="text" name="username" placeholder="корисничко име" onfocus="this.placeholder = ''" onblur="this.placeholder = 'корисничко име'">
+      <input id="username" onkeydown="if (event.keyCode == 13) $PRM.signIn();" type="text" name="username" placeholder="корисничко име" onfocus="this.placeholder = ''" onblur="this.placeholder = 'корисничко име'">
       <br>
-      <input id="password" onkeydown="if (event.keyCode == 13) $PRM.signIn();" class="open-sans-dark-normal" type="password" name="password" placeholder="лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'лозинка'">
+      <input id="password" onkeydown="if (event.keyCode == 13) $PRM.signIn();" type="password" name="password" placeholder="лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'лозинка'">
       <br>
-      <button id="login-button" type="submit" onclick="$PRM.signIn();">ПРИЈАВА</button>
+      <button id="login-button" type="submit" onclick="$PRM.signIn();"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;&nbsp;ПРИЈАВА</button>
     </div>
     <div class="col-2 col-md-4"></div>
   </div>
