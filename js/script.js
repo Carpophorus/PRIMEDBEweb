@@ -250,6 +250,13 @@
     }, 2500); //this delay only simulating network response
   };
 
+  PRM.searchbarInputChanged = function(e) {
+    if ($(e).val() != "")
+      $("#clear-searchboxes i").addClass("fa-eraser").removeClass("fa-times");
+    else if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0)
+      $("#clear-searchboxes i").removeClass("fa-eraser").addClass("fa-times");
+  };
+
   PRM.searchbarSelectChanged = function(e) {
     $(e).css({
       "color": "white"
@@ -268,6 +275,23 @@
         "opacity": "1"
       });
     } else {
+      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0) {
+        $.confirm({
+          title: 'ГРЕШКА',
+          content: 'Барем једно од поља за критеријуме претраге мора имати вредност.',
+          theme: 'supervan',
+          backgroundDismiss: 'true',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-prm',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
+        return;
+      }
       $("#search-criteria").css({
         "width": "0",
         "opacity": "0"
@@ -299,6 +323,119 @@
         "opacity": "1"
       });
     }
+  };
+
+  PRM.tableRowClicked = function(n, e) {
+    if ($(e).hasClass("expanded")) {
+      $(e).removeClass("expanded");
+      $("#expansion-" + n).collapse('hide');
+    } else {
+      $(e).addClass("expanded");
+      $("#expansion-" + n).collapse('show');
+    }
+  };
+
+  PRM.expansionSelectChanged = function(e) {
+    $(e).css({
+      "color": "white"
+    });
+  };
+
+  PRM.forward = function(pID, e) {
+    if ($(e).parent().parent().find("#forward option:selected").val() == 0) {
+      $.confirm({
+        title: 'ГРЕШКА',
+        content: 'Морате изабрати оператера којем се примедба прослеђује.',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      return;
+    } else {
+      disappear(e, 500);
+      setTimeout(function() {
+        appear($(e).parent().find(".loader"), 500);
+      }, 500);
+      setTimeout(function() {
+        $.confirm({
+          title: 'ПОТВРДА',
+          content: 'Примедба ' + pID + ' успешно прослеђена.',
+          theme: 'supervan',
+          backgroundDismiss: 'true',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-prm',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
+        disappear($(e).parent().find(".loader"), 500);
+        setTimeout(function() {
+          appear(e, 500);
+        }, 500);
+      }, 2500); //this delay only simulating network response
+    }
+  };
+
+  PRM.send = function(pID, e) {
+    if ($("#office-response").html() == "") {
+      $.confirm({
+        title: 'ГРЕШКА',
+        content: 'Не можете послати празан одговор.',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      return;
+    } else {
+      disappear(e, 500);
+      setTimeout(function() {
+        appear($(e).parent().find(".loader"), 500);
+      }, 500);
+      setTimeout(function() {
+        $.confirm({
+          title: 'ПОТВРДА',
+          content: 'Одговор на примедбу ' + pID + ' успешно евидентиран. / Одговор на примедбу ' + pID + ' успешно послат клијенту.',
+          theme: 'supervan',
+          backgroundDismiss: 'true',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-prm',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
+        disappear($(e).parent().find(".loader"), 500);
+        setTimeout(function() {
+          appear(e, 500);
+        }, 500);
+      }, 2500); //this delay only simulating network response
+    }
+  };
+
+  PRM.refresh = function() {
+    $("#refresh i").addClass("fa-spin");
+    setTimeout(function() {
+      $("#refresh i").removeClass("fa-spin");
+    }, 2500); //this delay only simulating network response
   };
 
   global.$PRM = PRM;
