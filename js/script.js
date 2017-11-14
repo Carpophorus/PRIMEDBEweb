@@ -304,6 +304,18 @@
     }
   };
 
+  PRM.mobileSearchButtonClicked = function() {
+    if ($("#mobile-refresh-clear").hasClass("shrunken")) {
+      $("#mobile-refresh-clear").removeClass("shrunken");
+      $("#mobile-refresh-clear i").removeClass("fa-times fa-eraser").addClass("fa-refresh");
+    } else {
+      $("#mobile-refresh-clear").addClass("shrunken");
+      $("#mobile-refresh-clear i").removeClass("fa-refresh");
+      $("#mobile-refresh-clear i").addClass("fa-times"); //if all fields empty
+      //$("#mobile-refresh-clear i").addClass("fa-eraser"); //else
+    }
+  };
+
   PRM.clearButtonClicked = function() {
     if ($("#clear-searchboxes i").hasClass("fa-eraser")) {
       $("#searchbar input").val("");
@@ -323,6 +335,10 @@
         "opacity": "1"
       });
     }
+  };
+
+  PRM.mobileRefreshClearButtonClicked = function() {
+
   };
 
   PRM.tableRowClicked = function(n, e) {

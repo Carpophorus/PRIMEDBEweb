@@ -43,9 +43,9 @@ button, button:hover, button:focus {
   padding: 0 !important;
   border-radius: 100vh;
   font-family: 'Russo One', sans-serif;
-  -webkit-transition: color 0.5s ease, background-color 0.5s ease !important;
-  -moz-transition: color 0.5s ease, background-color 0.5s ease !important;
-  transition: color 0.5s ease, background-color 0.5s ease !important;
+  -webkit-transition: opacity 0.5s ease, width 0.5s ease, margin-left 0.5s ease, color 0.5s ease, background-color 0.5s ease !important;
+  -moz-transition: opacity 0.5s ease, width 0.5s ease, margin-left 0.5s ease, color 0.5s ease, background-color 0.5s ease !important;
+  transition: opacity 0.5s ease, width 0.5s ease, margin-left 0.5s ease, color 0.5s ease, background-color 0.5s ease !important;
 }
 
 select, select:hover, select:focus {
@@ -340,13 +340,17 @@ header {
 #searchbar {
   height: 8vh;
   line-height: 8vh;
-  padding-right: 1vh;
   width: calc(100% - 1vh);
   position: relative;
 }
 
-#searchbar .col-1 {
+#searchbar .col-1, #mobile-search-button-container, #mobile-refresh-clear-button-container {
   padding: 1vh 0 0 1vh;
+}
+
+#mobile-refresh-clear-button-container>.shrunken {
+  margin-left: 50%;
+  width: 50% !important;
 }
 
 #search-criteria, #two-buttons {
@@ -384,6 +388,10 @@ header {
   float: left;
 }
 
+#clear-searchboxes {
+  overflow: hidden;
+}
+
 #searchbar .col-outertwelvth {
   width: 9.090909%;
   float: right;
@@ -393,23 +401,23 @@ header {
   width: 4.545454%;
 }
 
-#searchbar .col-ninth>input, #searchbar .col-ninth>select {
+#searchbar input, #searchbar select {
   width: 100%;
   height: 7vh;
   text-align: center;
   background-color: #444;
 }
 
-#searchbar .col-ninth>select {
+#searchbar select {
   color: #888;
   padding-left: 1vh;
 }
 
-#searchbar .col-ninth>select>option, .expansion select>option {
+#searchbar select>option, .expansion select>option {
   color: white;
 }
 
-#searchbar .col-ninth>select>option:first-child, .expansion select>option:first-child {
+#searchbar select>option:first-child, .expansion select>option:first-child {
   color: #888;
 }
 
@@ -576,6 +584,12 @@ header {
   }
   #stats {
     padding: 5vh;
+  }
+  #searchbar:first-child {
+    display: none;
+  }
+  #searchbar {
+    height: auto;
   }
   #forward-select-container {
     padding-right: 0;
