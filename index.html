@@ -78,14 +78,14 @@
     <div id="switchbox">
       <div id="searchbar" class="row hidden-md-down">
         <div id="search-criteria" class="col-11">
-          <div class="col-ninth"><input id="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-ninth"><input id="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-ninth"><input id="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-ninth"><input id="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-ninth"><input id="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-ninth"><input id="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-ninth"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
           <div class="col-ninth">
-            <select id="office" onchange="$PRM.searchbarSelectChanged(this);">
+            <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
               <option value="0" disabled selected hidden>служба</option>
               <option value="1">Ада</option>
               <option value="2">Нови Београд</option>
@@ -94,7 +94,7 @@
             </select>
           </div>
           <div class="col-ninth">
-            <select id="status" onchange="$PRM.searchbarSelectChanged(this);">
+            <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
               <option value="0" disabled selected hidden>статус</option>
               <option value="1">Непрослеђен</option>
               <option value="2">Прослеђен</option>
@@ -102,7 +102,7 @@
             </select>
           </div>
           <div class="col-ninth">
-            <select id="response" onchange="$PRM.searchbarSelectChanged(this);">
+            <select id="response" class="response" onchange="$PRM.searchbarSelectChanged(this);">
               <option value="0" disabled selected hidden>одговор</option>
               <option value="1">На чекању</option>
               <option value="2">Одговорено</option>
@@ -126,22 +126,24 @@
         </div>
       </div>
       <div id="searchbar" class="row hidden-lg-up">
-        <div class="col-4 col-md-6"></div>
-        <div id="mobile-refresh-clear-button-container" class="col-4 col-md-3">
-          <button id="mobile-refresh-clear" onclick="$PRM.mobileRefreshClearButtonClicked();"><i class="fa fa-refresh"></i></button>
+        <div id="mobile-buttons-container" class="row">
+          <div class="col-4 col-md-6"></div>
+          <div id="mobile-refresh-clear-button-container" class="col-4 col-md-3">
+            <button id="mobile-refresh-clear" onclick="$PRM.mobileRefreshClearButtonClicked();"><i class="fa fa-refresh"></i></button>
+          </div>
+          <div id="mobile-search-button-container" class="col-4 col-md-3">
+            <button id="mobile-search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+          </div>
         </div>
-        <div id="mobile-search-button-container" class="col-4 col-md-3">
-          <button id="mobile-search" onclick="$PRM.mobileSearchButtonClicked();"><i class="fa fa-search"></i></button>
-        </div>
-        <div id="mobile-searchboxes" class=" row">
-          <div class="col-12"><input id="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-12 col-md-6"><input id="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-12 col-md-6"><input id="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-12 col-md-6"><input id="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-12 col-md-6"><input id="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-          <div class="col-12 col-md-6"><input id="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div id="mobile-searchboxes" class="collapse row">
+          <div class="col-12"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-12 col-md-6"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-12 col-md-6"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-12 col-md-6"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-12 col-md-6"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+          <div class="col-12 col-md-6"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
           <div class="col-12 col-md-6">
-            <select id="office" onchange="$PRM.searchbarSelectChanged(this);">
+            <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
               <option value="0" disabled selected hidden>служба</option>
               <option value="1">Ада</option>
               <option value="2">Нови Београд</option>
@@ -150,7 +152,7 @@
             </select>
           </div>
           <div class="col-12 col-md-6">
-            <select id="status" onchange="$PRM.searchbarSelectChanged(this);">
+            <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
               <option value="0" disabled selected hidden>статус</option>
               <option value="1">Непрослеђен</option>
               <option value="2">Прослеђен</option>
@@ -158,7 +160,7 @@
             </select>
           </div>
           <div class="col-12 col-md-6">
-            <select id="response" onchange="$PRM.searchbarSelectChanged(this);">
+            <select id="response" class="response" onchange="$PRM.searchbarSelectChanged(this);">
               <option value="0" disabled selected hidden>одговор</option>
               <option value="1">На чекању</option>
               <option value="2">Одговорено</option>

@@ -251,20 +251,23 @@
   };
 
   PRM.searchbarInputChanged = function(e) {
-    if ($(e).val() != "")
-      $("#clear-searchboxes i").addClass("fa-eraser").removeClass("fa-times");
-    else if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0)
-      $("#clear-searchboxes i").removeClass("fa-eraser").addClass("fa-times");
+    if ($(e).val() != "") {
+      $("#clear-searchboxes i, #mobile-refresh-clear i").addClass("fa-eraser").removeClass("fa-times");
+      $("." + $(e).attr("class")).val($(e).val());
+    } else if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0)
+      $("#clear-searchboxes i, #mobile-refresh-clear i").removeClass("fa-eraser").addClass("fa-times");
   };
 
   PRM.searchbarSelectChanged = function(e) {
-    $(e).css({
+    $("." + $(e).attr("class")).css({
       "color": "white"
     });
-    $("#clear-searchboxes i").addClass("fa-eraser").removeClass("fa-times");
+    $("." + $(e).attr("class")).prop("selectedIndex", $(e).prop("selectedIndex"));
+    $("#clear-searchboxes i, #mobile-refresh-clear i").addClass("fa-eraser").removeClass("fa-times");
   };
 
   PRM.searchButtonClicked = function() {
+    if ($("#refresh i").hasClass("fa-spin")) return;
     if ($("#search-criteria").width() == 0) {
       $("#two-buttons").css({
         "width": "0",
@@ -274,6 +277,13 @@
         "width": "100%",
         "opacity": "1"
       });
+      $("#mobile-searchboxes").collapse("show");
+      $("#mobile-refresh-clear").addClass("shrunken");
+      $("#mobile-refresh-clear i").removeClass("fa-refresh");
+      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0)
+        $("#mobile-refresh-clear i").addClass("fa-times");
+      else
+        $("#mobile-refresh-clear i").addClass("fa-eraser");
     } else {
       if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0) {
         $.confirm({
@@ -300,23 +310,14 @@
         "width": "100%",
         "opacity": "1"
       });
-      //perform search
-    }
-  };
-
-  PRM.mobileSearchButtonClicked = function() {
-    if ($("#mobile-refresh-clear").hasClass("shrunken")) {
+      $("#mobile-searchboxes").collapse("hide");
       $("#mobile-refresh-clear").removeClass("shrunken");
       $("#mobile-refresh-clear i").removeClass("fa-times fa-eraser").addClass("fa-refresh");
-    } else {
-      $("#mobile-refresh-clear").addClass("shrunken");
-      $("#mobile-refresh-clear i").removeClass("fa-refresh");
-      $("#mobile-refresh-clear i").addClass("fa-times"); //if all fields empty
-      //$("#mobile-refresh-clear i").addClass("fa-eraser"); //else
+      //TODO: perform search
     }
   };
 
-  PRM.clearButtonClicked = function() {
+  PRM.clearButtonClicked = function(nest) {
     if ($("#clear-searchboxes i").hasClass("fa-eraser")) {
       $("#searchbar input").val("");
       $("#searchbar option").prop("selected", false);
@@ -335,10 +336,29 @@
         "opacity": "1"
       });
     }
+    if (nest != 1)
+      PRM.mobileRefreshClearButtonClicked(1);
   };
 
-  PRM.mobileRefreshClearButtonClicked = function() {
-
+  PRM.mobileRefreshClearButtonClicked = function(nest) {
+    if ($("#mobile-refresh-clear i").hasClass("fa-spin")) return;
+    if ($("#mobile-refresh-clear i").hasClass("fa-refresh")) {
+      PRM.refresh();
+    } else if ($("#mobile-refresh-clear i").hasClass("fa-times")) {
+      $("#mobile-searchboxes").collapse("hide");
+      $("#mobile-refresh-clear").removeClass("shrunken");
+      $("#mobile-refresh-clear i").removeClass("fa-times").addClass("fa-refresh");
+      if (nest != 1)
+        PRM.clearButtonClicked(1);
+    } else if ($("#mobile-refresh-clear i").hasClass("fa-eraser")) {
+      $("#searchbar input").val("");
+      $("#searchbar option").prop("selected", false);
+      $("#searchbar option:first-child").prop("selected", true);
+      $("#searchbar select").css({
+        "color": "#777"
+      });
+      $("#mobile-refresh-clear i").removeClass("fa-eraser").addClass("fa-times");
+    }
   };
 
   PRM.tableRowClicked = function(n, e) {
@@ -420,37 +440,60 @@
       });
       return;
     } else {
-      disappear(e, 500);
-      setTimeout(function() {
-        appear($(e).parent().find(".loader"), 500);
-      }, 500);
-      setTimeout(function() {
-        $.confirm({
-          title: 'ПОТВРДА',
-          content: 'Одговор на примедбу ' + pID + ' успешно евидентиран. / Одговор на примедбу ' + pID + ' успешно послат клијенту.',
-          theme: 'supervan',
-          backgroundDismiss: 'true',
-          buttons: {
-            ok: {
-              text: 'ОК',
-              btnClass: 'btn-white-prm',
-              keys: ['enter'],
-              action: function() {}
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Да ли сте сигурни да желите да сачувате овај одговор као званичан одговор службе? / Да ли сте сигурни да желите да клијенту пошаљете овај одговор као званичан одговор службе?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {
+              disappear(e, 500);
+              setTimeout(function() {
+                appear($(e).parent().find(".loader"), 500);
+              }, 500);
+              setTimeout(function() {
+                $.confirm({
+                  title: 'ПОТВРДА',
+                  content: 'Одговор на примедбу ' + pID + ' успешно евидентиран. / Одговор на примедбу ' + pID + ' успешно послат клијенту.',
+                  theme: 'supervan',
+                  backgroundDismiss: 'true',
+                  buttons: {
+                    ok: {
+                      text: 'ОК',
+                      btnClass: 'btn-white-prm',
+                      keys: ['enter'],
+                      action: function() {}
+                    }
+                  }
+                });
+                disappear($(e).parent().find(".loader"), 500);
+                setTimeout(function() {
+                  appear(e, 500);
+                }, 500);
+              }, 2500); //this delay only simulating network response
             }
           }
-        });
-        disappear($(e).parent().find(".loader"), 500);
-        setTimeout(function() {
-          appear(e, 500);
-        }, 500);
-      }, 2500); //this delay only simulating network response
+        }
+      });
     }
   };
 
   PRM.refresh = function() {
-    $("#refresh i").addClass("fa-spin");
+    if ($("#refresh i").hasClass("fa-spin")) return;
+    $("#refresh i, #mobile-refresh-clear i").addClass("fa-spin");
     setTimeout(function() {
-      $("#refresh i").removeClass("fa-spin");
+      $("#refresh i, #mobile-refresh-clear i").removeClass("fa-spin");
     }, 2500); //this delay only simulating network response
   };
 

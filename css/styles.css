@@ -344,6 +344,12 @@ header {
   position: relative;
 }
 
+#mobile-buttons-container {
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
 #searchbar .col-1, #mobile-search-button-container, #mobile-refresh-clear-button-container {
   padding: 1vh 0 0 1vh;
 }
@@ -390,6 +396,15 @@ header {
 
 #clear-searchboxes {
   overflow: hidden;
+}
+
+#mobile-searchboxes.show {
+  width: 100%;
+  display: inherit;
+}
+
+#mobile-searchboxes>div {
+  padding: 1vh 0.5vh 0 1.5vh;
 }
 
 #searchbar .col-outertwelvth {
@@ -590,6 +605,7 @@ header {
   }
   #searchbar {
     height: auto;
+    padding-top: 8vh;
   }
   #forward-select-container {
     padding-right: 0;
