@@ -115,7 +115,7 @@
   PRM.signIn = function() {
     if ($("#username").val() == "" || $("#password").val() == "") {
       $.confirm({
-        title: 'ГРЕШКА',
+        title: 'ГРЕШКА!',
         content: 'Морате унети и корисничко име и шифру.',
         theme: 'supervan',
         backgroundDismiss: 'true',
@@ -139,7 +139,7 @@
       setTimeout(function() {
         appear($(".login-screen"), 500);
         $.confirm({
-          title: 'ГРЕШКА',
+          title: 'ГРЕШКА!',
           content: 'Појавила се грешка приликом пријаве на систем. Проверите своје креденцијале и покушајте поново.<br><br>Контактирајте системске администраторе уколико се овај проблем често дешава.',
           theme: 'supervan',
           backgroundDismiss: 'true',
@@ -287,7 +287,7 @@
     } else {
       if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0) {
         $.confirm({
-          title: 'ГРЕШКА',
+          title: 'ГРЕШКА!',
           content: 'Барем једно од поља за критеријуме претраге мора имати вредност.',
           theme: 'supervan',
           backgroundDismiss: 'true',
@@ -380,7 +380,7 @@
   PRM.forward = function(pID, e) {
     if ($(e).parent().parent().find("#forward option:selected").val() == 0) {
       $.confirm({
-        title: 'ГРЕШКА',
+        title: 'ГРЕШКА!',
         content: 'Морате изабрати оператера којем се примедба прослеђује.',
         theme: 'supervan',
         backgroundDismiss: 'true',
@@ -425,7 +425,7 @@
   PRM.send = function(pID, e) {
     if ($("#office-response").html() == "") {
       $.confirm({
-        title: 'ГРЕШКА',
+        title: 'ГРЕШКА!',
         content: 'Не можете послати празан одговор.',
         theme: 'supervan',
         backgroundDismiss: 'true',
@@ -495,6 +495,111 @@
     setTimeout(function() {
       $("#refresh i, #mobile-refresh-clear i").removeClass("fa-spin");
     }, 2500); //this delay only simulating network response
+  };
+
+  var printTitle = "";
+  PRM.printTitleChanged = function(e) {
+    printTitle = $(e).val();
+  };
+
+  PRM.print = function() {
+    printTitle = "";
+    $.confirm({
+      title: 'ПОТВРДА',
+      content: `Уколико желите наслов на документу за штампу, унесите га у ово поље:<br><br><input id="print-title" type="text" placeholder="наслов" onfocus="this.placeholder = ''" onblur="this.placeholder = 'наслов'" onkeyup="$PRM.printTitleChanged(this);">`,
+      theme: 'supervan',
+      backgroundDismiss: 'true',
+      buttons: {
+        cancel: {
+          text: '<i class="fa fa-times"></i>',
+          btnClass: 'btn-white-prm',
+          keys: ['esc'],
+          action: function() {}
+        },
+        print: {
+          text: '<i class="fa fa-print"></i>',
+          btnClass: 'btn-white-prm',
+          keys: ['enter'],
+          action: function() {
+            var html4print = `
+              <head><title>` + printTitle + `</title></head>
+              <body>
+                <div class="header">
+                  <div class="inner-s">р.б.</div>
+                  <div class="inner-xl">бр. предмета</div>
+                  <div class="inner-l">датум</div>
+                  <div class="inner-xl">име и презиме</div>
+                  <div class="inner-xl">e-mail</div>
+                  <div class="inner-l">телефон</div>
+                  <div class="inner-l">служба</div>
+                  <div class="inner-l">статус</div>
+                  <div class="inner-l">одговор</div>
+                </div>
+            `;
+            for (var i = 0; i < 50; i++) {
+              html4print += `
+                <div class="outer">
+                  <div class="inner-s">` + `123` + `</div>
+                  <div class="inner-xl">` + `95-74993678/2017` + `</div>
+                  <div class="inner-l">` + `10.11.2017. 08:51` + `</div>
+                  <div class="inner-xl">` + `Radibrat Radibratović` + `</div>
+                  <div class="inner-xl">` + `rr69@gmail.com` + `</div>
+                  <div class="inner-l">` + `069/555-78-03` + `</div>
+                  <div class="inner-l">` + `Велика Плана` + `</div>
+                  <div class="inner-l">` + `Непрослеђен` + `</div>
+                  <div class="inner-l">` + `Нема одговора` + `</div>
+                </div>
+              `;
+            }
+            html4print += `
+              </body>
+              <style>
+                body {
+                  margin: 0;
+                  -webkit-print-color-adjust: exact;
+                }
+                .header, .outer {
+                  position: relative;
+                  width: 100%;
+                  font-size: 65%;
+                  overflow: auto;
+                }
+                .header {
+                  color: white;
+                  font-weight: bold;
+                  background-color: #444;
+                }
+                .outer:nth-child(odd) {
+                  background-color: #eee !important;
+                }
+                .header>div, .outer>div {
+                  float: left;
+                  white-space: nowrap;
+                  overflow: hidden !important;
+                  text-overflow: ellipsis;
+                  line-height: 2;
+                }
+                .inner-s {
+                  width: 5%;
+                }
+                .inner-l {
+                  width: 10%;
+                }
+                .inner-xl {
+                  width: 15%;
+                }
+              </style>
+            `;
+
+            w = window.open("");
+            w.document.write(html4print);
+            w.print();
+            w.close();
+          }
+        }
+      }
+    });
+    //generate html (prompt for all or screen?)
   };
 
   global.$PRM = PRM;

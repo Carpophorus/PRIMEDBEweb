@@ -60,6 +60,10 @@ input {
   color: inherit;
 }
 
+select, input {
+  font-family: 'Open Sans', sans-serif !important;
+}
+
 .loader {
   width: 15vh;
   height: 15vh;
@@ -583,6 +587,14 @@ header {
   height: 7vh;
   width: 7vh;
   border-width: 0.75vh;
+}
+
+#print-title {
+  text-align: center;
+  border-radius: 0;
+  line-height: 7vh;
+  width: 100%;
+  color: #333;
 }
 
 @media (max-width: 991.5px) {
