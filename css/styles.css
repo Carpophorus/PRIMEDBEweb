@@ -597,6 +597,12 @@ header {
   color: #333;
 }
 
+#search-criteria img {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+}
+
 @media (max-width: 991.5px) {
   .navbar-collapse {
     margin-top: 8vh;

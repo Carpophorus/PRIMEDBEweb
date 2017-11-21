@@ -284,7 +284,7 @@
         $("#mobile-refresh-clear i").addClass("fa-times");
       else
         $("#mobile-refresh-clear i").addClass("fa-eraser");
-    } else {
+    } else if ($("#search-criteria").width() >= (window.innerWidth - window.innerHeight / 100) * 11 / 12 - 20) {
       if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0) {
         $.confirm({
           title: 'ГРЕШКА!',
@@ -325,6 +325,9 @@
       $("#searchbar select").css({
         "color": "#777"
       });
+      $(".date-from, .date-to").datepicker('update', '');
+      $(".date-from, .date-to").datepicker('setEndDate', '0d');
+      $(".date-from, .date-to").datepicker('setStartDate', '');
       $("#clear-searchboxes i").removeClass("fa-eraser").addClass("fa-times");
     } else {
       $("#search-criteria").css({
@@ -357,6 +360,9 @@
       $("#searchbar select").css({
         "color": "#777"
       });
+      $(".date-from, .date-to").datepicker('update', '');
+      $(".date-from, .date-to").datepicker('setEndDate', '0d');
+      $(".date-from, .date-to").datepicker('setStartDate', '');
       $("#mobile-refresh-clear i").removeClass("fa-eraser").addClass("fa-times");
     }
   };
@@ -600,6 +606,30 @@
       }
     });
     //generate html (prompt for all or screen?)
+  };
+
+  PRM.dateInit = function() {
+    $(".date-from, .date-to").datepicker({
+      format: "dd.mm.yyyy.",
+      todayHighlight: true,
+      todayBtn: "linked",
+      language: "sr",
+      endDate: "0d"
+    });
+  };
+
+  PRM.dateFromChanged = function(e) {
+    if ($(e).val() != "")
+      $(".date-to").datepicker('setStartDate', $(e).val());
+    console.log($("#date-to").datepicker('getStartDate'));
+    PRM.searchbarInputChanged(e);
+  };
+
+  PRM.dateToChanged = function(e) {
+    if ($(e).val() != "")
+      $(".date-from").datepicker('setEndDate', $(e).val());
+    console.log($("#date-from").datepicker('getEndDate'));
+    PRM.searchbarInputChanged(e);
   };
 
   global.$PRM = PRM;
