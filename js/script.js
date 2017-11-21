@@ -632,5 +632,41 @@
     PRM.searchbarInputChanged(e);
   };
 
+  PRM.firstPage = function() {
+    if ($("#page-select").prop("selectedIndex") != 0) {
+      $("#page-select option").prop("selected", false);
+      $("#page-select option:first-child").prop("selected", true);
+      PRM.selectPage();
+    }
+  };
+
+  PRM.previousPage = function() {
+    if ($("#page-select").prop("selectedIndex") != 0) {
+      var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") - 1);
+      PRM.selectPage();
+    }
+  };
+
+  PRM.selectPage = function() {
+    //call api
+    console.log($("#page-select option:selected").val());
+  };
+
+  PRM.nextPage = function() {
+    if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
+      var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") + 1);
+      PRM.selectPage();
+    }
+  };
+
+  PRM.lastPage = function() {
+    if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
+      $("#page-select option").prop("selected", false);
+      $("#page-select option:last-child").prop("selected", true);
+      PRM.selectPage();
+    }
+  };
+
+
   global.$PRM = PRM;
 })(window);

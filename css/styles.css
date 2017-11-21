@@ -603,6 +603,65 @@ header {
   width: 1px;
 }
 
+#pagination {
+  position: relative;
+  color: #CC5505;
+}
+
+#pagination>div {
+  position: absolute;
+  top: 1vh;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 34vh;
+  height: 5vh;
+}
+
+#pagination>div>div {
+  height: 100%;
+  margin-left: 1vh;
+  width: 5vh;
+  float: left;
+  cursor: pointer;
+  position: relative;
+}
+
+#pagination>div>div:hover {
+  background-color: #444;
+}
+
+#pagination>div>div:first-child {
+  margin-left: 0;
+}
+
+#pagination>div>div:nth-child(3) {
+  width: 10vh;
+  background-color: #444;
+}
+
+#pagination i {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  line-height: 5vh;
+  font-size: 4vh;
+  text-align: center;
+}
+
+#pagination select {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding-left: 1vh;
+  color: #CC5505;
+  background-color: transparent;
+  font-weight: bold;
+  font-size: 2.4vh;
+}
+
 @media (max-width: 991.5px) {
   .navbar-collapse {
     margin-top: 8vh;

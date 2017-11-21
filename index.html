@@ -311,7 +311,25 @@
           </div>
         </div>
       </div>
-      <div id="pagination"></div>
+      <div id="pagination">
+        <div>
+          <div onclick="$PRM.firstPage();"><i class="fa fa-angle-double-left"></i></div>
+          <div onclick="$PRM.previousPage();"><i class="fa fa-angle-left"></i></div>
+          <div>
+            <select id="page-select" onchange="$PRM.selectPage();">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+            </select>
+          </div>
+          <div onclick="$PRM.nextPage();"><i class="fa fa-angle-right"></i></div>
+          <div onclick="$PRM.lastPage();"><i class="fa fa-angle-double-right"></i></div>
+        </div>
+      </div>
     </div>
   </div>
 </body>
