@@ -134,26 +134,72 @@
     setTimeout(function() {
       appear($(".loader"), 500);
     }, 500);
-    setTimeout(function() { //after unsuccesful login, with prompt
-      disappear($(".loader"), 500);
-      setTimeout(function() {
-        appear($(".login-screen"), 500);
-        $.confirm({
-          title: 'ГРЕШКА!',
-          content: 'Појавила се грешка приликом пријаве на систем. Проверите своје креденцијале и покушајте поново.<br><br>Контактирајте системске администраторе уколико се овај проблем често дешава.',
-          theme: 'supervan',
-          backgroundDismiss: 'true',
-          buttons: {
-            ok: {
-              text: 'ОК',
-              btnClass: 'btn-white-prm',
-              keys: ['enter'],
-              action: function() {}
+    if ($("#username").val() != "t" || $("#password").val() != "t") {
+      setTimeout(function() { //after unsuccesful login, with prompt
+        disappear($(".loader"), 500);
+        setTimeout(function() {
+          appear($(".login-screen"), 500);
+          $.confirm({
+            title: 'ГРЕШКА!',
+            content: 'Појавила се грешка приликом пријаве на систем. Проверите своје креденцијале и покушајте поново.<br><br>Контактирајте системске администраторе уколико се овај проблем често дешава.',
+            theme: 'supervan',
+            backgroundDismiss: 'true',
+            buttons: {
+              ok: {
+                text: 'ОК',
+                btnClass: 'btn-white-prm',
+                keys: ['enter'],
+                action: function() {}
+              }
             }
-          }
-        });
-      }, 500);
-    }, 3000);
+          });
+        }, 500);
+      }, 3000); //this delay only simulating network response
+    } else {
+      setTimeout(function() { //success
+        disappear($(".loader"), 500);
+        setTimeout(function() {
+          var html = `
+            <header class="gone">
+              <nav class="navbar navbar-toggleable-md">
+                <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <div class="navbar-brand"></div>
+                <div class="mobile-navi-helper mnh-1 hidden-lg-up"><i class="fa fa-ticket"></i></div>
+                <div class="mobile-navi-helper mnh-2 hidden-lg-up gone"><i class="fa fa-bar-chart"></i></div>
+                <div class="mobile-navi-helper mnh-3 hidden-lg-up gone"><i class="fa fa-user-circle-o"></i></div>
+                <div class="collapse navbar-collapse" id="navbar-content">
+                  <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active" onclick="$PRM.navi(1, this);">
+                      <div class="nav-link"><i class="fa fa-ticket"></i>&nbsp;&nbsp;&nbsp;ПРИМЕДБЕ</div>
+                    </li>
+                    <li class="nav-item" onclick="$PRM.navi(2, this);">
+                      <div class="nav-link"><i class="fa fa-bar-chart"></i>&nbsp;&nbsp;&nbsp;СТАТИСТИКА</div>
+                    </li>
+                    <li class="nav-item" onclick="$PRM.navi(3, this);">
+                      <div class="nav-link"><i class="fa fa-user-circle-o"></i>&nbsp;&nbsp;&nbsp;ПРОФИЛ</div>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+            </header>
+            <div id="main-content" class="gone">
+              <div class="loader">
+                <div class="loader-inner"></div>
+              </div>
+              <div id="switchbox" class="gone">
+              </div>
+            </div>
+          `;
+          insertHtml("body", html);
+          appear($("header, #main-content"), 500);
+          setTimeout(function() {
+            PRM.loadPage(1);
+          }, 500);
+        }, 500);
+      }, 3000); //this delay only simulating network response
+    }
   };
 
   PRM.navi = function(n, e) {
@@ -171,14 +217,268 @@
   };
 
   PRM.loadPage = function(n) {
-    //
     disappear($("#switchbox"), 500);
     appear($(".loader"), 500);
     setTimeout(function() {
       insertHtml("#switchbox", ``);
     }, 500);
     setTimeout(function() {
-      if (n == 2) {
+      if (n == 1) {
+        var html = `
+          <div id="searchbar" class="row hidden-md-down">
+            <div id="search-criteria" class="col-11">
+              <img src="img/favicons/favicon.ico" onload="$PRM.dateInit();">
+              <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
+              <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
+              <div class="col-ninth"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-ninth">
+                <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
+                    <option value="0" disabled selected hidden>служба</option>
+                    <option value="1">Ада</option>
+                    <option value="2">Нови Београд</option>
+                    <option value="3">Осечина</option>
+                    <option value="4">Житорађа</option>
+                  </select>
+              </div>
+              <div class="col-ninth">
+                <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
+                    <option value="0" disabled selected hidden>статус</option>
+                    <option value="1">Непрослеђен</option>
+                    <option value="2">Прослеђен</option>
+                    <option value="3">Готов</option>
+                  </select>
+              </div>
+              <div class="col-ninth">
+                <select id="response" class="response" onchange="$PRM.searchbarSelectChanged(this);">
+                    <option value="0" disabled selected hidden>одговор</option>
+                    <option value="1">На чекању</option>
+                    <option value="2">Одговорено</option>
+                    <option value="3">Нема одговора</option>
+                  </select>
+              </div>
+              <div class="col-outertwelvthhalf">
+                <button id="clear-searchboxes" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <div id="two-buttons" class="col-11">
+              <div class="col-outertwelvth">
+                <button id="print" onclick="$PRM.print();"><i class="fa fa-print"></i></button>
+              </div>
+              <div class="col-outertwelvth">
+                <button id="refresh" onclick="$PRM.refresh();"><i class="fa fa-refresh"></i></button>
+              </div>
+            </div>
+            <div id="search-button-container" class="col-1">
+              <button id="search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+            </div>
+          </div>
+          <div id="searchbar" class="row hidden-lg-up">
+            <div id="mobile-buttons-container" class="row">
+              <div class="col-4 col-md-6"></div>
+              <div id="mobile-refresh-clear-button-container" class="col-4 col-md-3">
+                <button id="mobile-refresh-clear" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-refresh"></i></button>
+              </div>
+              <div id="mobile-search-button-container" class="col-4 col-md-3">
+                <button id="mobile-search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+            <div id="mobile-searchboxes" class="collapse row">
+              <div class="col-12"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-12 col-md-6"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
+              <div class="col-12 col-md-6"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
+              <div class="col-12 col-md-6"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-12 col-md-6"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-12 col-md-6"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              <div class="col-12 col-md-6">
+                <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
+                    <option value="0" disabled selected hidden>служба</option>
+                    <option value="1">Ада</option>
+                    <option value="2">Нови Београд</option>
+                    <option value="3">Осечина</option>
+                    <option value="4">Житорађа</option>
+                  </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
+                    <option value="0" disabled selected hidden>статус</option>
+                    <option value="1">Непрослеђен</option>
+                    <option value="2">Прослеђен</option>
+                    <option value="3">Готов</option>
+                  </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <select id="response" class="response" onchange="$PRM.searchbarSelectChanged(this);">
+                    <option value="0" disabled selected hidden>одговор</option>
+                    <option value="1">На чекању</option>
+                    <option value="2">Одговорено</option>
+                    <option value="3">Нема одговора</option>
+                  </select>
+              </div>
+            </div>
+          </div>
+          <div id="table">
+            <div id="table-header" class="row">
+              <div class="col-2 col-md-1">р.б.</div>
+              <div class="col-6 col-md-3">бр. предмета</div>
+              <div class="col-3 hidden-sm-down">датум</div>
+              <div class="col-3 hidden-sm-down">име и презиме</div>
+              <div class="col-2 col-md-1"><span class="hidden-sm-down">статус</span><i class="hidden-md-up fa fa-info-circle"></i></div>
+              <div class="col-2 col-md-1"><span class="hidden-sm-down">одговор</span><i class="hidden-md-up fa fa-comments"></i></div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(1, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-2 col-md-1 status-1"><i class="fa fa-inbox"></i></div>
+              <div class="col-2 col-md-1 response-1"></div>
+            </div>
+            <div id="expansion-1" class="expansion collapse">
+              <div class="row">
+                <div class="expansion-info col-12 col-md-6">
+                  <div class="expansion-label">бр. предмета:</div>
+                  <div class="expansion-info-data">95-74993/2017</div>
+                  <div class="expansion-label">датум:</div>
+                  <div class="expansion-info-data">10.11.2017. 08:51</div>
+                  <div class="expansion-label">име и презиме:</div>
+                  <div class="expansion-info-data">Radibrat Radibratović</div>
+                  <div class="expansion-label">e-mail:</div>
+                  <div class="expansion-info-data">rr69@gmail.com</div>
+                  <div class="expansion-label">телефон:</div>
+                  <div class="expansion-info-data">069/555-78-03</div>
+                  <div class="expansion-label">служба:</div>
+                  <div class="expansion-info-data">Велика Плана</div>
+                  <div class="expansion-label">статус:</div>
+                  <div class="expansion-info-data">Непрослеђен</div>
+                  <div class="expansion-label">одговор:</div>
+                  <div class="expansion-info-data">Нема одговора</div>
+                </div>
+                <div class="expansion-response col-12 col-md-6">
+                  <div id="forward-label" class="expansion-label">прослеђивање:</div>
+                  <div id="forward-container" class="row">
+                    <div id="forward-select-container" class="col-12 col-md-9">
+                      <select id="forward" onchange="$PRM.expansionSelectChanged(this);">
+                          <option value="0" disabled selected hidden>оператер</option>
+                          <option value="1">Оператер Оператерић 1</option>
+                          <option value="2">Оператер Оператерић 2</option>
+                          <option value="3">Оператер Оператерић 3</option>
+                          <option value="4">Оператер Оператерић 4</option>
+                          <option value="5">Оператер Оператерић 5</option>
+                          <option value="6">Оператер Оператерић 6</option>
+                          <option value="7">Оператер Оператерић 7</option>
+                        </select>
+                    </div>
+                    <div id="forward-button-container" class="col-12 col-md-3">
+                      <div class="loader gone">
+                        <div class="loader-inner"></div>
+                      </div>
+                      <button onclick="$PRM.forward(1, this);"><i class="fa fa-share"></i></button>
+                    </div>
+                  </div>
+                  <div class="expansion-label">примедба:</div>
+                  <div class="divtextarea">Ovo je primedba klijenta. Polje se ne može menjati. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet provident similique nemo alias amet, sapiente dolor, at maiores voluptates quo deleniti praesentium modi ab, illo minus vitae
+                    deserunt harum dolorum. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni ipsum consectetur in ad quia, quas vitae aliquam tempora ex doloremque dignissimos perspiciatis veniam odio esse, qui, eos dicta nesciunt est? Lorem ipsum
+                    dolor sit amet, consectetur adipisicing elit. Hic, possimus nemo nihil voluptatum facere aperiam ullam dolor. Velit officiis dignissimos blanditiis, saepe fugit dolor dolorem tenetur quo voluptatum, ab ullam!</div>
+                  <div class="expansion-label">одговор службе:</div>
+                  <div id="office-response" class="divtextarea" contenteditable="true"></div>
+                  <div class="row">
+                    <div class="hidden-sm-down col-md-9"></div>
+                    <div id="send-button-container" class="col-12 col-md-3">
+                      <div class="loader gone">
+                        <div class="loader-inner"></div>
+                      </div>
+                      <button onclick="$PRM.send(1, this);"><i class="fa fa-paper-plane"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(2, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
+              <div class="col-2 col-md-1 response-2"><i class="fa fa-clock-o"></i></div>
+            </div>
+            <div id="expansion-2" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(3, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
+              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
+            </div>
+            <div id="expansion-3" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(4, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
+              <div class="col-2 col-md-1 response-4"><i class="fa fa-times"></i></div>
+            </div>
+            <div id="expansion-4" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(5, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
+              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
+            </div>
+            <div id="expansion-5" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+          </div>
+          <div id="pagination">
+            <div>
+              <div onclick="$PRM.firstPage();" class="pagination-disabled"><i class="fa fa-angle-double-left"></i></div>
+              <div onclick="$PRM.previousPage();" class="pagination-disabled"><i class="fa fa-angle-left"></i></div>
+              <div>
+                <select id="page-select" onchange="$PRM.selectPage();">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                  </select>
+              </div>
+              <div onclick="$PRM.nextPage();"><i class="fa fa-angle-right"></i></div>
+              <div onclick="$PRM.lastPage();"><i class="fa fa-angle-double-right"></i></div>
+            </div>
+          </div>
+        `;
+        insertHtml("#switchbox", html);
+      } else if (n == 2) {
         var html = `
           <div class="row">
             <div class="col-lg-6 col-12" id="chart"></div>
@@ -244,6 +544,27 @@
             data.element.animate(animationDefinition, false);
           }
         });
+      } else if (n == 3) {
+        var html = `
+          <div id="profile-picture"><i class="fa fa-user-circle-o"></i></div>
+          <div id="profile-name">Петар Петровић</div>
+          <div id="profile-position">ОПЕРАТЕР</div>
+          <div id="profile-container" class="row">
+            <div class="col-2 col-md-4"></div>
+            <div id="profile-content" class="col-8 col-md-4">
+              <div id="new-password-container"><input id="new-password" type="password" placeholder="нова лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'нова лозинка'"></div>
+              <div id="change-password-container">
+                <div class="loader gone">
+                  <div class="loader-inner"></div>
+                </div>
+                <button id="change-password-button" onclick="$PRM.changePassword();" onkeydown="if (event.keyCode == 13) $PRM.changePassword();"><i class="fa fa-key"></i>&nbsp;&nbsp;&nbsp;ПРОМЕНИ</button>
+              </div>
+              <div id="logout-container"><button id="logout-button" onclick="$PRM.signOut();"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;&nbsp;ОДЈАВА</button></div>
+            </div>
+            <div class="col-2 col-md-4"></div>
+          </div>
+        `;
+        insertHtml("#switchbox", html);
       }
       appear($("#switchbox"), 500);
       disappear($(".loader"), 500);
@@ -314,11 +635,15 @@
       $("#mobile-refresh-clear").removeClass("shrunken");
       $("#mobile-refresh-clear i").removeClass("fa-times fa-eraser").addClass("fa-refresh");
       //TODO: perform search
+      PRM.refresh(); //maybe
     }
   };
 
-  PRM.clearButtonClicked = function(nest) {
-    if ($("#clear-searchboxes i").hasClass("fa-eraser")) {
+  PRM.clearRefreshButtonClicked = function() {
+    if ($("#mobile-refresh-clear i").hasClass("fa-spin")) return;
+    if ($("#mobile-refresh-clear i").hasClass("fa-refresh")) {
+      PRM.refresh();
+    } else if ($("#clear-searchboxes i").hasClass("fa-eraser") || $("#mobile-refresh-clear i").hasClass("fa-eraser")) {
       $("#searchbar input").val("");
       $("#searchbar option").prop("selected", false);
       $("#searchbar option:first-child").prop("selected", true);
@@ -328,8 +653,8 @@
       $(".date-from, .date-to").datepicker('update', '');
       $(".date-from, .date-to").datepicker('setEndDate', '0d');
       $(".date-from, .date-to").datepicker('setStartDate', '');
-      $("#clear-searchboxes i").removeClass("fa-eraser").addClass("fa-times");
-    } else {
+      $("#clear-searchboxes i, #mobile-refresh-clear i").removeClass("fa-eraser").addClass("fa-times");
+    } else if ($("#clear-searchboxes i").hasClass("fa-times") || $("#mobile-refresh-clear i").hasClass("fa-times")) {
       $("#search-criteria").css({
         "width": "0",
         "opacity": "0"
@@ -338,32 +663,9 @@
         "width": "100%",
         "opacity": "1"
       });
-    }
-    if (nest != 1)
-      PRM.mobileRefreshClearButtonClicked(1);
-  };
-
-  PRM.mobileRefreshClearButtonClicked = function(nest) {
-    if ($("#mobile-refresh-clear i").hasClass("fa-spin")) return;
-    if ($("#mobile-refresh-clear i").hasClass("fa-refresh")) {
-      PRM.refresh();
-    } else if ($("#mobile-refresh-clear i").hasClass("fa-times")) {
       $("#mobile-searchboxes").collapse("hide");
       $("#mobile-refresh-clear").removeClass("shrunken");
       $("#mobile-refresh-clear i").removeClass("fa-times").addClass("fa-refresh");
-      if (nest != 1)
-        PRM.clearButtonClicked(1);
-    } else if ($("#mobile-refresh-clear i").hasClass("fa-eraser")) {
-      $("#searchbar input").val("");
-      $("#searchbar option").prop("selected", false);
-      $("#searchbar option:first-child").prop("selected", true);
-      $("#searchbar select").css({
-        "color": "#777"
-      });
-      $(".date-from, .date-to").datepicker('update', '');
-      $(".date-from, .date-to").datepicker('setEndDate', '0d');
-      $(".date-from, .date-to").datepicker('setStartDate', '');
-      $("#mobile-refresh-clear i").removeClass("fa-eraser").addClass("fa-times");
     }
   };
 
@@ -498,8 +800,36 @@
   PRM.refresh = function() {
     if ($("#refresh i").hasClass("fa-spin")) return;
     $("#refresh i, #mobile-refresh-clear i").addClass("fa-spin");
+    disappear($(".table-row"), 500);
     setTimeout(function() {
+      appear($(".loader"), 500);
+    }, 500);
+    insertHtml("#page-select", "");
+    $("#pagination>div>div").addClass("pagination-disabled");
+    $("#pagination select").prop("disabled", true);
+    setTimeout(function() {
+      //edit table html and #page-select html according to response
       $("#refresh i, #mobile-refresh-clear i").removeClass("fa-spin");
+      disappear($(".loader"), 500);
+      setTimeout(function() {
+        appear($(".table-row"), 500);
+      }, 500);
+      insertHtml("#page-select", `
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+      `);
+      $("#pagination>div>div:nth-child(3)").removeClass("pagination-disabled");
+      $("#pagination select").prop("disabled", false);
+      $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").addClass("pagination-disabled");
+      if ($("#page-select option").length == 1)
+        $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").addClass("pagination-disabled");
+      else
+        $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").removeClass("pagination-disabled");
     }, 2500); //this delay only simulating network response
   };
 
@@ -649,7 +979,24 @@
 
   PRM.selectPage = function() {
     //call api
-    console.log($("#page-select option:selected").val());
+    disappear($(".table-row"), 500);
+    setTimeout(function() {
+      appear($(".loader"), 500);
+    }, 500);
+    setTimeout(function() {
+      disappear($(".loader"), 500);
+      setTimeout(function() {
+        appear($(".table-row"), 500);
+      }, 500);
+    }, 2000); //this delay only simulating network response
+    if ($("#page-select").prop("selectedIndex") == 0)
+      $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").addClass("pagination-disabled");
+    else
+      $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").removeClass("pagination-disabled");
+    if ($("#page-select").prop("selectedIndex") == $("#page-select option").length - 1)
+      $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").addClass("pagination-disabled");
+    else
+      $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").removeClass("pagination-disabled");
   };
 
   PRM.nextPage = function() {
@@ -667,6 +1014,83 @@
     }
   };
 
+  PRM.signOut = function() {
+    $.confirm({
+      title: 'ПАЖЊА!',
+      content: 'Да ли сте сигурни да желите да се одјавите?',
+      theme: 'supervan',
+      backgroundDismiss: 'true',
+      autoClose: 'no|10000',
+      buttons: {
+        no: {
+          text: 'НЕ',
+          btnClass: 'btn-white-prm',
+          keys: ['esc'],
+          action: function() {}
+        },
+        yes: {
+          text: 'ДА',
+          btnClass: 'btn-white-prm',
+          keys: ['enter'],
+          action: function() {
+            location.reload();
+          }
+        }
+      }
+    });
+  };
+
+  pattern1 = /[~!@\`#$%\^&*+=\-\[\];,./{}()|\\\":<>\?]/;
+  pattern2 = /[a-z]/;
+  pattern3 = /[A-Z]/;
+  pattern4 = /[0-9]/;
+
+  PRM.changePassword = function() {
+    var newPass = $("#new-password").val();
+    if (newPass.length < 8 || !pattern1.test(newPass) || !pattern2.test(newPass) || !pattern3.test(newPass) || !pattern4.test(newPass)) {
+      $.confirm({
+        title: 'ГРЕШКА!',
+        content: 'Лозинка мора имати барем 8 карактера и мора садржати барем једно мало слово и барем једно велико слово енглеског алфабета, барем једну цифру и барем један специјални карактер. Шифра не сме садржати бланко ознаке (space, tab и сл.)',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      return;
+    }
+    $("#new-password").prop("disabled", true);
+    disappear($("#change-password-button"), 500);
+    setTimeout(function() {
+      appear($("#change-password-container .loader"), 500);
+    }, 500);
+    setTimeout(function() {
+      disappear($("#change-password-container .loader"), 500);
+      setTimeout(function() {
+        appear($("#change-password-button"), 500);
+      }, 500);
+      $.confirm({
+        title: 'ПОТВРДА',
+        content: 'Лозинка је успешно промењена.<br><br>Користите нову лозинку приликом следеће пријаве на систем.',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      $("#new-password").prop("disabled", false);
+    }, 2500); //this delay only simulating network response
+  };
 
   global.$PRM = PRM;
 })(window);

@@ -220,6 +220,7 @@ header {
   box-shadow: 0 0 3vh 0.5vh black;
   z-index: 1000;
   color: black;
+  opacity: 0;
 }
 
 .navbar {
@@ -285,6 +286,7 @@ header {
   height: 100vh;
   position: relative;
   padding-top: 8vh;
+  opacity: 0;
 }
 
 #switchbox {
@@ -440,7 +442,7 @@ header {
   color: #888;
 }
 
-#searchbar button, .expansion button {
+#searchbar button, .expansion button, #profile-content button {
   width: 100%;
   height: 7vh;
   border-radius: 100vh;
@@ -450,7 +452,7 @@ header {
   margin-top: 0.75vh;
 }
 
-#searchbar button:hover, .expansion button:hover {
+#searchbar button:hover, .expansion button:hover, #profile-content button:hover {
   background-color: white;
   color: #333;
 }
@@ -583,7 +585,13 @@ header {
   min-height: 10vh;
 }
 
-#forward-button-container .loader, #send-button-container .loader {
+#change-password-container {
+  height: 7vh;
+  position: relative;
+  margin-bottom: 5vh;
+}
+
+#forward-button-container .loader, #send-button-container .loader, #change-password-container .loader {
   height: 7vh;
   width: 7vh;
   border-width: 0.75vh;
@@ -637,7 +645,6 @@ header {
 
 #pagination>div>div:nth-child(3) {
   width: 10vh;
-  background-color: #444;
 }
 
 #pagination i {
@@ -657,9 +664,74 @@ header {
   height: 100%;
   padding-left: 1vh;
   color: #CC5505;
-  background-color: transparent;
+  background-color: #444;
   font-weight: bold;
   font-size: 2.4vh;
+}
+
+.pagination-disabled, .pagination-disabled select {
+  color: #444 !important;
+}
+
+.pagination-disabled:hover {
+  background-color: transparent !important;
+  cursor: default !important;
+}
+
+.pagination-disabled select:hover {
+  cursor: default !important;
+}
+
+#profile-content {
+  padding-top: 45vh;
+}
+
+#profile-picture {
+  position: absolute;
+  top: 13vh;
+  left: 0;
+  right: 0;
+  margin: auto;
+  height: 13vh;
+  width: 13vh;
+  text-align: center;
+  line-height: 13vh;
+  font-size: 13vh;
+}
+
+#profile-name {
+  position: absolute;
+  top: 28vh;
+  width: 100%;
+  text-align: center;
+  font-family: 'Russo One', sans-serif;
+  font-size: 4vh;
+}
+
+#profile-position {
+  position: absolute;
+  top: 33vh;
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+}
+
+#new-password {
+  width: 100%;
+  height: 7vh;
+  line-height: 7vh;
+  font-size: 3vh !important;
+  text-align: center;
+  background-color: #444;
+  margin-bottom: 5vh;
+}
+
+#change-password-button {
+  margin-top: 0 !important;
+}
+
+#logout-button {
+  margin-top: 4vh !important;
 }
 
 @media (max-width: 991.5px) {

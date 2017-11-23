@@ -1,0 +1,16 @@
+<div id="profile-picture"><i class="fa fa-user-circle-o"></i></div>
+<div id="profile-name">Петар Петровић</div>
+<div id="profile-position">ОПЕРАТЕР</div>
+<div id="profile-container" class="row">
+  <div class="col-2 col-md-4"></div>
+  <div id="profile-content" class="col-8 col-md-4">
+    <div id="new-password-container"><input id="new-password" type="password" placeholder="нова лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'нова лозинка'"></div>
+    <div id="change-password-container">
+      <div class="loader gone">
+        <div class="loader-inner"></div>
+      </div>
+      <button id="change-password-button" onclick="$PRM.changePassword();"><i class="fa fa-key"></i>&nbsp;&nbsp;&nbsp;ПРОМЕНИ</button></div>
+    <div id="logout-container"><button id="logout-button" onclick="$PRM.signOut();"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;&nbsp;ОДЈАВА</button></div>
+  </div>
+  <div class="col-2 col-md-4"></div>
+</div>
