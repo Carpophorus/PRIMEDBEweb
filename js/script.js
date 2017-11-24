@@ -30,7 +30,6 @@
     setTimeout(function() {
       $(selector).addClass("gone");
     }, Number(interval) + 10);
-
   };
 
   // document.addEventListener("DOMContentLoaded", function(event) {
