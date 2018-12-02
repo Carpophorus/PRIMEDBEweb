@@ -221,19 +221,19 @@
 }
 
 .ct-series-e .ct-bar, .ct-series-e .ct-line, .ct-series-e .ct-point, .ct-series-e .ct-slice-donut {
-  stroke: #453d3f
+  stroke: #fff
 }
 
 .ct-series-e .ct-area, .ct-series-e .ct-slice-donut-solid, .ct-series-e .ct-slice-pie {
-  fill: #453d3f
+  fill: #fff
 }
 
 .ct-series-f .ct-bar, .ct-series-f .ct-line, .ct-series-f .ct-point, .ct-series-f .ct-slice-donut {
-  stroke: #59922b
+  stroke: transparent
 }
 
 .ct-series-f .ct-area, .ct-series-f .ct-slice-donut-solid, .ct-series-f .ct-slice-pie {
-  fill: #59922b
+  fill: transparent
 }
 
 .ct-series-g .ct-bar, .ct-series-g .ct-line, .ct-series-g .ct-point, .ct-series-g .ct-slice-donut {

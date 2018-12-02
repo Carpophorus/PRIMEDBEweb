@@ -2,6 +2,33 @@
   PRM = {};
 
   PRM.nav = 0;
+  var officesArray = [];
+
+  console.log(`
+    LOGIN:
+
+    Oba polja (username i password) su samo slovo t. Planiran je trajni token u local strage-u radi smanjivanja broja prijava na sistem nakon osvežavanja strane. Svi ostali pozivi osim login-a ka API-u imaju ovaj token kao Auth. Po tome, odn. korisničkoj roli, odlučuje se koje se primedbe i ostali sadržaj prikazuje korisniku.
+
+
+    PRIMEDBE:
+
+    Prikazuje se po 10 primedbi (API poziv ne sme da dohvati sve primedbe, pa se na front-u rešava iteracija). U pozivu ka API-u postoji i broj stranice zbog dohvatanja određenih 10 primedbi po hronološki opadajućem redosledu (na dnu ispod primedbi je pagination na čiju se promenu opet poziva API; poziv ka API-u nakon login-a bi onda bio npr. .../api/desetPrimedbi&page=1). Štampa je rešena sa tim podacima, refresh je poslednji poziv za desetPrimedbi. Opcioni parametri pretrage bi trebalo da se takođe ubace u API poziv. Rezultat API poziva mora da vraća i ukupan broj tiketa kao odvojeni rezultat zbog određivanja broja stranica za pagination.
+
+
+    POJEDINAČNA PRIMEDBA:
+
+    Unutar ekspandovane primedbe je najveći broj poziva ka API-u. Sva polja su priložena, uz moguće dodavanje komentara službenika ispod komentara kontrolora. Istorija treba da sadrži sve relevantne događaje prosleđivanja, odgovaranja ili isteka roka za odgovor, eventualno i promene komentara kontrolora ili službenika (sve naravno prati i ID korisnika ako je u pitanju user action). Prosleđivanje primedbe i save za izmene su odvojeni pozivi. U odnosu na korisničke role po Auth tokenu treba paziti ko šta može da izmeni, iako će na front-u biti onemogućen pristup određenim poljima za određene role. Status primedbe i status odgovora su automatski (potvrda da je odgovor poslat građaninu može da bude na odvojeno dugme jer to jedino nije automatski).
+
+
+    STATISTIKA:
+
+    Parametri su opseg datuma i odabrane SKN. Samo su ovi parametri vidljivi na početku (grafikon i rezultati se prikazuju nakon pokretanja pretrage). Podaci su zbirni za odabrane SKN, ali su u RGZ-u hteli da ih razdvoje. Primljeni podaci će moći da se štampaju nakon dobijanja podataka (dugme za štampu treba da se pojavi).
+
+
+    PROFIL:
+
+    Lični podaci i logout dugme. Osim invalidacije tokena, ova strana ne bi trebalo da dodaje funkcije na API (lični podaci su tu nakon login-a).
+  `);
 
   var insertHtml = function(selector, html) {
     var targetElem = document.querySelector(selector);
@@ -331,7 +358,7 @@
               <div class="col-2 col-md-1">123</div>
               <div class="col-6 col-md-3">95-74993678/2017</div>
               <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
               <div class="col-2 col-md-1 status-1"><i class="fa fa-inbox"></i></div>
               <div class="col-2 col-md-1 response-1"></div>
             </div>
@@ -343,7 +370,7 @@
                   <div class="expansion-label">датум:</div>
                   <div class="expansion-info-data">10.11.2017. 08:51</div>
                   <div class="expansion-label">име и презиме:</div>
-                  <div class="expansion-info-data">Radibrat Radibratović</div>
+                  <div class="expansion-info-data">Petar Petrović</div>
                   <div class="expansion-label">e-mail:</div>
                   <div class="expansion-info-data">rr69@gmail.com</div>
                   <div class="expansion-label">телефон:</div>
@@ -354,6 +381,12 @@
                   <div class="expansion-info-data">Непрослеђен</div>
                   <div class="expansion-label">одговор:</div>
                   <div class="expansion-info-data">Нема одговора</div>
+                  <div class="expansion-label">историја:</div>
+                  <div class="expansion-info-data">
+                    &bull; прослеђено на СКН Велика Плана 11.11.2017. 09:45
+                    <br>&bull; није одговорено до 14.11.2017. 09:45
+                    <br>&bull; прослеђено на СКН Велика Плана 15.11.2017. 13:27
+                  </div>
                 </div>
                 <div class="expansion-response col-12 col-md-6">
                   <div id="forward-label" class="expansion-label">прослеђивање:</div>
@@ -361,26 +394,28 @@
                     <div id="forward-select-container" class="col-12 col-md-9">
                       <select id="forward" onchange="$PRM.expansionSelectChanged(this);">
                           <option value="0" disabled selected hidden>оператер</option>
-                          <option value="1">Оператер Оператерић 1</option>
-                          <option value="2">Оператер Оператерић 2</option>
-                          <option value="3">Оператер Оператерић 3</option>
-                          <option value="4">Оператер Оператерић 4</option>
-                          <option value="5">Оператер Оператерић 5</option>
-                          <option value="6">Оператер Оператерић 6</option>
-                          <option value="7">Оператер Оператерић 7</option>
+                          <option value="1">СКН 1</option>
+                          <option value="2">СКН 2</option>
+                          <option value="3">СКН 3</option>
+                          <option value="4">СКН 4</option>
+                          <option value="5">СКН 5</option>
+                          <option value="6">СКН 6</option>
+                          <option value="7">Другостепена комисија</option>
                         </select>
                     </div>
                     <div id="forward-button-container" class="col-12 col-md-3">
                       <div class="loader gone">
                         <div class="loader-inner"></div>
                       </div>
-                      <button onclick="$PRM.forward(1, this);"><i class="fa fa-share"></i></button>
+                      <button onclick="$PRM.forward(123, this);"><i class="fa fa-share"></i></button>
                     </div>
                   </div>
                   <div class="expansion-label">примедба:</div>
                   <div class="divtextarea">Ovo je primedba klijenta. Polje se ne može menjati. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet provident similique nemo alias amet, sapiente dolor, at maiores voluptates quo deleniti praesentium modi ab, illo minus vitae
                     deserunt harum dolorum. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni ipsum consectetur in ad quia, quas vitae aliquam tempora ex doloremque dignissimos perspiciatis veniam odio esse, qui, eos dicta nesciunt est? Lorem ipsum
                     dolor sit amet, consectetur adipisicing elit. Hic, possimus nemo nihil voluptatum facere aperiam ullam dolor. Velit officiis dignissimos blanditiis, saepe fugit dolor dolorem tenetur quo voluptatum, ab ullam!</div>
+                  <div class="expansion-label">коментар контролора:</div>
+                  <div class="divtextarea" contenteditable="true">Ovo je komentar kontrolora. Polje može menjati samo kontrolor.</div>
                   <div class="expansion-label">одговор службе:</div>
                   <div id="office-response" class="divtextarea" contenteditable="true"></div>
                   <div class="row">
@@ -389,7 +424,7 @@
                       <div class="loader gone">
                         <div class="loader-inner"></div>
                       </div>
-                      <button onclick="$PRM.send(1, this);"><i class="fa fa-paper-plane"></i></button>
+                      <button onclick="$PRM.send(123, this);"><i class="fa fa-save"></i></button>
                     </div>
                   </div>
                 </div>
@@ -399,7 +434,7 @@
               <div class="col-2 col-md-1">123</div>
               <div class="col-6 col-md-3">95-74993678/2017</div>
               <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
               <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
               <div class="col-2 col-md-1 response-2"><i class="fa fa-clock-o"></i></div>
             </div>
@@ -414,7 +449,7 @@
               <div class="col-2 col-md-1">123</div>
               <div class="col-6 col-md-3">95-74993678/2017</div>
               <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
               <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
               <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
             </div>
@@ -429,7 +464,7 @@
               <div class="col-2 col-md-1">123</div>
               <div class="col-6 col-md-3">95-74993678/2017</div>
               <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
               <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
               <div class="col-2 col-md-1 response-4"><i class="fa fa-times"></i></div>
             </div>
@@ -444,11 +479,86 @@
               <div class="col-2 col-md-1">123</div>
               <div class="col-6 col-md-3">95-74993678/2017</div>
               <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Radibrat Radibratović</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
               <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
               <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
             </div>
             <div id="expansion-5" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(6, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
+              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
+              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
+            </div>
+            <div id="expansion-6" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(7, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
+              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
+              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
+            </div>
+            <div id="expansion-7" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(8, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
+              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
+              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
+            </div>
+            <div id="expansion-8" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(9, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
+              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
+              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
+            </div>
+            <div id="expansion-9" class="expansion collapse">
+              <div>
+                dgfjgkldfgkldfkl
+                <br>djfkdkdfd
+                <br>gdkfdfdpllgdld
+              </div>
+            </div>
+            <div class="table-row row" onclick="$PRM.tableRowClicked(10, this);">
+              <div class="col-2 col-md-1">123</div>
+              <div class="col-6 col-md-3">95-74993678/2017</div>
+              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
+              <div class="col-3 hidden-sm-down">Petar Petrović</div>
+              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
+              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
+            </div>
+            <div id="expansion-10" class="expansion collapse">
               <div>
                 dgfjgkldfgkldfkl
                 <br>djfkdkdfd
@@ -479,38 +589,77 @@
         insertHtml("#switchbox", html);
       } else if (n == 2) {
         var html = `
-          <div class="row">
-            <div class="col-lg-6 col-12" id="chart"></div>
+          <div class="row" id="statsparams">
+            <img src="img/favicons/favicon.ico" onload="$PRM.statsDateInit();">
+            <div class="col-7 hidden-md-down"></div>
+            <div class="col-8 col-md-9 hidden-lg-up"></div>
+            <div class="col-4 col-md-3 hidden-lg-up"><button id="search" onclick="$PRM.statsSearchButtonClicked();"><i class="fa fa-search"></i></button></div>
+            <div class="col-12 col-md-6 col-lg-1"><input id="stats-date-from" class="stats-date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.statsDateFromChanged(this);"></div>
+            <div class="col-12 col-md-6 col-lg-1"><input id="stats-date-to" class="stats-date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.statsDateToChanged(this);"></div>
+            <div class="col-12 col-lg-2"><input id="stats-offices" class="stats-offices" type="text" placeholder="службе" onfocus="this.placeholder = ''" onblur="this.placeholder = 'службе'" onkeydown="return false" onclick="$PRM.statsOfficesClicked();"></div>
+            <div class="col-1 hidden-md-down"><button id="search" onclick="$PRM.statsSearchButtonClicked();"><i class="fa fa-search"></i></button></div>
+          </div>
+          <div class="row" id="statsdata">
+            <div class="col-12" id="statstitle">Статистика за СКН XXXXXXX за период од XX.XX.XXXX. до XX.XX.XXXX.</div>
+            <div class="col-lg-6 col-12" id="chart">
+              <div id="chart-inner"></div>
+            </div>
             <div class="col-lg-6 col-12" id="stats">
-              <div class="stat row">
-                <div class="col-7 col-sm-8 stat-toc">Укупно:&nbsp;......................................................................................................................................................................................................</div>
-                <div class="col-2 col-sm-2 stat-num stat-white">` + 66 + `</div>
-                <div class="col-3 col-sm-2 stat-desc">примедби</div>
-              </div>
-              <div class="stat row">
-                <div class="col-7 col-sm-8 stat-toc">Без&nbsp;одговора:&nbsp;......................................................................................................................................................................................................</div>
-                <div class="col-2 col-sm-2 stat-num stat-red">` + 14 + `</div>
+              <div class="stat row noreply">
+                <div class="col-9 col-sm-10 stat-toc">Без&nbsp;одговора:&nbsp;......................................................................................................................................................................................................
+                  <div class="stat-num stat-red">` + 14 + `</div>
+                </div>
                 <div class="col-3 col-sm-2 stat-desc">(` + (100 * 14 / 66).toFixed(2) + `%)</div>
               </div>
-              <div class="stat row">
-                <div class="col-7 col-sm-8 stat-toc">Непрослеђених:&nbsp;......................................................................................................................................................................................................</div>
-                <div class="col-2 col-sm-2 stat-num stat-blue">` + 5 + `</div>
+              <div class="stat row unforwarded">
+                <div class="col-9 col-sm-10 stat-toc">Непрослеђених:&nbsp;......................................................................................................................................................................................................
+                  <div class="stat-num stat-blue">` + 5 + `</div>
+                </div>
                 <div class="col-3 col-sm-2 stat-desc">(` + (100 * 5 / 66).toFixed(2) + `%)</div>
               </div>
-              <div class="stat row">
-                <div class="col-7 col-sm-8 stat-toc">На&nbsp;чекању:&nbsp;......................................................................................................................................................................................................</div>
-                <div class="col-2 col-sm-2 stat-num stat-yellow">` + 7 + `</div>
+              <div class="stat row pending">
+                <div class="col-9 col-sm-10 stat-toc">На&nbsp;чекању:&nbsp;......................................................................................................................................................................................................
+                  <div class="stat-num stat-yellow">` + 7 + `</div>
+                </div>
                 <div class="col-3 col-sm-2 stat-desc">(` + (100 * 7 / 66).toFixed(2) + `%)</div>
               </div>
-              <div class="stat row">
-                <div class="col-7 col-sm-8 stat-toc">Одговорено:&nbsp;......................................................................................................................................................................................................</div>
-                <div class="col-2 col-sm-2 stat-num stat-green">` + 40 + `</div>
+              <div class="stat row answered">
+                <div class="col-9 col-sm-10 stat-toc">Одговорено:&nbsp;......................................................................................................................................................................................................
+                  <div class="stat-num stat-green">` + 40 + `</div>
+                </div>
                 <div class="col-3 col-sm-2 stat-desc">(` + (100 * 40 / 66).toFixed(2) + `%)</div>
+              </div>
+              <div class="totaldouble" style="margin: 3vh 0 2vh 0; border-top: 2px solid #CC5505"></div>
+              <div class="stat row totaldouble">
+                <div class="col-9 col-sm-10 stat-toc">Укупно:&nbsp;......................................................................................................................................................................................................
+                  <div class="stat-num stat-orange">` + 66 + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(100.00%)</div>
+              </div>
+              <div class="stat row totaldouble">
+                <div class="col-9 col-sm-10 stat-toc">Вишеструко&nbsp;прослеђених:&nbsp;......................................................................................................................................................................................................
+                  <div class="stat-num stat-white">` + 9 + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 9 / 66).toFixed(2) + `%)</div>
               </div>
             </div>
           </div>
         `;
         insertHtml("#switchbox", html);
+        $(".stat, .totaldouble").css({"opacity": "0", "transition": "opacity 0.45s ease"});
+        $(".noreply").css({"opacity": "1"});
+        setTimeout(function() {
+          $(".unforwarded").css({"opacity": "1"});
+        }, 500);
+        setTimeout(function() {
+          $(".pending").css({"opacity": "1"});
+        }, 1000);
+        setTimeout(function() {
+          $(".answered").css({"opacity": "1"});
+        }, 1500);
+        setTimeout(function() {
+          $(".totaldouble").css({"opacity": "1"});
+        }, 2000);
         var chart = new Chartist.Pie("#chart", {
           series: [14, 5, 7, 40],
           labels: [0, 0, 0, 0]
@@ -543,6 +692,38 @@
             data.element.animate(animationDefinition, false);
           }
         });
+        var chartInner = new Chartist.Pie("#chart-inner", {
+          series: [0, 0, 0, 0, 9, 66 - 9],
+          labels: [0, 0, 0, 0, 0, 0]
+        }, {
+          donut: true,
+          showLabel: false
+        });
+        chartInner.on('draw', function(data) {
+          if (data.type === 'slice') {
+            var pathLength = data.element._node.getTotalLength();
+            data.element.attr({
+              'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+            });
+            var animationDefinition = {
+              'stroke-dashoffset': {
+                id: 'anim' + data.index,
+                dur: 500,
+                from: -pathLength + 'px',
+                to: '0px',
+                easing: Chartist.Svg.Easing.easeOutQuint,
+                fill: 'freeze'
+              }
+            };
+            if (data.index !== 0) {
+              animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+            }
+            data.element.attr({
+              'stroke-dashoffset': -pathLength + 'px'
+            });
+            data.element.animate(animationDefinition, false);
+          }
+        });
       } else if (n == 3) {
         var html = `
           <div id="profile-picture"><i class="fa fa-user-circle-o"></i></div>
@@ -551,13 +732,13 @@
           <div id="profile-container" class="row">
             <div class="col-2 col-md-4"></div>
             <div id="profile-content" class="col-8 col-md-4">
-              <div id="new-password-container"><input id="new-password" type="password" placeholder="нова лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'нова лозинка'"></div>
+              <!--<div id="new-password-container"><input id="new-password" type="password" placeholder="нова лозинка" onfocus="this.placeholder = ''" onblur="this.placeholder = 'нова лозинка'"></div>
               <div id="change-password-container">
                 <div class="loader gone">
                   <div class="loader-inner"></div>
                 </div>
                 <button id="change-password-button" onclick="$PRM.changePassword();" onkeydown="if (event.keyCode == 13) $PRM.changePassword();"><i class="fa fa-key"></i>&nbsp;&nbsp;&nbsp;ПРОМЕНИ</button>
-              </div>
+              </div>-->
               <div id="logout-container"><button id="logout-button" onclick="$PRM.signOut();"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;&nbsp;ОДЈАВА</button></div>
             </div>
             <div class="col-2 col-md-4"></div>
@@ -568,6 +749,65 @@
       appear($("#switchbox"), 500);
       disappear($(".loader"), 500);
     }, 2500); //this delay only simulating network response
+  };
+
+  PRM.statsOfficesClicked = function() {
+    var html = `
+      <div class="offices-picker">
+        <button class="offices-picker-all" onclick="$PRM.officesAllClicked();">ОДАБЕРИ&nbsp;СВЕ&nbsp;СКН</button>
+        <div class="offices-picker-list row">
+    `;
+    for(var i = 1; i < 100; i++)
+      html += `<div class="col-12 col-md-6 col-lg-3"><div value="` + i + `" onclick="$PRM.officeItemClicked(` + i + `, this);">СКН ` + i + `</div></div>`;
+    html += `
+        </div>
+        <button onclick="$PRM.officesConfirm();">ОК</button>
+      </div>
+    `;
+    $("body").append(html);
+    setTimeout(function() {
+      $(".offices-picker").css({"opacity": "1"});
+      if (officesArray.length > 0) {
+        $(".offices-picker-list>div>div").each(function() {
+          if (officesArray.indexOf(Number($(this).attr("value"))) != -1) {
+            $(this).toggleClass("checked", true);
+          }
+        });
+      }
+      if ($(".offices-picker-list>div>div").length == $(".offices-picker-list>div>.checked").length) {
+        $(".offices-picker-all").toggleClass("checked", true);
+      }
+    }, 20);
+  };
+
+  PRM.officesConfirm = function() {
+    $(".offices-picker").css({"opacity": "0"});
+    setTimeout(function() {
+      $(".offices-picker").remove();
+    }, 400);
+  };
+
+  PRM.officeItemClicked = function(id, e) {
+    $(e).toggleClass("checked");
+    if ($(e).hasClass("checked")) {
+      officesArray.push(id);
+      if ($(".offices-picker-list>div>div").length == $(".offices-picker-list>div>.checked").length)
+        $(".offices-picker-all").toggleClass("checked", true);
+    } else {
+      officesArray.splice(officesArray.indexOf(id), 1);
+      $(".offices-picker-all").toggleClass("checked", false);
+    }
+  };
+
+  PRM.officesAllClicked = function() {
+    $(".offices-picker-all").toggleClass("checked");
+    $(".offices-picker-list>div>div").toggleClass("checked", $(".offices-picker-all").hasClass("checked"));
+    officesArray = [];
+    if ($(".offices-picker-all").hasClass("checked")) {
+      $(".offices-picker-list>div>div").each(function() {
+        officesArray.push(Number($(this).attr("value")));
+      });
+    }
   };
 
   PRM.searchbarInputChanged = function(e) {
@@ -772,7 +1012,7 @@
               setTimeout(function() {
                 $.confirm({
                   title: 'ПОТВРДА',
-                  content: 'Одговор на примедбу ' + pID + ' успешно евидентиран. / Одговор на примедбу ' + pID + ' успешно послат клијенту.',
+                  content: 'Одговор на примедбу ' + pID + ' успешно евидентиран. / Измене успешно сачуване. / Одговор на примедбу ' + pID + ' успешно послат клијенту.',
                   theme: 'supervan',
                   backgroundDismiss: 'true',
                   buttons: {
@@ -877,7 +1117,7 @@
                   <div class="inner-s">` + `123` + `</div>
                   <div class="inner-xl">` + `95-74993678/2017` + `</div>
                   <div class="inner-l">` + `10.11.2017. 08:51` + `</div>
-                  <div class="inner-xl">` + `Radibrat Radibratović` + `</div>
+                  <div class="inner-xl">` + `Petar Petrović` + `</div>
                   <div class="inner-xl">` + `rr69@gmail.com` + `</div>
                   <div class="inner-l">` + `069/555-78-03` + `</div>
                   <div class="inner-l">` + `Велика Плана` + `</div>
@@ -947,18 +1187,36 @@
     });
   };
 
+  PRM.statsDateInit = function() {
+    $(".stats-date-from, .stats-date-to").datepicker({
+      format: "dd.mm.yyyy.",
+      todayHighlight: true,
+      todayBtn: "linked",
+      language: "sr",
+      endDate: "0d"
+    });
+  };
+
   PRM.dateFromChanged = function(e) {
     if ($(e).val() != "")
       $(".date-to").datepicker('setStartDate', $(e).val());
-    console.log($("#date-to").datepicker('getStartDate'));
     PRM.searchbarInputChanged(e);
+  };
+
+  PRM.statsDateFromChanged = function(e) {
+    if ($(e).val() != "")
+      $(".stats-date-to").datepicker('setStartDate', $(e).val());
   };
 
   PRM.dateToChanged = function(e) {
     if ($(e).val() != "")
       $(".date-from").datepicker('setEndDate', $(e).val());
-    console.log($("#date-from").datepicker('getEndDate'));
     PRM.searchbarInputChanged(e);
+  };
+
+  PRM.statsDateToChanged = function(e) {
+    if ($(e).val() != "")
+      $(".stats-date-from").datepicker('setEndDate', $(e).val());
   };
 
   PRM.firstPage = function() {
