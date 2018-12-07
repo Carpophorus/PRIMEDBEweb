@@ -308,6 +308,13 @@ header {
   padding-top: 7vh;
 }
 
+#statsdata {
+  opacity: 0;
+  -webkit-transition: opacity .5s ease;
+  -moz-transition: opacity .5s ease;
+  transition: opacity .5s ease;
+}
+
 .offices-picker {
   position: absolute;
   top: 0;
@@ -688,8 +695,16 @@ header {
   margin: 1.5vh 0;
 }
 
-#forward-button-container, #send-button-container {
+#forward-button-container, #send-button-container, #check-button-container {
   min-height: 10vh;
+}
+
+#check-button-container button {
+  background-color: #05CC55;
+}
+
+#check-button-container button:hover {
+  background-color: white;
 }
 
 #change-password-container {
@@ -698,7 +713,7 @@ header {
   margin-bottom: 5vh;
 }
 
-#forward-button-container .loader, #send-button-container .loader, #change-password-container .loader {
+#forward-button-container .loader, #send-button-container .loader, #check-button-container .loader, #change-password-container .loader {
   height: 7vh;
   width: 7vh;
   border-width: 0.75vh;
@@ -870,9 +885,6 @@ header {
     height: auto;
     padding-top: 9vh;
   }
-  #forward-select-container {
-    padding-right: 0;
-  }
   .jconfirm .jconfirm-box .jconfirm-buttons button.btn-white-prm {
     background-color: white;
     color: #333
@@ -896,6 +908,15 @@ header {
   .jconfirm .jconfirm-box .jconfirm-buttons button.btn-green-prm {
     background-color: #05CC55;
     color: white
+  }
+}
+
+@media (max-width: 767.5px) {
+  .hidden-sm-down {
+    display: none;
+  }
+  #forward-select-container {
+    padding-right: 0;
   }
 }
 

@@ -358,7 +358,7 @@
               <div class="col-2 col-md-1">123</div>
               <div class="col-6 col-md-3">95-74993678/2017</div>
               <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
+              <div class="col-3 hidden-sm-down">Петар Петровић</div>
               <div class="col-2 col-md-1 status-1"><i class="fa fa-inbox"></i></div>
               <div class="col-2 col-md-1 response-1"></div>
             </div>
@@ -370,13 +370,17 @@
                   <div class="expansion-label">датум:</div>
                   <div class="expansion-info-data">10.11.2017. 08:51</div>
                   <div class="expansion-label">име и презиме:</div>
-                  <div class="expansion-info-data">Petar Petrović</div>
+                  <div class="expansion-info-data">Петар Петровић</div>
                   <div class="expansion-label">e-mail:</div>
                   <div class="expansion-info-data">rr69@gmail.com</div>
                   <div class="expansion-label">телефон:</div>
                   <div class="expansion-info-data">069/555-78-03</div>
                   <div class="expansion-label">служба:</div>
                   <div class="expansion-info-data">Велика Плана</div>
+                  <div class="expansion-label">претходно обраћање:</div>
+                  <div class="expansion-info-data">ДА</div>
+                  <div class="expansion-label">службеник:</div>
+                  <div class="expansion-info-data">Јован Јовановић</div>
                   <div class="expansion-label">статус:</div>
                   <div class="expansion-info-data">Непрослеђен</div>
                   <div class="expansion-label">одговор:</div>
@@ -416,15 +420,26 @@
                     dolor sit amet, consectetur adipisicing elit. Hic, possimus nemo nihil voluptatum facere aperiam ullam dolor. Velit officiis dignissimos blanditiis, saepe fugit dolor dolorem tenetur quo voluptatum, ab ullam!</div>
                   <div class="expansion-label">коментар контролора:</div>
                   <div class="divtextarea" contenteditable="true">Ovo je komentar kontrolora. Polje može menjati samo kontrolor.</div>
+                  <div class="expansion-label">коментар службеника:</div>
+                  <div class="divtextarea" contenteditable="true">Ovo je komentar službenika. Polje može menjati samo službenik.</div>
                   <div class="expansion-label">одговор службе:</div>
                   <div id="office-response" class="divtextarea" contenteditable="true"></div>
                   <div class="row">
                     <div class="hidden-sm-down col-md-9"></div>
-                    <div id="send-button-container" class="col-12 col-md-3">
+                    <div id="save-button-container" class="col-12 col-md-3">
                       <div class="loader gone">
                         <div class="loader-inner"></div>
                       </div>
-                      <button onclick="$PRM.send(123, this);"><i class="fa fa-save"></i></button>
+                      <button onclick="$PRM.save(123, this);"><i class="fa fa-save"></i></button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="hidden-sm-down col-md-9"></div>
+                    <div id="check-button-container" class="col-12 col-md-3">
+                      <div class="loader gone">
+                        <div class="loader-inner"></div>
+                      </div>
+                      <button onclick="$PRM.check(123, this);"><i class="fa fa-check"></i></button>
                     </div>
                   </div>
                 </div>
@@ -599,131 +614,9 @@
             <div class="col-12 col-lg-2"><input id="stats-offices" class="stats-offices" type="text" placeholder="службе" onfocus="this.placeholder = ''" onblur="this.placeholder = 'службе'" onkeydown="return false" onclick="$PRM.statsOfficesClicked();"></div>
             <div class="col-1 hidden-md-down"><button id="search" onclick="$PRM.statsSearchButtonClicked();"><i class="fa fa-search"></i></button></div>
           </div>
-          <div class="row" id="statsdata">
-            <div class="col-12" id="statstitle">Статистика за СКН XXXXXXX за период од XX.XX.XXXX. до XX.XX.XXXX.</div>
-            <div class="col-lg-6 col-12" id="chart">
-              <div id="chart-inner"></div>
-            </div>
-            <div class="col-lg-6 col-12" id="stats">
-              <div class="stat row noreply">
-                <div class="col-9 col-sm-10 stat-toc">Без&nbsp;одговора:&nbsp;......................................................................................................................................................................................................
-                  <div class="stat-num stat-red">` + 14 + `</div>
-                </div>
-                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 14 / 66).toFixed(2) + `%)</div>
-              </div>
-              <div class="stat row unforwarded">
-                <div class="col-9 col-sm-10 stat-toc">Непрослеђених:&nbsp;......................................................................................................................................................................................................
-                  <div class="stat-num stat-blue">` + 5 + `</div>
-                </div>
-                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 5 / 66).toFixed(2) + `%)</div>
-              </div>
-              <div class="stat row pending">
-                <div class="col-9 col-sm-10 stat-toc">На&nbsp;чекању:&nbsp;......................................................................................................................................................................................................
-                  <div class="stat-num stat-yellow">` + 7 + `</div>
-                </div>
-                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 7 / 66).toFixed(2) + `%)</div>
-              </div>
-              <div class="stat row answered">
-                <div class="col-9 col-sm-10 stat-toc">Одговорено:&nbsp;......................................................................................................................................................................................................
-                  <div class="stat-num stat-green">` + 40 + `</div>
-                </div>
-                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 40 / 66).toFixed(2) + `%)</div>
-              </div>
-              <div class="totaldouble" style="margin: 3vh 0 2vh 0; border-top: 2px solid #CC5505"></div>
-              <div class="stat row totaldouble">
-                <div class="col-9 col-sm-10 stat-toc">Укупно:&nbsp;......................................................................................................................................................................................................
-                  <div class="stat-num stat-orange">` + 66 + `</div>
-                </div>
-                <div class="col-3 col-sm-2 stat-desc">(100.00%)</div>
-              </div>
-              <div class="stat row totaldouble">
-                <div class="col-9 col-sm-10 stat-toc">Вишеструко&nbsp;прослеђених:&nbsp;......................................................................................................................................................................................................
-                  <div class="stat-num stat-white">` + 9 + `</div>
-                </div>
-                <div class="col-3 col-sm-2 stat-desc">(` + (100 * 9 / 66).toFixed(2) + `%)</div>
-              </div>
-            </div>
-          </div>
+          <div class="row" id="statsdata"></div>
         `;
         insertHtml("#switchbox", html);
-        $(".stat, .totaldouble").css({"opacity": "0", "transition": "opacity 0.45s ease"});
-        $(".noreply").css({"opacity": "1"});
-        setTimeout(function() {
-          $(".unforwarded").css({"opacity": "1"});
-        }, 500);
-        setTimeout(function() {
-          $(".pending").css({"opacity": "1"});
-        }, 1000);
-        setTimeout(function() {
-          $(".answered").css({"opacity": "1"});
-        }, 1500);
-        setTimeout(function() {
-          $(".totaldouble").css({"opacity": "1"});
-        }, 2000);
-        var chart = new Chartist.Pie("#chart", {
-          series: [14, 5, 7, 40],
-          labels: [0, 0, 0, 0]
-        }, {
-          donut: true,
-          showLabel: false
-        });
-        chart.on('draw', function(data) {
-          if (data.type === 'slice') {
-            var pathLength = data.element._node.getTotalLength();
-            data.element.attr({
-              'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
-            });
-            var animationDefinition = {
-              'stroke-dashoffset': {
-                id: 'anim' + data.index,
-                dur: 500,
-                from: -pathLength + 'px',
-                to: '0px',
-                easing: Chartist.Svg.Easing.easeOutQuint,
-                fill: 'freeze'
-              }
-            };
-            if (data.index !== 0) {
-              animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
-            }
-            data.element.attr({
-              'stroke-dashoffset': -pathLength + 'px'
-            });
-            data.element.animate(animationDefinition, false);
-          }
-        });
-        var chartInner = new Chartist.Pie("#chart-inner", {
-          series: [0, 0, 0, 0, 9, 66 - 9],
-          labels: [0, 0, 0, 0, 0, 0]
-        }, {
-          donut: true,
-          showLabel: false
-        });
-        chartInner.on('draw', function(data) {
-          if (data.type === 'slice') {
-            var pathLength = data.element._node.getTotalLength();
-            data.element.attr({
-              'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
-            });
-            var animationDefinition = {
-              'stroke-dashoffset': {
-                id: 'anim' + data.index,
-                dur: 500,
-                from: -pathLength + 'px',
-                to: '0px',
-                easing: Chartist.Svg.Easing.easeOutQuint,
-                fill: 'freeze'
-              }
-            };
-            if (data.index !== 0) {
-              animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
-            }
-            data.element.attr({
-              'stroke-dashoffset': -pathLength + 'px'
-            });
-            data.element.animate(animationDefinition, false);
-          }
-        });
       } else if (n == 3) {
         var html = `
           <div id="profile-picture"><i class="fa fa-user-circle-o"></i></div>
@@ -748,6 +641,155 @@
       }
       appear($("#switchbox"), 500);
       disappear($(".loader"), 500);
+    }, 2500); //this delay only simulating network response
+  };
+
+  PRM.statsSearchButtonClicked = function() {
+    if ($("#stats-date-from").val() == "" || $("#stats-date-to").val() == "" || $("#stats-offices").val() == "") {
+      $.confirm({
+        title: 'ГРЕШКА!',
+        content: 'Морате унети све параметре за претрагу.',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      return;
+    }
+    appear($(".loader"), 500);
+    setTimeout(function() {
+      var html = `
+        <div class="col-12" id="statstitle">Статистика за СКН XXXXXXX за период од XX.XX.XXXX. до XX.XX.XXXX.</div>
+        <div class="col-lg-6 col-12" id="chart">
+          <div id="chart-inner"></div>
+        </div>
+        <div class="col-lg-6 col-12" id="stats">
+          <div class="stat row noreply">
+            <div class="col-9 col-sm-10 stat-toc">Без&nbsp;одговора:&nbsp;......................................................................................................................................................................................................
+              <div class="stat-num stat-red">` + 14 + `</div>
+            </div>
+            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 14 / 66).toFixed(2) + `%)</div>
+          </div>
+          <div class="stat row unforwarded">
+            <div class="col-9 col-sm-10 stat-toc">Непрослеђених:&nbsp;......................................................................................................................................................................................................
+              <div class="stat-num stat-blue">` + 5 + `</div>
+            </div>
+            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 5 / 66).toFixed(2) + `%)</div>
+          </div>
+          <div class="stat row pending">
+            <div class="col-9 col-sm-10 stat-toc">На&nbsp;чекању:&nbsp;......................................................................................................................................................................................................
+              <div class="stat-num stat-yellow">` + 7 + `</div>
+            </div>
+            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 7 / 66).toFixed(2) + `%)</div>
+          </div>
+          <div class="stat row answered">
+            <div class="col-9 col-sm-10 stat-toc">Одговорено:&nbsp;......................................................................................................................................................................................................
+              <div class="stat-num stat-green">` + 40 + `</div>
+            </div>
+            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 40 / 66).toFixed(2) + `%)</div>
+          </div>
+          <div class="totaldouble" style="margin: 3vh 0 2vh 0; border-top: 2px solid #CC5505"></div>
+          <div class="stat row totaldouble">
+            <div class="col-9 col-sm-10 stat-toc">Укупно:&nbsp;......................................................................................................................................................................................................
+              <div class="stat-num stat-orange">` + 66 + `</div>
+            </div>
+            <div class="col-3 col-sm-2 stat-desc">(100.00%)</div>
+          </div>
+          <div class="stat row totaldouble">
+            <div class="col-9 col-sm-10 stat-toc">Вишеструко&nbsp;прослеђених:&nbsp;......................................................................................................................................................................................................
+              <div class="stat-num stat-white">` + 9 + `</div>
+            </div>
+            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 9 / 66).toFixed(2) + `%)</div>
+          </div>
+        </div>
+      `;
+      insertHtml("#statsdata", html);
+      $(".stat, .totaldouble").css({"opacity": "0", "transition": "opacity 0.45s ease"});
+      $(".noreply").css({"opacity": "1"});
+      setTimeout(function() {
+        $(".unforwarded").css({"opacity": "1"});
+      }, 500);
+      setTimeout(function() {
+        $(".pending").css({"opacity": "1"});
+      }, 1000);
+      setTimeout(function() {
+        $(".answered").css({"opacity": "1"});
+      }, 1500);
+      setTimeout(function() {
+        $(".totaldouble").css({"opacity": "1"});
+      }, 2000);
+      var chart = new Chartist.Pie("#chart", {
+        series: [14, 5, 7, 40],
+        labels: [0, 0, 0, 0]
+      }, {
+        donut: true,
+        showLabel: false
+      });
+      chart.on('draw', function(data) {
+        if (data.type === 'slice') {
+          var pathLength = data.element._node.getTotalLength();
+          data.element.attr({
+            'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+          });
+          var animationDefinition = {
+            'stroke-dashoffset': {
+              id: 'anim' + data.index,
+              dur: 500,
+              from: -pathLength + 'px',
+              to: '0px',
+              easing: Chartist.Svg.Easing.easeOutQuint,
+              fill: 'freeze'
+            }
+          };
+          if (data.index !== 0) {
+            animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+          }
+          data.element.attr({
+            'stroke-dashoffset': -pathLength + 'px'
+          });
+          data.element.animate(animationDefinition, false);
+        }
+      });
+      var chartInner = new Chartist.Pie("#chart-inner", {
+        series: [0, 0, 0, 0, 9, 66 - 9],
+        labels: [0, 0, 0, 0, 0, 0]
+      }, {
+        donut: true,
+        showLabel: false
+      });
+      chartInner.on('draw', function(data) {
+        if (data.type === 'slice') {
+          var pathLength = data.element._node.getTotalLength();
+          data.element.attr({
+            'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+          });
+          var animationDefinition = {
+            'stroke-dashoffset': {
+              id: 'anim' + data.index,
+              dur: 500,
+              from: -pathLength + 'px',
+              to: '0px',
+              easing: Chartist.Svg.Easing.easeOutQuint,
+              fill: 'freeze'
+            }
+          };
+          if (data.index !== 0) {
+            animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+          }
+          data.element.attr({
+            'stroke-dashoffset': -pathLength + 'px'
+          });
+          data.element.animate(animationDefinition, false);
+        }
+      });
+      disappear($(".loader"), 500);
+      $("#statsdata").css({"opacity": "1"});
     }, 2500); //this delay only simulating network response
   };
 
@@ -783,6 +825,10 @@
   PRM.officesConfirm = function() {
     $(".offices-picker").css({"opacity": "0"});
     setTimeout(function() {
+      var offices = '';
+      for (var i = 0; i < officesArray.length; i++)
+        offices += 'СКН ' + officesArray[i] + ((i == officesArray.length - 1) ? '' : ', ');
+      $("#stats-offices").val(offices);
       $(".offices-picker").remove();
     }, 400);
   };
@@ -969,11 +1015,11 @@
     }
   };
 
-  PRM.send = function(pID, e) {
+  PRM.save = function(pID, e) {
     if ($("#office-response").html() == "") {
       $.confirm({
         title: 'ГРЕШКА!',
-        content: 'Не можете послати празан одговор.',
+        content: 'Не можете послати празан одговор.', //ne ovo, već samo ako su neka polja izmenjena...prosleđivanje se ne prikazuje na strani skn-a
         theme: 'supervan',
         backgroundDismiss: 'true',
         buttons: {
@@ -989,7 +1035,7 @@
     } else {
       $.confirm({
         title: 'ПАЖЊА!',
-        content: 'Да ли сте сигурни да желите да сачувате овај одговор као званичан одговор службе? / Да ли сте сигурни да желите да клијенту пошаљете овај одговор као званичан одговор службе?',
+        content: 'Да ли сте сигурни да желите да сачувате измењене податке?',
         theme: 'supervan',
         backgroundDismiss: 'true',
         autoClose: 'no|10000',
@@ -1012,7 +1058,74 @@
               setTimeout(function() {
                 $.confirm({
                   title: 'ПОТВРДА',
-                  content: 'Одговор на примедбу ' + pID + ' успешно евидентиран. / Измене успешно сачуване. / Одговор на примедбу ' + pID + ' успешно послат клијенту.',
+                  content: 'Измене над примедбом ' + pID + ' успешно сачуване.',
+                  theme: 'supervan',
+                  backgroundDismiss: 'true',
+                  buttons: {
+                    ok: {
+                      text: 'ОК',
+                      btnClass: 'btn-white-prm',
+                      keys: ['enter'],
+                      action: function() {}
+                    }
+                  }
+                });
+                disappear($(e).parent().find(".loader"), 500);
+                setTimeout(function() {
+                  appear(e, 500);
+                }, 500);
+              }, 2500); //this delay only simulating network response
+            }
+          }
+        }
+      });
+    }
+  };
+
+  PRM.check = function(pID, e) {
+    if ($("#office-response").html() == "") { //mora se proveriti i da li su polja dirty u else if, pa prompt za save first
+      $.confirm({
+        title: 'ГРЕШКА!',
+        content: 'Не можете послати празан одговор.',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      return;
+    } else {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Да ли сте сигурни да желите да завршите обраду ове примедбе и проследите је контролорима?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {
+              disappear(e, 500);
+              setTimeout(function() {
+                appear($(e).parent().find(".loader"), 500);
+              }, 500);
+              setTimeout(function() {
+                $.confirm({
+                  title: 'ПОТВРДА',
+                  content: 'Примедба ' + pID + ' успешно закључена и прослеђена контролорима.',
                   theme: 'supervan',
                   backgroundDismiss: 'true',
                   buttons: {
