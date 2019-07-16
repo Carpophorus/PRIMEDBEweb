@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>РГЗ еПримедбе</title>
+  <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./script.js"></script>
+</head>
+
+<body>
+
+  <header>
+    <div></div>
+    <img src="./header.png">
+  </header>
+
+  <div id="bckgrnd"></div>
+
+  <div class="loader" id="loader">
+    <div class="loader-inner"></div>
+  </div>
+
+  <div id="form-container">
+    <div id="naslov">ПРИМЕДБА НА РАД СЛУЖБЕ</div>
+    <form id="primedba">
+      <label for="Ime">Име и презиме:</label>
+      <div class="help-container">
+        <input type="text" spellcheck="false" name="Ime" class="field" pattern="^(?:([A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)\s([A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?)|([\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)\s([\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?))$" required>
+        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+          <div></div>
+          <img src="./question.svg">
+        </div>
+        <div class="help-footnote-container">
+          <div class="help-footnote">
+            Формат: Име(размак)Презиме или само једна реч (име или презиме); презиме може бити и вишечлано, одвојено цртицом, без размака (тј. у формату Презиме1-Презиме2).
+          </div>
+        </div>
+      </div>
+      <label for="Email">e-mail:</label>
+      <div class="help-container">
+        <input type="email" spellcheck="false" name="Email" class="field" required><br>
+        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+          <div></div>
+          <img src="./question.svg">
+        </div>
+        <div class="help-footnote-container">
+          <div class="help-footnote">
+            Формат: нпр. aaa@aaa.aaa или aaa@aaa.aa.aa
+          </div>
+        </div>
+      </div>
+      <label for="Telefon">Телефон:</label>
+      <div class="help-container">
+        <input type="text" spellcheck="false" name="Telefon" class="field" pattern="^(\u002B381|0)(1[0-9]|2(?:[0-9]|30|80|90)|3(?:[0-9]|90)|6(?:0|1|2|3|4|5|6|77|78|8|9))(\d{6,7})$" required>
+        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+          <div></div>
+          <img src="./question.svg">
+        </div>
+        <div class="help-footnote-container">
+          <div class="help-footnote">
+            Формат: нпр. +381xxxxxxxxx или 0xxxxxxxxx, без размака и специјалних знакова (осим знака + уколико је формат као први наведени случај). Прихватају се српски бројеви мобилних и фиксних телефона (са троцифреним и четвороцифреним префиксима), као и виртуелних мрежних оператера. Након префикса за град или префикса мобилног оператера, мора се унети 6 или 7 цифара.
+          </div>
+        </div>
+      </div>
+      <label for="SluzbaId">Служба код које је предмет заведен:</label>
+      <div class="help-container">
+        <select name="SluzbaId" id="sluzba-id" class="field" required></select><br>
+        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+          <div></div>
+          <img src="./question.svg">
+        </div>
+        <div class="help-footnote-container">
+          <div class="help-footnote">
+            Из падајуће листе одаберите службу код које је предмет заведен.
+          </div>
+        </div>
+      </div>
+      <label for="BrojPredmeta">Број предмета:</label>
+      <div class="help-container">
+        <input type="text" spellcheck="false" name="BrojPredmeta" class="field" pattern="^952-02-(0?(?:[1-9]|1[0-9]|2[0-1]))-(\d+|\d+-\d+)\/((?:19|20)?(?:\d{2}))$" required> <!-- pattern needs update -->
+        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+          <div></div>
+          <img src="./question.svg">
+        </div>
+        <div class="help-footnote-container">
+          <div class="help-footnote">
+            Формат: нпр. 952-02-pp-nnnn/gggg (по старој класификацији) или 952-02-pp-sss-nnnn/gggg (по новој класификацији), без размака. pp је класификација предмета у опсегу од 1 до 21 (са или без водеће нуле, тј. 1, 2 или 3 цифре), sss је шифра службе код које је предмет заведен по новој класификацији (најчешће 3 цифре), nnnn је редни број предмета (дужина варира), а gggg је година када је предмет заведен (омогућен је унос све 4 цифре или само последње 2 цифре године).
+          </div> <!-- description needs update -->
+        </div>
+      </div>
+      <label for="ObracanjeSluzbi">Да ли сте се претходно обратили надлежној служби?</label>
+      <input type="radio" name="ObracanjeSluzbi" value="true" onchange="document.getElementById('ime-sluzbenika-container').style.maxHeight = document.getElementById('ime-sluzbenika').scrollHeight + 15 + 'px'" required>&nbsp;ДА&nbsp;&nbsp;&nbsp;
+      <input type="radio" name="ObracanjeSluzbi" value="false" onchange="document.getElementById('ime-sluzbenika-container').style.maxHeight = 0" checked required>&nbsp;НЕ<br>
+      <div id="ime-sluzbenika-container">
+        <div id="ime-sluzbenika">
+          <label for="ObracanjeKome">Име особе којој сте се обратили у надлежној служби:</label>
+          <div class="help-container">
+            <input type="text" spellcheck="false" name="ObracanjeKome" class="field" pattern="((^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+$))|((^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?$))|(^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+\s[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+\s[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?$)|(^$)">
+            <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0'); document.getElementById('ime-sluzbenika-container').style.maxHeight = document.getElementById('ime-sluzbenika').scrollHeight + 15 + ((this.classList.contains('toggled')) ? document.getElementById('ime-sluzbenika-footnote').scrollHeight + 10 : 0) + 'px'">
+              <div></div>
+              <img src="./question.svg">
+            </div>
+            <div class="help-footnote-container">
+              <div class="help-footnote" id="ime-sluzbenika-footnote">
+                Формат: Име(размак)Презиме или само једна реч (име или презиме); презиме може бити и вишечлано, одвојено цртицом, без размака (тј. у формату Презиме1-Презиме2). Поље није обавезно чак иако сте у кораку изнад одабрали да сте се претходно некоме обратили, али морате испоштовати наведени формат ако нешто уписујете у ово поље.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <label for="OpisPrimedbe">Опис примедбе:</label>
+      <textarea spellcheck="false" name="OpisPrimedbe" style="resize: none" rows="9" class="field" required></textarea><br>
+      <!-- pattern="(?:^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e\s\u0021-\u0040]+$)|(?:^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f\s\u0021-\u0040]+$)" -->
+      <input type="submit" value="ОК">
+    </form>
+    <div id="napomena">
+      НАПОМЕНА: Поља која су обавезна биће означена симболом <img src="./red.svg"> уколико нису попуњена или ако нису попуњена у одговарајућем формату. Уколико су таква поља исправно попуњена, појавиће се симбол <img src="./green.svg">. Није могуће мешати ћирилицу и латиницу у оквиру појединачних поља (са изузетком описа примедбе). Иако је унос описа примедбе произвољан, молимо да будете што детаљнији приликом попуњавања овог поља како би примедба била усвојена и ефикасно размотрена. Није могуће поднети примедбу у вези другостепених предмета. Примедбе које нису поднете у име подносиоца предмета или примедбе са непостојећим бројем предмета се неће узимати у разматрање.
+    </div>
+  </div>
+
+</body>
+
+</html>

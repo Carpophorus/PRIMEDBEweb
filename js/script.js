@@ -3,32 +3,30 @@
 
   PRM.nav = 0;
   var officesArray = [];
+  var offices = null;
+  var statuses = null;
 
-  console.log(`
-    LOGIN:
+  var apiRoot = 'http://10.0.1.251:8090/';
 
-    Oba polja (username i password) su samo slovo t. Planiran je trajni token u local strage-u radi smanjivanja broja prijava na sistem nakon osvežavanja strane. Svi ostali pozivi osim login-a ka API-u imaju ovaj token kao Auth. Po tome, odn. korisničkoj roli, odlučuje se koje se primedbe i ostali sadržaj prikazuje korisniku.
+  var authObject = null;
 
+  var cComment, oComment, oResponse;
+  var cComms = [];
+  var oComms = [];
+  var oResps = [];
 
-    PRIMEDBE:
-
-    Prikazuje se po 10 primedbi (API poziv ne sme da dohvati sve primedbe, pa se na front-u rešava iteracija). U pozivu ka API-u postoji i broj stranice zbog dohvatanja određenih 10 primedbi po hronološki opadajućem redosledu (na dnu ispod primedbi je pagination na čiju se promenu opet poziva API; poziv ka API-u nakon login-a bi onda bio npr. .../api/desetPrimedbi&page=1). Štampa je rešena sa tim podacima, refresh je poslednji poziv za desetPrimedbi. Opcioni parametri pretrage bi trebalo da se takođe ubace u API poziv. Rezultat API poziva mora da vraća i ukupan broj tiketa kao odvojeni rezultat zbog određivanja broja stranica za pagination.
-
-
-    POJEDINAČNA PRIMEDBA:
-
-    Unutar ekspandovane primedbe je najveći broj poziva ka API-u. Sva polja su priložena, uz moguće dodavanje komentara službenika ispod komentara kontrolora. Istorija treba da sadrži sve relevantne događaje prosleđivanja, odgovaranja ili isteka roka za odgovor, eventualno i promene komentara kontrolora ili službenika (sve naravno prati i ID korisnika ako je u pitanju user action). Prosleđivanje primedbe i save za izmene su odvojeni pozivi. U odnosu na korisničke role po Auth tokenu treba paziti ko šta može da izmeni, iako će na front-u biti onemogućen pristup određenim poljima za određene role. Status primedbe i status odgovora su automatski (potvrda da je odgovor poslat građaninu može da bude na odvojeno dugme jer to jedino nije automatski).
-
-
-    STATISTIKA:
-
-    Parametri su opseg datuma i odabrane SKN. Samo su ovi parametri vidljivi na početku (grafikon i rezultati se prikazuju nakon pokretanja pretrage). Podaci su zbirni za odabrane SKN, ali su u RGZ-u hteli da ih razdvoje. Primljeni podaci će moći da se štampaju nakon dobijanja podataka (dugme za štampu treba da se pojavi).
-
-
-    PROFIL:
-
-    Lični podaci i logout dugme. Osim invalidacije tokena, ova strana ne bi trebalo da dodaje funkcije na API (lični podaci su tu nakon login-a).
-  `);
+  var groupByProperty = function(collection, property) {
+    const groupedCollection = collection.reduce((previous, current) => {
+      if (!previous[current[property]]) {
+        previous[current[property]] = [current];
+      } else {
+        previous[current[property]].push(current);
+      }
+      return previous;
+    }, {});
+    // this will return an array of objects, each object containing a group of objects
+    return Object.keys(groupedCollection).map(key => ({ key, value: groupedCollection[key] }));
+  }
 
   var insertHtml = function(selector, html) {
     var targetElem = document.querySelector(selector);
@@ -58,6 +56,47 @@
       $(selector).addClass("gone");
     }, Number(interval) + 10);
   };
+
+  document.addEventListener("DOMContentLoaded", function(event) {
+    if (localStorage.getItem("RGZPRMrefreshToken") !== null) {
+      disappear($(".login-screen"), 500);
+      setTimeout(function() {
+        appear($(".loader"), 500);
+        var data = 'refresh_token=' + encodeURIComponent(localStorage.getItem("RGZPRMrefreshToken")) + '&grant_type=refresh_token';
+        $ajaxUtils.sendPostRequestWithData(
+          apiRoot + 'token',
+          function(response, status) {
+            authObject = response;
+            localStorage.setItem("RGZPRMrefreshToken", authObject.refresh_token);
+            var cnt = 0;
+            $ajaxUtils.sendGetRequest(
+              apiRoot + 'api/Sluzbe',
+              function(response, status) {
+                offices = response;
+                console.log(offices);
+                cnt = cnt + 1;
+                if (cnt == 2)
+                  PRM.signInAux();
+              },
+              true, authObject.access_token
+            );
+            $ajaxUtils.sendGetRequest(
+              apiRoot + 'api/rgz_primedbe/get_statusi',
+              function(response, status) {
+                statuses = response;
+                console.log(statuses);
+                cnt = cnt + 1;
+                if (cnt == 2)
+                  PRM.signInAux();
+              },
+              true, authObject.access_token
+            );
+          },
+          true, data, null
+        );
+      }, 500);
+    }
+  });
 
   // document.addEventListener("DOMContentLoaded", function(event) {
   //   if (history.state != null) {
@@ -159,73 +198,83 @@
     disappear($(".login-screen"), 500);
     setTimeout(function() {
       appear($(".loader"), 500);
+      var data = 'username=' + encodeURIComponent($("#username").val()) + '&password=' + encodeURIComponent($("#password").val()) + '&grant_type=password';
+      $ajaxUtils.sendPostRequestWithData(
+        apiRoot + 'token',
+        function(response, status) {
+          authObject = response;
+          localStorage.setItem("RGZPRMrefreshToken", authObject.refresh_token);
+          var cnt = 0;
+          $ajaxUtils.sendGetRequest(
+            apiRoot + 'api/Sluzbe',
+            function(response, status) {
+              offices = response;
+              console.log(offices);
+              cnt = cnt + 1;
+              if (cnt == 2)
+                PRM.signInAux();
+            },
+            true, authObject.access_token
+          );
+          $ajaxUtils.sendGetRequest(
+            apiRoot + 'api/rgz_primedbe/get_statusi',
+            function(response, status) {
+              statuses = response;
+              console.log(statuses);
+              cnt = cnt + 1;
+              if (cnt == 2)
+                PRM.signInAux();
+            },
+            true, authObject.access_token
+          );
+        },
+        true, data, null
+      );
     }, 500);
-    if ($("#username").val() != "t" || $("#password").val() != "t") {
-      setTimeout(function() { //after unsuccesful login, with prompt
-        disappear($(".loader"), 500);
-        setTimeout(function() {
-          appear($(".login-screen"), 500);
-          $.confirm({
-            title: 'ГРЕШКА!',
-            content: 'Појавила се грешка приликом пријаве на систем. Проверите своје креденцијале и покушајте поново.<br><br>Контактирајте системске администраторе уколико се овај проблем често дешава.',
-            theme: 'supervan',
-            backgroundDismiss: 'true',
-            buttons: {
-              ok: {
-                text: 'ОК',
-                btnClass: 'btn-white-prm',
-                keys: ['enter'],
-                action: function() {}
-              }
-            }
-          });
-        }, 500);
-      }, 3000); //this delay only simulating network response
-    } else {
-      setTimeout(function() { //success
-        disappear($(".loader"), 500);
-        setTimeout(function() {
-          var html = `
-            <header class="gone">
-              <nav class="navbar navbar-toggleable-md">
-                <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
-                  <i class="fa fa-bars"></i>
-                </button>
-                <div class="navbar-brand"></div>
-                <div class="mobile-navi-helper mnh-1 hidden-lg-up"><i class="fa fa-ticket"></i></div>
-                <div class="mobile-navi-helper mnh-2 hidden-lg-up gone"><i class="fa fa-bar-chart"></i></div>
-                <div class="mobile-navi-helper mnh-3 hidden-lg-up gone"><i class="fa fa-user-circle-o"></i></div>
-                <div class="collapse navbar-collapse" id="navbar-content">
-                  <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active" onclick="$PRM.navi(1, this);">
-                      <div class="nav-link"><i class="fa fa-ticket"></i>&nbsp;&nbsp;&nbsp;ПРИМЕДБЕ</div>
-                    </li>
-                    <li class="nav-item" onclick="$PRM.navi(2, this);">
-                      <div class="nav-link"><i class="fa fa-bar-chart"></i>&nbsp;&nbsp;&nbsp;СТАТИСТИКА</div>
-                    </li>
-                    <li class="nav-item" onclick="$PRM.navi(3, this);">
-                      <div class="nav-link"><i class="fa fa-user-circle-o"></i>&nbsp;&nbsp;&nbsp;ПРОФИЛ</div>
-                    </li>
-                  </ul>
-                </div>
-              </nav>
-            </header>
-            <div id="main-content" class="gone">
-              <div class="loader">
-                <div class="loader-inner"></div>
-              </div>
-              <div id="switchbox" class="gone">
-              </div>
+  };
+
+  PRM.signInAux = function() {
+    disappear($(".loader"), 500);
+    setTimeout(function() {
+      var html = `
+        <header class="gone">
+          <nav class="navbar navbar-toggleable-md">
+            <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="fa fa-bars"></i>
+            </button>
+            <div class="navbar-brand"></div>
+            <div class="mobile-navi-helper mnh-1 hidden-lg-up"><i class="fa fa-ticket"></i></div>
+            <div class="mobile-navi-helper mnh-2 hidden-lg-up gone"><i class="fa fa-bar-chart"></i></div>
+            <div class="mobile-navi-helper mnh-3 hidden-lg-up gone"><i class="fa fa-user-circle-o"></i></div>
+            <div class="collapse navbar-collapse" id="navbar-content">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item active" onclick="$PRM.navi(1, this);">
+                  <div class="nav-link"><i class="fa fa-ticket"></i>&nbsp;&nbsp;&nbsp;ПРИМЕДБЕ</div>
+                </li>
+                <li class="nav-item" onclick="$PRM.navi(2, this);">
+                  <div class="nav-link"><i class="fa fa-bar-chart"></i>&nbsp;&nbsp;&nbsp;СТАТИСТИКА</div>
+                </li>
+                <li class="nav-item" onclick="$PRM.navi(3, this);">
+                  <div class="nav-link"><i class="fa fa-user-circle-o"></i>&nbsp;&nbsp;&nbsp;ПРОФИЛ</div>
+                </li>
+              </ul>
             </div>
-          `;
-          insertHtml("body", html);
-          appear($("header, #main-content"), 500);
-          setTimeout(function() {
-            PRM.loadPage(1);
-          }, 500);
-        }, 500);
-      }, 3000); //this delay only simulating network response
-    }
+          </nav>
+        </header>
+        <div id="main-content" class="gone">
+          <div class="loader">
+            <div class="loader-inner"></div>
+          </div>
+          <div id="switchbox" class="gone">
+          </div>
+        </div>
+      `;
+      insertHtml("body", html);
+      appear($("header, #main-content"), 500);
+      setTimeout(function() {
+        PRM.loadPage(1);
+      }, 500);
+    }, 500);
   };
 
   PRM.navi = function(n, e) {
@@ -244,384 +293,365 @@
 
   PRM.loadPage = function(n) {
     disappear($("#switchbox"), 500);
-    appear($(".loader"), 500);
-    setTimeout(function() {
-      insertHtml("#switchbox", ``);
-    }, 500);
-    setTimeout(function() {
-      if (n == 1) {
-        var html = `
-          <div id="searchbar" class="row hidden-md-down">
-            <div id="search-criteria" class="col-11">
-              <img src="img/favicons/favicon.ico" onload="$PRM.dateInit();">
-              <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
-              <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
-              <div class="col-ninth"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-ninth">
-                <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
-                    <option value="0" disabled selected hidden>служба</option>
-                    <option value="1">Ада</option>
-                    <option value="2">Нови Београд</option>
-                    <option value="3">Осечина</option>
-                    <option value="4">Житорађа</option>
-                  </select>
-              </div>
-              <div class="col-ninth">
-                <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
-                    <option value="0" disabled selected hidden>статус</option>
-                    <option value="1">Непрослеђен</option>
-                    <option value="2">Прослеђен</option>
-                    <option value="3">Готов</option>
-                  </select>
-              </div>
-              <div class="col-ninth">
-                <select id="response" class="response" onchange="$PRM.searchbarSelectChanged(this);">
-                    <option value="0" disabled selected hidden>одговор</option>
-                    <option value="1">На чекању</option>
-                    <option value="2">Одговорено</option>
-                    <option value="3">Нема одговора</option>
-                  </select>
-              </div>
-              <div class="col-outertwelvthhalf">
-                <button id="clear-searchboxes" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <div id="two-buttons" class="col-11">
-              <div class="col-outertwelvth">
-                <button id="print" onclick="$PRM.print();"><i class="fa fa-print"></i></button>
-              </div>
-              <div class="col-outertwelvth">
-                <button id="refresh" onclick="$PRM.refresh();"><i class="fa fa-refresh"></i></button>
-              </div>
-            </div>
-            <div id="search-button-container" class="col-1">
-              <button id="search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
-            </div>
-          </div>
-          <div id="searchbar" class="row hidden-lg-up">
-            <div id="mobile-buttons-container" class="row">
-              <div class="col-4 col-md-6"></div>
-              <div id="mobile-refresh-clear-button-container" class="col-4 col-md-3">
-                <button id="mobile-refresh-clear" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-refresh"></i></button>
-              </div>
-              <div id="mobile-search-button-container" class="col-4 col-md-3">
-                <button id="mobile-search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
-              </div>
-            </div>
-            <div id="mobile-searchboxes" class="collapse row">
-              <div class="col-12"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-12 col-md-6"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
-              <div class="col-12 col-md-6"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
-              <div class="col-12 col-md-6"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-12 col-md-6"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-12 col-md-6"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              <div class="col-12 col-md-6">
-                <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
-                    <option value="0" disabled selected hidden>служба</option>
-                    <option value="1">Ада</option>
-                    <option value="2">Нови Београд</option>
-                    <option value="3">Осечина</option>
-                    <option value="4">Житорађа</option>
-                  </select>
-              </div>
-              <div class="col-12 col-md-6">
-                <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
-                    <option value="0" disabled selected hidden>статус</option>
-                    <option value="1">Непрослеђен</option>
-                    <option value="2">Прослеђен</option>
-                    <option value="3">Готов</option>
-                  </select>
-              </div>
-              <div class="col-12 col-md-6">
-                <select id="response" class="response" onchange="$PRM.searchbarSelectChanged(this);">
-                    <option value="0" disabled selected hidden>одговор</option>
-                    <option value="1">На чекању</option>
-                    <option value="2">Одговорено</option>
-                    <option value="3">Нема одговора</option>
-                  </select>
-              </div>
-            </div>
-          </div>
-          <div id="table">
-            <div id="table-header" class="row">
-              <div class="col-2 col-md-1">р.б.</div>
-              <div class="col-6 col-md-3">бр. предмета</div>
-              <div class="col-3 hidden-sm-down">датум</div>
-              <div class="col-3 hidden-sm-down">име и презиме</div>
-              <div class="col-2 col-md-1"><span class="hidden-sm-down">статус</span><i class="hidden-md-up fa fa-info-circle"></i></div>
-              <div class="col-2 col-md-1"><span class="hidden-sm-down">одговор</span><i class="hidden-md-up fa fa-comments"></i></div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(1, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Петар Петровић</div>
-              <div class="col-2 col-md-1 status-1"><i class="fa fa-inbox"></i></div>
-              <div class="col-2 col-md-1 response-1"></div>
-            </div>
-            <div id="expansion-1" class="expansion collapse">
-              <div class="row">
-                <div class="expansion-info col-12 col-md-6">
-                  <div class="expansion-label">бр. предмета:</div>
-                  <div class="expansion-info-data">95-74993/2017</div>
-                  <div class="expansion-label">датум:</div>
-                  <div class="expansion-info-data">10.11.2017. 08:51</div>
-                  <div class="expansion-label">име и презиме:</div>
-                  <div class="expansion-info-data">Петар Петровић</div>
-                  <div class="expansion-label">e-mail:</div>
-                  <div class="expansion-info-data">rr69@gmail.com</div>
-                  <div class="expansion-label">телефон:</div>
-                  <div class="expansion-info-data">069/555-78-03</div>
-                  <div class="expansion-label">служба:</div>
-                  <div class="expansion-info-data">Велика Плана</div>
-                  <div class="expansion-label">претходно обраћање:</div>
-                  <div class="expansion-info-data">ДА</div>
-                  <div class="expansion-label">службеник:</div>
-                  <div class="expansion-info-data">Јован Јовановић</div>
-                  <div class="expansion-label">статус:</div>
-                  <div class="expansion-info-data">Непрослеђен</div>
-                  <div class="expansion-label">одговор:</div>
-                  <div class="expansion-info-data">Нема одговора</div>
-                  <div class="expansion-label">историја:</div>
-                  <div class="expansion-info-data">
-                    &bull; прослеђено на СКН Велика Плана 11.11.2017. 09:45
-                    <br>&bull; није одговорено до 14.11.2017. 09:45
-                    <br>&bull; прослеђено на СКН Велика Плана 15.11.2017. 13:27
+    if (n == 1) {
+      appear($(".loader"), 500);
+      setTimeout(function() {
+        $ajaxUtils.sendGetRequest(
+          apiRoot + 'api/rgz_primedbe/get' + '?page=1',
+          function(response, status) {
+            var html = `
+              <div id="searchbar" class="row hidden-md-down">
+              <div id="search-criteria" class="col-11">
+                <img src="img/favicons/favicon.ico" onload="$PRM.dateInit();">
+                <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+                <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
+                <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
+                <div class="col-ninth ` + (authObject.sluzba == "Kontrola" ? "" : "col-ninth-double") + `"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+                <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+                <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+              `;
+              if (authObject.sluzba == "Kontrola") {
+                html += `
+                  <div class="col-ninth">
+                    <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
+                        <option value="0" disabled selected hidden>служба</option>
+                `;
+                for (var i = 0; i < offices.length; i++)
+                  html += `<option value="` + offices[i].Id + `">` + offices[i].Naziv + `</option>`;
+                html += `
+                    </select>
                   </div>
+                `;
+              }
+              html += `
+                <div class="col-ninth col-ninth-double">
+                  <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
+                      <option value="0" disabled selected hidden>статус / одговор</option>
+                      <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
+                      <option value="ПРОСЛЕЂЕН СЛУЖБИ">ПРОСЛЕЂЕНИ / НА ЧЕКАЊУ</option>
+                      <option value="НИЈЕ ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / НИЈЕ ОДГОВОРЕНО</option>
+                      <option value="ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / ОДГОВОРЕНО</option>
+                      <option value="ОДГОВОРЕНО КОРИСНИКУ">ОДГОВОР ПОСЛАТ ГРАЂАНИНУ / ОДГОВОРЕНО</option>
+                    </select>
                 </div>
-                <div class="expansion-response col-12 col-md-6">
-                  <div id="forward-label" class="expansion-label">прослеђивање:</div>
-                  <div id="forward-container" class="row">
-                    <div id="forward-select-container" class="col-12 col-md-9">
-                      <select id="forward" onchange="$PRM.expansionSelectChanged(this);">
-                          <option value="0" disabled selected hidden>оператер</option>
-                          <option value="1">СКН 1</option>
-                          <option value="2">СКН 2</option>
-                          <option value="3">СКН 3</option>
-                          <option value="4">СКН 4</option>
-                          <option value="5">СКН 5</option>
-                          <option value="6">СКН 6</option>
-                          <option value="7">Другостепена комисија</option>
-                        </select>
+                <div class="col-outertwelvthhalf">
+                  <button id="clear-searchboxes" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-times"></i></button>
+                </div>
+              </div>
+              <div id="two-buttons" class="col-11">
+                <div class="col-outertwelvth">
+                  <button id="print" onclick="$PRM.print();"><i class="fa fa-print"></i></button>
+                </div>
+                <div class="col-outertwelvth">
+                  <button id="refresh" onclick="$PRM.refresh();"><i class="fa fa-refresh"></i></button>
+                </div>
+              </div>
+              <div id="search-button-container" class="col-1">
+                <button id="search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+            <div id="searchbar" class="row hidden-lg-up">
+              <div id="mobile-buttons-container" class="row">
+                <div class="col-4 col-md-6"></div>
+                <div id="mobile-refresh-clear-button-container" class="col-4 col-md-3">
+                  <button id="mobile-refresh-clear" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-refresh"></i></button>
+                </div>
+                <div id="mobile-search-button-container" class="col-4 col-md-3">
+                  <button id="mobile-search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+                </div>
+              </div>
+              <div id="mobile-searchboxes" class="collapse row">
+                <div class="col-12"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+                <div class="col-12 col-md-6"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
+                <div class="col-12 col-md-6"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
+                <div class="col-12 col-md-6"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+                <div class="col-12 col-md-6"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+                <div class="col-12 col-md-6"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+                `;
+                if (authObject.sluzba == "Kontrola") {
+                  html += `
+                    <div class="col-12 col-md-6">
+                      <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
+                          <option value="0" disabled selected hidden>служба</option>
+                  `;
+                  for (var i = 0; i < offices.length; i++)
+                    html += `<option value="` + offices[i].Id + `">` + offices[i].Naziv + `</option>`;
+                  html += `
+                      </select>
                     </div>
-                    <div id="forward-button-container" class="col-12 col-md-3">
-                      <div class="loader gone">
-                        <div class="loader-inner"></div>
-                      </div>
-                      <button onclick="$PRM.forward(123, this);"><i class="fa fa-share"></i></button>
-                    </div>
-                  </div>
-                  <div class="expansion-label">примедба:</div>
-                  <div class="divtextarea">Ovo je primedba klijenta. Polje se ne može menjati. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet provident similique nemo alias amet, sapiente dolor, at maiores voluptates quo deleniti praesentium modi ab, illo minus vitae
-                    deserunt harum dolorum. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni ipsum consectetur in ad quia, quas vitae aliquam tempora ex doloremque dignissimos perspiciatis veniam odio esse, qui, eos dicta nesciunt est? Lorem ipsum
-                    dolor sit amet, consectetur adipisicing elit. Hic, possimus nemo nihil voluptatum facere aperiam ullam dolor. Velit officiis dignissimos blanditiis, saepe fugit dolor dolorem tenetur quo voluptatum, ab ullam!</div>
-                  <div class="expansion-label">коментар контролора:</div>
-                  <div class="divtextarea" contenteditable="true">Ovo je komentar kontrolora. Polje može menjati samo kontrolor.</div>
-                  <div class="expansion-label">коментар службеника:</div>
-                  <div class="divtextarea" contenteditable="true">Ovo je komentar službenika. Polje može menjati samo službenik.</div>
-                  <div class="expansion-label">одговор службе:</div>
-                  <div id="office-response" class="divtextarea" contenteditable="true"></div>
-                  <div class="row">
-                    <div class="hidden-sm-down col-md-9"></div>
-                    <div id="save-button-container" class="col-12 col-md-3">
-                      <div class="loader gone">
-                        <div class="loader-inner"></div>
-                      </div>
-                      <button onclick="$PRM.save(123, this);"><i class="fa fa-save"></i></button>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="hidden-sm-down col-md-9"></div>
-                    <div id="check-button-container" class="col-12 col-md-3">
-                      <div class="loader gone">
-                        <div class="loader-inner"></div>
-                      </div>
-                      <button onclick="$PRM.check(123, this);"><i class="fa fa-check"></i></button>
-                    </div>
-                  </div>
+                  `;
+                }
+                html += `
+                <div class="col-12 col-md-6">
+                  <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
+                    <option value="0" disabled selected hidden>статус / одговор</option>
+                    <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
+                    <option value="ПРОСЛЕЂЕН СЛУЖБИ">ПРОСЛЕЂЕНИ / НА ЧЕКАЊУ</option>
+                    <option value="НИЈЕ ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / НИЈЕ ОДГОВОРЕНО</option>
+                    <option value="ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / ОДГОВОРЕНО</option>
+                    <option value="ОДГОВОРЕНО КОРИСНИКУ">ОДГОВОР ПОСЛАТ ГРАЂАНИНУ / ОДГОВОРЕНО</option>
+                  </select>
                 </div>
               </div>
             </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(2, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
-              <div class="col-2 col-md-1 response-2"><i class="fa fa-clock-o"></i></div>
-            </div>
-            <div id="expansion-2" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
+            <div id="table">
+              <div id="table-header" class="row">
+                <div class="col-2 col-md-1">р.б.</div>
+                <div class="col-6 col-md-3">бр. предмета</div>
+                <div class="col-3 hidden-sm-down">датум</div>
+                <div class="col-3 hidden-sm-down">име и презиме</div>
+                <div class="col-2 col-md-1"><span class="hidden-sm-down">статус</span><i class="hidden-md-up fa fa-info-circle"></i></div>
+                <div class="col-2 col-md-1"><span class="hidden-sm-down">одговор</span><i class="hidden-md-up fa fa-comments"></i></div>
               </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(3, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
-              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
-            </div>
-            <div id="expansion-3" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
+            `;
+            for (var i = 0; i < response.Primedbe.length; i++) {
+              var officeString = '';
+              for (var j = 0; j < offices.length; j++)
+                if (offices[j].Id == response.Primedbe[i].SluzbaId) {
+                  officeString = offices[i].Naziv;
+                  break;
+                }
+              var statusIcon = '';
+              var statusClass = '';
+              var statusString = '';
+              var responseIcon = '';
+              var responseClass = '';
+              var responseString = '';
+              switch (response.Primedbe[i].PoslednjiStatus) {
+                case 'ПРИМЕДБА НИЈЕ ПРОСЛЕЂЕНА':
+                  statusIcon = '<i class="fa fa-inbox"></i>';
+                  statusClass = 'status-1';
+                  statusString = 'НЕПРОСЛЕЂЕН';
+                  responseString = 'НИЈЕ ОДГОВОРЕНО';
+                  break;
+                case 'ПРОСЛЕЂЕН СЛУЖБИ':
+                  statusIcon = '<i class="fa fa-share"></i>';
+                  statusClass = 'status-2';
+                  statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+                  responseIcon = '<i class="fa fa-clock-o"></i>';
+                  responseClass = 'response-2';
+                  responseString = 'ЧЕКА СЕ ОДГОВОР СЛУЖБЕ';
+                  break;
+                case 'НИЈЕ ОДГОВОРЕНО':
+                  statusIcon = '<i class="fa fa-share"></i>';
+                  statusClass = 'status-2';
+                  statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+                  responseIcon = '<i class="fa fa-times"></i>';
+                  responseClass = 'response-4';
+                  responseString = 'НИЈЕ ОДГОВОРЕНО У ПРЕДВИЂЕНОМ РОКУ';
+                  break;
+                case 'ОДГОВОРЕНО':
+                  statusIcon = '<i class="fa fa-share"></i>';
+                  statusClass = 'status-2';
+                  statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+                  responseIcon = '<i class="fa fa-check"></i>';
+                  responseClass = 'response-3';
+                  responseString = 'ОДГОВОРЕНО';
+                  break;
+                case 'ОДГОВОРЕНО КОРИСНИКУ':
+                  statusIcon = '<i class="fa fa-check"></i>';
+                  statusClass = 'status-3';
+                  statusString = 'ОДГОВОР ПОСЛАТ ГРАЂАНИНУ';
+                  responseIcon = '<i class="fa fa-check"></i>';
+                  responseClass = 'response-3';
+                  responseString = 'ОДГОВОРЕНО';
+                  break;
+              }
+              html += `
+                <div class="table-row row" onclick="$PRM.tableRowClicked(` + (i + 1) + `, this);">
+                  <div class="col-2 col-md-1">` + response.Primedbe[i].Id + `</div>
+                  <div class="col-6 col-md-3">` + response.Primedbe[i].BrojPredmeta + `</div>
+                  <div class="col-3 hidden-sm-down">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
+                  <div class="col-3 hidden-sm-down">` + response.Primedbe[i].Ime + `</div>
+                  <div class="col-2 col-md-1 ` + statusClass + `">` + statusIcon + `</div>
+                  <div class="col-2 col-md-1 ` + responseClass + `">` + responseIcon + `</div>
+                </div>
+                <div id="expansion-1" class="expansion collapse">
+                  <div class="row">
+                    <div class="expansion-info col-12 col-md-6">
+                      <div class="expansion-label">бр. предмета:</div>
+                      <div class="expansion-info-data">` + response.Primedbe[i].BrojPredmeta + `</div>
+                      <div class="expansion-label">датум:</div>
+                      <div class="expansion-info-data">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
+                      <div class="expansion-label">име и презиме:</div>
+                      <div class="expansion-info-data">` + response.Primedbe[i].Ime + `</div>
+                      <div class="expansion-label">e-mail:</div>
+                      <div class="expansion-info-data">` + response.Primedbe[i].Email + `</div>
+                      <div class="expansion-label">телефон:</div>
+                      <div class="expansion-info-data">` + response.Primedbe[i].Telefon + `</div>
+                      <div class="expansion-label">служба:</div>
+                      <div class="expansion-info-data">` + officeString + `</div>
+                      <div class="expansion-label">претходно обраћање:</div>
+                      <div class="expansion-info-data">` + (response.Primedbe[i].ObracanjeSluzbi ? `ДА` : `НЕ`) + `</div>` +
+                      (response.Primedbe[i].ObracanjeSluzbi && response.Primedbe[i].ObracanjeKome != null ? `<div class="expansion-label">службеник:</div>
+                      <div class="expansion-info-data">` + response.Primedbe[i].ObracanjeKome + `</div>` : ``) + `
+                      <div class="expansion-label">статус:</div>
+                      <div class="expansion-info-data">` + statusString + `</div>
+                      <div class="expansion-label">одговор:</div>
+                      <div class="expansion-info-data">` + responseString + `</div>
+                      <div class="expansion-label">историја:</div>
+                      <div class="expansion-info-data">
+              `;
+              cComment = null;
+              oComment = null;
+              oResponse = response.Primedbe[i].Odgovor != [] ? response.Primedbe[i].Odgovor[0].Odgovor1 : '';
+              var answered = false;
+              for (var j = 1; j < response.Primedbe[i].Logovi.length; j++) {
+                var logStatusString = '';
+                var logResponseString = '';
+                switch (response.Primedbe[i].Logovi[j].Status) {
+                  case 'ПРИМЕДБА НИЈЕ ПРОСЛЕЂЕНА':
+                    logStatusString = 'НЕПРОСЛЕЂЕН';
+                    logResponseString = 'НИЈЕ ОДГОВОРЕНО';
+                    break;
+                  case 'ПРОСЛЕЂЕН СЛУЖБИ':
+                    logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+                    logResponseString = 'ЧЕКА СЕ ОДГОВОР СЛУЖБЕ';
+                    break;
+                  case 'НИЈЕ ОДГОВОРЕНО':
+                    logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+                    logResponseString = 'НИЈЕ ОДГОВОРЕНО У ПРЕДВИЂЕНОМ РОКУ';
+                    break;
+                  case 'ОДГОВОРЕНО':
+                    logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+                    logResponseString = 'ОДГОВОРЕНО';
+                    answered = true;
+                    break;
+                  case 'ОДГОВОРЕНО КОРИСНИКУ':
+                    logStatusString = 'ОДГОВОР ПОСЛАТ ГРАЂАНИНУ';
+                    logResponseString = 'ОДГОВОРЕНО';
+                    break;
+                }
+                html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == 'Kontrola' ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
+                if (response.Primedbe[i].Logovi[j].Komentar != null) {
+                  if (!answered) {
+                  html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
+                  if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == "Kontrola")
+                    cComment = response.Primedbe[i].Logovi[j].Komentar;
+                  else
+                    oComment = response.Primedbe[i].Logovi[j].Komentar;
+                  } else {
+                    html += ' уз одговор \"' + oResponse + '\"';
+                    answered = false;
+                  }
+                }
+                html += '<br>';
+              }
+              cComms[i] = cComment ? cComment : '';
+              oComms[i] = oComment ? oComment : '';
+              oResps[i] = oResponse;
+              html += `
+                      </div>
+                    </div>
+                    <div class="expansion-response col-12 col-md-6">
+              `;
+              if (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4]) {
+                html += `
+                      <div id="forward-label" class="expansion-label">прослеђивање:</div>
+                      <div id="forward-container" class="row">
+                        <div id="forward-select-container" class="col-12 col-md-9">
+                          <select id="forward" onchange="$PRM.expansionSelectChanged(this);">
+                              <option value="0" disabled selected hidden>СКН</option>
+                `;
+                for (var j = 0; j < offices.length; j++)
+                  html += `<option value="` + offices[j].Id + `">` + offices[j].Naziv + `</option>`;
+                html += `
+                          </select>
+                        </div>
+                        <div id="forward-button-container" class="col-12 col-md-3">
+                          <div class="loader gone">
+                            <div class="loader-inner"></div>
+                          </div>
+                          <button onclick="$PRM.forward(` + response.Primedbe[i].Id + `, this);"><i class="fa fa-share"></i></button>
+                        </div>
+                      </div>
+                `;
+              }
+              html += `
+                      <div class="expansion-label">примедба:</div>
+                      <div class="divtextarea" spellcheck="false">` + response.Primedbe[i].OpisPrimedbe + `</div>
+                      <div class="expansion-label">коментар контролора:</div>
+                      <div id="controller-comment" onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);" onblur="$PRM.crChanged(1, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `contenteditable="true"` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</div>
+                      <div class="expansion-label">коментар службеника:</div>
+                      <div id="office-comment" onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</div>
+                      <div class="expansion-label">одговор службе:</div>
+                      <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + oResponse + `</div>
+                      ` + (authObject.sluzba != "Kontrola" && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
+                      <div class="row">
+                        <div class="hidden-sm-down col-md-9"></div>
+                        <div id="save-button-container" class="col-12 col-md-3">
+                          <div class="loader gone">
+                            <div class="loader-inner"></div>
+                          </div>
+                          <button onclick="$PRM.save(` + response.Primedbe[i].Id + `, this, ` + i + `);"><i class="fa fa-save"></i></button>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="hidden-sm-down col-md-9"></div>
+                        <div id="check-button-container" class="col-12 col-md-3">
+                          <div class="loader gone">
+                            <div class="loader-inner"></div>
+                          </div>
+                          <button onclick="$PRM.check(` + response.Primedbe[i].Id + `, this, ` + i + `);"><i class="fa fa-check"></i></button>
+                        </div>
+                      </div>
+                      `) + `
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+            html += `
               </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(4, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-2"><i class="fa fa-share"></i></div>
-              <div class="col-2 col-md-1 response-4"><i class="fa fa-times"></i></div>
-            </div>
-            <div id="expansion-4" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
+              <div id="pagination">
+                <div>
+                  <div onclick="$PRM.firstPage();" class="pagination-disabled"><i class="fa fa-angle-double-left"></i></div>
+                  <div onclick="$PRM.previousPage();" class="pagination-disabled"><i class="fa fa-angle-left"></i></div>
+                  <div>
+                    <select id="page-select" onchange="$PRM.selectPage();">
+            `;
+            for (var i = 0; i < (response.UkupnoPrimedbi < 10 ? 1 : Math.ceil(response.UkupnoPrimedbi / 10)); i++)
+              html += `<option value="` + (i + 1) + `" ` + (i == 0 ? `selected` : ``) + `>` + (i + 1) + `</option>`;
+            html += `
+                      </select>
+                  </div>
+                  <div onclick="$PRM.nextPage();" ` + (response.UkupnoPrimedbi < 10 ? `class="pagination-disabled"` : ``) + `><i class="fa fa-angle-right"></i></div>
+                  <div onclick="$PRM.lastPage();" ` + (response.UkupnoPrimedbi < 10 ? `class="pagination-disabled"` : ``) + `><i class="fa fa-angle-double-right"></i></div>
+                </div>
               </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(5, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
-              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
-            </div>
-            <div id="expansion-5" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
-              </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(6, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
-              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
-            </div>
-            <div id="expansion-6" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
-              </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(7, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
-              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
-            </div>
-            <div id="expansion-7" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
-              </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(8, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
-              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
-            </div>
-            <div id="expansion-8" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
-              </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(9, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
-              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
-            </div>
-            <div id="expansion-9" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
-              </div>
-            </div>
-            <div class="table-row row" onclick="$PRM.tableRowClicked(10, this);">
-              <div class="col-2 col-md-1">123</div>
-              <div class="col-6 col-md-3">95-74993678/2017</div>
-              <div class="col-3 hidden-sm-down">10.11.2017. 08:51</div>
-              <div class="col-3 hidden-sm-down">Petar Petrović</div>
-              <div class="col-2 col-md-1 status-3"><i class="fa fa-check"></i></div>
-              <div class="col-2 col-md-1 response-3"><i class="fa fa-check"></i></div>
-            </div>
-            <div id="expansion-10" class="expansion collapse">
-              <div>
-                dgfjgkldfgkldfkl
-                <br>djfkdkdfd
-                <br>gdkfdfdpllgdld
-              </div>
-            </div>
-          </div>
-          <div id="pagination">
-            <div>
-              <div onclick="$PRM.firstPage();" class="pagination-disabled"><i class="fa fa-angle-double-left"></i></div>
-              <div onclick="$PRM.previousPage();" class="pagination-disabled"><i class="fa fa-angle-left"></i></div>
-              <div>
-                <select id="page-select" onchange="$PRM.selectPage();">
-                    <option value="1" selected>1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                  </select>
-              </div>
-              <div onclick="$PRM.nextPage();"><i class="fa fa-angle-right"></i></div>
-              <div onclick="$PRM.lastPage();"><i class="fa fa-angle-double-right"></i></div>
-            </div>
-          </div>
-        `;
-        insertHtml("#switchbox", html);
-      } else if (n == 2) {
+            `;
+            insertHtml("#switchbox", html);
+            disappear($(".loader"), 500);
+            appear($("#switchbox"), 500);
+            console.log(cComms, oComms, oResps);
+          },
+          true, authObject.access_token
+        );
+      }, 510);
+    } else if (n == 2) {
+      setTimeout(function() {
         var html = `
           <div class="row" id="statsparams">
             <img src="img/favicons/favicon.ico" onload="$PRM.statsDateInit();">
-            <div class="col-7 hidden-md-down"></div>
+            ` + (authObject.sluzba == "Kontrola" ? `<div class="col-7 hidden-md-down"></div>` : `<div class="col-9 hidden-md-down"></div>`) + `
             <div class="col-8 col-md-9 hidden-lg-up"></div>
             <div class="col-4 col-md-3 hidden-lg-up"><button id="search" onclick="$PRM.statsSearchButtonClicked();"><i class="fa fa-search"></i></button></div>
             <div class="col-12 col-md-6 col-lg-1"><input id="stats-date-from" class="stats-date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.statsDateFromChanged(this);"></div>
             <div class="col-12 col-md-6 col-lg-1"><input id="stats-date-to" class="stats-date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.statsDateToChanged(this);"></div>
-            <div class="col-12 col-lg-2"><input id="stats-offices" class="stats-offices" type="text" placeholder="службе" onfocus="this.placeholder = ''" onblur="this.placeholder = 'службе'" onkeydown="return false" onclick="$PRM.statsOfficesClicked();"></div>
+            ` + (authObject.sluzba == "Kontrola" ? `<div class="col-12 col-lg-2"><input id="stats-offices" class="stats-offices" type="text" placeholder="службе" onfocus="this.placeholder = ''" onblur="this.placeholder = 'службе'" onkeydown="return false" onclick="$PRM.statsOfficesClicked();"></div>` : ``) + `
             <div class="col-1 hidden-md-down"><button id="search" onclick="$PRM.statsSearchButtonClicked();"><i class="fa fa-search"></i></button></div>
           </div>
           <div class="row" id="statsdata"></div>
         `;
         insertHtml("#switchbox", html);
-      } else if (n == 3) {
+        appear($("#switchbox"), 500);
+      }, 510);
+    } else if (n == 3) {
+      setTimeout(function() {
         var html = `
           <div id="profile-picture"><i class="fa fa-user-circle-o"></i></div>
-          <div id="profile-name">Петар Петровић</div>
-          <div id="profile-position">ОПЕРАТЕР</div>
+          <div id="profile-name">` + authObject.name + `</div>
+          <div id="profile-position">` + (authObject.sluzba == 'Kontrola' ? 'КОНТРОЛОР' : 'СЛУЖБЕНИК') + `</div>
           <div id="profile-container" class="row">
             <div class="col-2 col-md-4"></div>
             <div id="profile-content" class="col-8 col-md-4">
@@ -638,14 +668,21 @@
           </div>
         `;
         insertHtml("#switchbox", html);
-      }
-      appear($("#switchbox"), 500);
-      disappear($(".loader"), 500);
-    }, 2500); //this delay only simulating network response
+        appear($("#switchbox"), 500);
+      }, 510);
+    }
+  };
+
+  PRM.crChanged = function(type, i, e) {
+    var ref = type == 1 ? cComms : type == 2 ? oComms : oResps;
+    if ($(e).html() != ref[i])
+      $(e).addClass('dirty');
+    else
+      $(e).removeClass('dirty');
   };
 
   PRM.statsSearchButtonClicked = function() {
-    if ($("#stats-date-from").val() == "" || $("#stats-date-to").val() == "" || $("#stats-offices").val() == "") {
+    if ($("#stats-date-from").val() == "" || $("#stats-date-to").val() == "" || $("#stats-offices").val() == "" && authObject.sluzba == "Kontrola") {
       $.confirm({
         title: 'ГРЕШКА!',
         content: 'Морате унети све параметре за претрагу.',
@@ -663,134 +700,192 @@
       return;
     }
     appear($(".loader"), 500);
-    setTimeout(function() {
-      var html = `
-        <div class="col-12" id="statstitle">Статистика за СКН XXXXXXX за период од XX.XX.XXXX. до XX.XX.XXXX.</div>
-        <div class="col-lg-6 col-12" id="chart">
-          <div id="chart-inner"></div>
-        </div>
-        <div class="col-lg-6 col-12" id="stats">
-          <div class="stat row noreply">
-            <div class="col-9 col-sm-10 stat-toc">Без&nbsp;одговора:&nbsp;......................................................................................................................................................................................................
-              <div class="stat-num stat-red">` + 14 + `</div>
-            </div>
-            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 14 / 66).toFixed(2) + `%)</div>
-          </div>
-          <div class="stat row unforwarded">
-            <div class="col-9 col-sm-10 stat-toc">Непрослеђених:&nbsp;......................................................................................................................................................................................................
-              <div class="stat-num stat-blue">` + 5 + `</div>
-            </div>
-            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 5 / 66).toFixed(2) + `%)</div>
-          </div>
-          <div class="stat row pending">
-            <div class="col-9 col-sm-10 stat-toc">На&nbsp;чекању:&nbsp;......................................................................................................................................................................................................
-              <div class="stat-num stat-yellow">` + 7 + `</div>
-            </div>
-            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 7 / 66).toFixed(2) + `%)</div>
-          </div>
-          <div class="stat row answered">
-            <div class="col-9 col-sm-10 stat-toc">Одговорено:&nbsp;......................................................................................................................................................................................................
-              <div class="stat-num stat-green">` + 40 + `</div>
-            </div>
-            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 40 / 66).toFixed(2) + `%)</div>
-          </div>
-          <div class="totaldouble" style="margin: 3vh 0 2vh 0; border-top: 2px solid #CC5505"></div>
-          <div class="stat row totaldouble">
-            <div class="col-9 col-sm-10 stat-toc">Укупно:&nbsp;......................................................................................................................................................................................................
-              <div class="stat-num stat-orange">` + 66 + `</div>
-            </div>
-            <div class="col-3 col-sm-2 stat-desc">(100.00%)</div>
-          </div>
-          <div class="stat row totaldouble">
-            <div class="col-9 col-sm-10 stat-toc">Вишеструко&nbsp;прослеђених:&nbsp;......................................................................................................................................................................................................
-              <div class="stat-num stat-white">` + 9 + `</div>
-            </div>
-            <div class="col-3 col-sm-2 stat-desc">(` + (100 * 9 / 66).toFixed(2) + `%)</div>
-          </div>
-        </div>
-      `;
-      insertHtml("#statsdata", html);
-      $(".stat, .totaldouble").css({"opacity": "0", "transition": "opacity 0.45s ease"});
-      $(".noreply").css({"opacity": "1"});
-      setTimeout(function() {
-        $(".unforwarded").css({"opacity": "1"});
-      }, 500);
-      setTimeout(function() {
-        $(".pending").css({"opacity": "1"});
-      }, 1000);
-      setTimeout(function() {
-        $(".answered").css({"opacity": "1"});
-      }, 1500);
-      setTimeout(function() {
-        $(".totaldouble").css({"opacity": "1"});
-      }, 2000);
-      var chart = new Chartist.Pie("#chart", {
-        series: [14, 5, 7, 40],
-        labels: [0, 0, 0, 0]
-      }, {
-        donut: true,
-        showLabel: false
-      });
-      chart.on('draw', function(data) {
-        if (data.type === 'slice') {
-          var pathLength = data.element._node.getTotalLength();
-          data.element.attr({
-            'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+    disappear($("#statsdata"), 500);
+    var dateFrom = $('#stats-date-from').datepicker('getDate');
+    var dateTo = $('#stats-date-to').datepicker('getDate');
+    $ajaxUtils.sendGetRequest(
+      apiRoot + 'api/statistika/get' + '?pocetak=' + encodeURIComponent(dateFrom.getFullYear() + '-' + (dateFrom.getMonth() + 1) + '-' + dateFrom.getDate() + ' 00:00:00') + '&kraj=' + encodeURIComponent(dateTo.getFullYear() + '-' + (dateTo.getMonth() + 1) + '-' + dateTo.getDate() + ' 00:00:00') + (authObject.sluzba == "Kontrola" ? '&sluzbe=' + encodeURIComponent(officesArray) : ''),
+      function(response, status) {
+        disappear($(".loader"), 500);
+
+        setTimeout(function() {
+          var tempStats = [];
+          response.forEach(function(e) {
+            tempStats = tempStats.concat(e.Statistika);
           });
-          var animationDefinition = {
-            'stroke-dashoffset': {
-              id: 'anim' + data.index,
-              dur: 500,
-              from: -pathLength + 'px',
-              to: '0px',
-              easing: Chartist.Svg.Easing.easeOutQuint,
-              fill: 'freeze'
+
+          var total = 0;
+          var status1 = 0;
+          var status2 = 0;
+          var status3 = 0;
+          var status4 = 0;
+          var status5 = 0;
+          var multiple = 0;
+
+          tempStats.forEach(function(e) {
+            total += e.Broj;
+            switch(e.Status) {
+              case statuses[0]:
+                status1 += e.Broj;
+                break;
+              case statuses[1]:
+                status2 += e.Broj;
+                break;
+              case statuses[2]:
+                status3 += e.Broj;
+                break;
+              case statuses[3]:
+                status4 += e.Broj;
+                break;
+              case statuses[4]:
+                status5 += e.Broj;
+                break;
             }
-          };
-          if (data.index !== 0) {
-            animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
-          }
-          data.element.attr({
-            'stroke-dashoffset': -pathLength + 'px'
           });
-          data.element.animate(animationDefinition, false);
-        }
-      });
-      var chartInner = new Chartist.Pie("#chart-inner", {
-        series: [0, 0, 0, 0, 9, 66 - 9],
-        labels: [0, 0, 0, 0, 0, 0]
-      }, {
-        donut: true,
-        showLabel: false
-      });
-      chartInner.on('draw', function(data) {
-        if (data.type === 'slice') {
-          var pathLength = data.element._node.getTotalLength();
-          data.element.attr({
-            'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+
+          response.forEach(function(e) {
+            multiple += e.VisestrukePrimedbe != null || e.VisestrukePrimedbe != undefined ? e.VisestrukePrimedbe.Broj : 0;
           });
-          var animationDefinition = {
-            'stroke-dashoffset': {
-              id: 'anim' + data.index,
-              dur: 500,
-              from: -pathLength + 'px',
-              to: '0px',
-              easing: Chartist.Svg.Easing.easeOutQuint,
-              fill: 'freeze'
+
+          var html = `
+            <div class="col-12" id="statstitle">Статистика за ` + (authObject.sluzba != "Kontrola" ? authObject.sluzba : (officesArray.length == 1 ? $('#stats-offices').val() : `одабране СКН`)) + ` за период од ` + $('#stats-date-from').val() + ` до ` + $('#stats-date-to').val() + `</div>
+            <div class="col-lg-6 col-12" id="chart">
+              <div id="chart-inner"></div>
+            </div>
+            <div class="col-lg-6 col-12" id="stats">
+              <div class="stat row unforwarded">
+                <div class="col-9 col-sm-10 stat-toc">Непрослеђених:&nbsp;............................................................................................................................................................................................................................................................................................................................................................................................................
+                  <div class="stat-num stat-blue">` + status1 + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * status1 / total).toFixed(2) + `%)</div>
+              </div>
+              <div class="stat row pending">
+                <div class="col-9 col-sm-10 stat-toc">На&nbsp;чекању:&nbsp;............................................................................................................................................................................................................................................................................................................................................................................................................
+                  <div class="stat-num stat-yellow">` + status2 + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * status2 / total).toFixed(2) + `%)</div>
+              </div>
+              <div class="stat row noreply">
+                <div class="col-9 col-sm-10 stat-toc">Без&nbsp;одговора:&nbsp;............................................................................................................................................................................................................................................................................................................................................................................................................
+                  <div class="stat-num stat-red">` + status3 + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * status3 / total).toFixed(2) + `%)</div>
+              </div>
+              <div class="stat row answered">
+                <div class="col-9 col-sm-10 stat-toc">Одговорено:&nbsp;............................................................................................................................................................................................................................................................................................................................................................................................................
+                  <div class="stat-num stat-darkgreen">` + status4 + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * status4 / total).toFixed(2) + `%)</div>
+              </div>
+              <div class="stat row closed">
+                <div class="col-9 col-sm-10 stat-toc">Послато&nbsp;грађанину:&nbsp;............................................................................................................................................................................................................................................................................................................................................................................................................
+                  <div class="stat-num stat-green">` + status5 + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * status5 / total).toFixed(2) + `%)</div>
+              </div>
+              <div class="totaldouble" style="margin: 3vh 0 2vh 0; border-top: 2px solid #CC5505"></div>
+              <div class="stat row totaldouble">
+                <div class="col-9 col-sm-10 stat-toc">Укупно:&nbsp;............................................................................................................................................................................................................................................................................................................................................................................................................
+                  <div class="stat-num stat-orange">` + total + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(100.00%)</div>
+              </div>
+              <div class="stat row totaldouble">
+                <div class="col-9 col-sm-10 stat-toc">Вишеструко&nbsp;прослеђених:&nbsp;............................................................................................................................................................................................................................................................................................................................................................................................................
+                  <div class="stat-num stat-white">` + multiple + `</div>
+                </div>
+                <div class="col-3 col-sm-2 stat-desc">(` + (100 * multiple / total).toFixed(2) + `%)</div>
+              </div>
+            </div>
+          `;
+          insertHtml("#statsdata", html);
+          $(".stat, .totaldouble").css({"opacity": "0", "transition": "opacity 0.45s ease"});
+          $(".unforwarded").css({"opacity": "1"});
+          setTimeout(function() {
+            $(".pending").css({"opacity": "1"});
+          }, 500);
+          setTimeout(function() {
+            $(".noreply").css({"opacity": "1"});
+          }, 1000);
+          setTimeout(function() {
+            $(".answered").css({"opacity": "1"});
+          }, 1500);
+          setTimeout(function() {
+            $(".closed").css({"opacity": "1"});
+          }, 2000);
+          setTimeout(function() {
+            $(".totaldouble").css({"opacity": "1"});
+          }, 2500);
+
+          var chart = new Chartist.Pie("#chart", {
+            series: [status1, status2, status3, status4, status5],
+            labels: [0, 0, 0, 0, 0]
+          }, {
+            donut: true,
+            showLabel: false
+          });
+          chart.on('draw', function(data) {
+            if (data.type === 'slice') {
+              var pathLength = data.element._node.getTotalLength();
+              data.element.attr({
+                'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+              });
+              var animationDefinition = {
+                'stroke-dashoffset': {
+                  id: 'anim' + data.index,
+                  dur: 500,
+                  from: -pathLength + 'px',
+                  to: '0px',
+                  easing: Chartist.Svg.Easing.easeOutQuint,
+                  fill: 'freeze'
+                }
+              };
+              if (data.index !== 0) {
+                animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+              }
+              data.element.attr({
+                'stroke-dashoffset': -pathLength + 'px'
+              });
+              data.element.animate(animationDefinition, false);
             }
-          };
-          if (data.index !== 0) {
-            animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
-          }
-          data.element.attr({
-            'stroke-dashoffset': -pathLength + 'px'
           });
-          data.element.animate(animationDefinition, false);
-        }
-      });
-      disappear($(".loader"), 500);
-      $("#statsdata").css({"opacity": "1"});
-    }, 2500); //this delay only simulating network response
+          var chartInner = new Chartist.Pie("#chart-inner", {
+            series: [0, 0, 0, 0, 0, multiple, total - multiple],
+            labels: [0, 0, 0, 0, 0, 0, 0]
+          }, {
+            donut: true,
+            showLabel: false
+          });
+          chartInner.on('draw', function(data) {
+            if (data.type === 'slice') {
+              var pathLength = data.element._node.getTotalLength();
+              data.element.attr({
+                'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+              });
+              var animationDefinition = {
+                'stroke-dashoffset': {
+                  id: 'anim' + data.index,
+                  dur: 500,
+                  from: -pathLength + 'px',
+                  to: '0px',
+                  easing: Chartist.Svg.Easing.easeOutQuint,
+                  fill: 'freeze'
+                }
+              };
+              if (data.index !== 0) {
+                animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+              }
+              data.element.attr({
+                'stroke-dashoffset': -pathLength + 'px'
+              });
+              data.element.animate(animationDefinition, false);
+            }
+          });
+          appear($("#statsdata"), 500);
+        }, 500);
+      },
+      true, authObject.access_token
+    );
   };
 
   PRM.statsOfficesClicked = function() {
@@ -799,8 +894,8 @@
         <button class="offices-picker-all" onclick="$PRM.officesAllClicked();">ОДАБЕРИ&nbsp;СВЕ&nbsp;СКН</button>
         <div class="offices-picker-list row">
     `;
-    for(var i = 1; i < 100; i++)
-      html += `<div class="col-12 col-md-6 col-lg-3"><div value="` + i + `" onclick="$PRM.officeItemClicked(` + i + `, this);">СКН ` + i + `</div></div>`;
+    for(var i = 0; i < offices.length; i++)
+      html += `<div class="col-12 col-md-6 col-lg-3"><div value="` + offices[i].Id + `" onclick="$PRM.officeItemClicked(` + offices[i].Id + `, this);">` + offices[i].Naziv + `</div></div>`;
     html += `
         </div>
         <button onclick="$PRM.officesConfirm();">ОК</button>
@@ -825,10 +920,14 @@
   PRM.officesConfirm = function() {
     $(".offices-picker").css({"opacity": "0"});
     setTimeout(function() {
-      var offices = '';
+      var officesTemp = '';
       for (var i = 0; i < officesArray.length; i++)
-        offices += 'СКН ' + officesArray[i] + ((i == officesArray.length - 1) ? '' : ', ');
-      $("#stats-offices").val(offices);
+        for (var j = 0; j < offices.length; j++)
+          if (officesArray[i] == offices[j].Id) {
+            officesTemp += offices[j].Naziv + (i == officesArray.length - 1 ? '' : ', ');
+            break;
+          }
+      $("#stats-offices").val(officesTemp);
       $(".offices-picker").remove();
     }, 400);
   };
@@ -993,33 +1092,149 @@
         appear($(e).parent().find(".loader"), 500);
       }, 500);
       setTimeout(function() {
+        $ajaxUtils.sendPutRequest(
+          apiRoot + 'api/rgz_primedbe/prosledi_sluzbi' + '?sluzbaId=' + $(e).parent().parent().find("#forward option:selected").val() + '&primedbaId=' + pID,
+          function(response, status) {
+            $.confirm({
+              title: 'ПОТВРДА',
+              content: 'Примедба ' + pID + ' успешно прослеђена.',
+              theme: 'supervan',
+              backgroundDismiss: 'true',
+              buttons: {
+                ok: {
+                  text: 'ОК',
+                  btnClass: 'btn-white-prm',
+                  keys: ['enter'],
+                  action: function() {}
+                }
+              }
+            });
+            //TODO: add history item, change status icons and status and response labels
+            disappear($(e).parent().find(".loader"), 500);
+            setTimeout(function() {
+              appear(e, 500);
+            }, 500);
+          },
+          true, authObject.access_token
+        );
+      }, 510);
+    }
+  };
+
+  PRM.save = function(pID, e, i) {
+    if ($(e).parent().parent().parent().find(authObject.sluzba == "Kontrola" ? "#controller-comment" : "#office-comment").hasClass("dirty")) {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Да ли сте сигурни да желите да сачувате измењени коментар?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {
+              disappear(e, 500);
+              setTimeout(function() {
+                appear($(e).parent().find(".loader"), 500);
+              }, 500);
+              setTimeout(function() {
+                $ajaxUtils.sendPutRequest(
+                  apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == "Kontrola" ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == "Kontrola" ? "#controller-comment" : "#office-comment").html()),
+                  function(response, status) {
+                    $.confirm({
+                      title: 'ПОТВРДА',
+                      content: 'Измене над примедбом ' + pID + ' успешно сачуване.',
+                      theme: 'supervan',
+                      backgroundDismiss: 'true',
+                      buttons: {
+                        ok: {
+                          text: 'ОК',
+                          btnClass: 'btn-white-prm',
+                          keys: ['enter'],
+                          action: function() {}
+                        }
+                      }
+                    });
+                    if (authObject.sluzba == "Kontrola") {
+                      $(e).parent().parent().parent().find("#controller-comment").removeClass('dirty');
+                      cComms[i] = $(e).parent().parent().parent().find("#controller-comment").html();
+                    } else {
+                      $(e).parent().parent().parent().find("#office-comment").removeClass('dirty');
+                      oComms[i] = $(e).parent().parent().parent().find("#office-comment").html();
+                    }
+                    //TODO: add history item
+                    disappear($(e).parent().find(".loader"), 500);
+                    setTimeout(function() {
+                      appear(e, 500);
+                    }, 500);
+                  },
+                  true, authObject.access_token
+                );
+              }, 510);
+            }
+          }
+        }
+      });
+    } else {
+      $.confirm({
+        title: 'ГРЕШКА!',
+        content: 'Морате прво изменити коментар пре него што сачувате измене коментара.',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
+      return;
+    }
+  };
+
+  PRM.check = function(pID, e, i) {
+    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') || $(e).parent().parent().parent().find("#office-response").html() != '' && authObject.sluzba == "Kontrola") {
+      if ($(e).parent().parent().parent().find("#controller-comment").hasClass('dirty') || $(e).parent().parent().parent().find("#office-coment").hasClass('dirty')) {
         $.confirm({
-          title: 'ПОТВРДА',
-          content: 'Примедба ' + pID + ' успешно прослеђена.',
+          title: 'ПАЖЊА!',
+          content: 'Да ли желите да ' + (authObject.sluzba == "Kontrola" ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + ', а да претходно нисте сачували постојеће измене коментара?',
           theme: 'supervan',
           backgroundDismiss: 'true',
+          autoClose: 'no|15000',
           buttons: {
-            ok: {
-              text: 'ОК',
+            no: {
+              text: 'НЕ',
+              btnClass: 'btn-white-prm',
+              keys: ['esc'],
+              action: function() {}
+            },
+            yes: {
+              text: 'ДА',
               btnClass: 'btn-white-prm',
               keys: ['enter'],
-              action: function() {}
+              action: function() {
+                PRM.checkAux(pID, e, i);
+              }
             }
           }
         });
-        disappear($(e).parent().find(".loader"), 500);
-        setTimeout(function() {
-          appear(e, 500);
-        }, 500);
-      }, 2500); //this delay only simulating network response
-    }
-  };
-
-  PRM.save = function(pID, e) {
-    if ($("#office-response").html() == "") {
+        return;
+      } else
+        PRM.checkAux(pID, e, i);
+    } else {
       $.confirm({
         title: 'ГРЕШКА!',
-        content: 'Не можете послати празан одговор.', //ne ovo, već samo ako su neka polja izmenjena...prosleđivanje se ne prikazuje na strani skn-a
+        content: 'Морате прво изменити одговор пре него што сачувате измене одговора.',
         theme: 'supervan',
         backgroundDismiss: 'true',
         buttons: {
@@ -1032,127 +1247,96 @@
         }
       });
       return;
-    } else {
-      $.confirm({
-        title: 'ПАЖЊА!',
-        content: 'Да ли сте сигурни да желите да сачувате измењене податке?',
-        theme: 'supervan',
-        backgroundDismiss: 'true',
-        autoClose: 'no|10000',
-        buttons: {
-          no: {
-            text: 'НЕ',
-            btnClass: 'btn-white-prm',
-            keys: ['esc'],
-            action: function() {}
-          },
-          yes: {
-            text: 'ДА',
-            btnClass: 'btn-white-prm',
-            keys: ['enter'],
-            action: function() {
-              disappear(e, 500);
-              setTimeout(function() {
-                appear($(e).parent().find(".loader"), 500);
-              }, 500);
-              setTimeout(function() {
-                $.confirm({
-                  title: 'ПОТВРДА',
-                  content: 'Измене над примедбом ' + pID + ' успешно сачуване.',
-                  theme: 'supervan',
-                  backgroundDismiss: 'true',
-                  buttons: {
-                    ok: {
-                      text: 'ОК',
-                      btnClass: 'btn-white-prm',
-                      keys: ['enter'],
-                      action: function() {}
-                    }
-                  }
-                });
-                disappear($(e).parent().find(".loader"), 500);
-                setTimeout(function() {
-                  appear(e, 500);
-                }, 500);
-              }, 2500); //this delay only simulating network response
-            }
-          }
-        }
-      });
     }
   };
 
-  PRM.check = function(pID, e) {
-    if ($("#office-response").html() == "") { //mora se proveriti i da li su polja dirty u else if, pa prompt za save first
-      $.confirm({
-        title: 'ГРЕШКА!',
-        content: 'Не можете послати празан одговор.',
-        theme: 'supervan',
-        backgroundDismiss: 'true',
-        buttons: {
-          ok: {
-            text: 'ОК',
-            btnClass: 'btn-white-prm',
-            keys: ['enter'],
-            action: function() {}
-          }
-        }
-      });
-      return;
-    } else {
-      $.confirm({
-        title: 'ПАЖЊА!',
-        content: 'Да ли сте сигурни да желите да завршите обраду ове примедбе и проследите је контролорима?',
-        theme: 'supervan',
-        backgroundDismiss: 'true',
-        autoClose: 'no|10000',
-        buttons: {
-          no: {
-            text: 'НЕ',
-            btnClass: 'btn-white-prm',
-            keys: ['esc'],
-            action: function() {}
-          },
-          yes: {
-            text: 'ДА',
-            btnClass: 'btn-white-prm',
-            keys: ['enter'],
-            action: function() {
-              disappear(e, 500);
-              setTimeout(function() {
-                appear($(e).parent().find(".loader"), 500);
-              }, 500);
-              setTimeout(function() {
-                $.confirm({
-                  title: 'ПОТВРДА',
-                  content: 'Примедба ' + pID + ' успешно закључена и прослеђена контролорима.',
-                  theme: 'supervan',
-                  backgroundDismiss: 'true',
-                  buttons: {
-                    ok: {
-                      text: 'ОК',
-                      btnClass: 'btn-white-prm',
-                      keys: ['enter'],
-                      action: function() {}
+  PRM.checkAux = function(pID, e, i) {
+    $.confirm({
+      title: 'ПАЖЊА!',
+      content: 'Да ли желите да ' + (authObject.sluzba == "Kontrola" ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + '?<br><br><br><span>Измене над овом примедбом неће бити могуће након ове акције.</span>',
+      theme: 'supervan',
+      backgroundDismiss: 'true',
+      autoClose: 'no|15000',
+      buttons: {
+        no: {
+          text: 'НЕ',
+          btnClass: 'btn-white-prm',
+          keys: ['esc'],
+          action: function() {}
+        },
+        yes: {
+          text: 'ДА',
+          btnClass: 'btn-white-prm',
+          keys: ['enter'],
+          action: function() {
+            disappear(e, 500);
+            setTimeout(function() {
+              appear($(e).parent().find(".loader"), 500);
+            }, 500);
+            setTimeout(function() {
+              $ajaxUtils.sendPutRequest(
+                apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == "Kontrola" ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html()),
+                function(response, status) {
+                  $.confirm({
+                    title: 'ПОТВРДА',
+                    content: (authObject.sluzba == "Kontrola" ? 'Примедба ' + pID + ' успешно закључена и означена као прослеђена грађанину.' : 'Одговор на примедбу ' + pID + ' успешно евидентиран и прослеђен контролорима.'),
+                    theme: 'supervan',
+                    backgroundDismiss: 'true',
+                    buttons: {
+                      ok: {
+                        text: 'ОК',
+                        btnClass: 'btn-white-prm',
+                        keys: ['enter'],
+                        action: function() {}
+                      }
                     }
-                  }
-                });
-                disappear($(e).parent().find(".loader"), 500);
-                setTimeout(function() {
-                  appear(e, 500);
-                }, 500);
-              }, 2500); //this delay only simulating network response
-            }
+                  });
+                  //TODO: add history item
+                  $(e).parent().parent().parent().find("#office-response").removeClass('dirty');
+                  oResps[i] = $(e).parent().parent().parent().find("#office-response").html();
+                  disappear($(e).parent().find(".loader"), 500);
+                  setTimeout(function() {
+                    appear(e, 500);
+                  }, 500);
+                },
+                true, authObject.access_token
+              );
+            }, 510);
           }
         }
-      });
-    }
+      }
+    });
   };
 
   PRM.refresh = function() {
+    if ($(".dirty").length > 0) {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Постоје измене над најмање једном примедбом. Да ли желите да одбаците ове измене и да наставите са учитавањем?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() { PRM.refreshAux(); }
+          }
+        }
+      });
+    } else
+      PRM.refreshAux();
+    /*
     if ($("#refresh i").hasClass("fa-spin")) return;
     $("#refresh i, #mobile-refresh-clear i").addClass("fa-spin");
-    disappear($(".table-row"), 500);
+    disappear($(".table-row, .expansion"), 500);
     setTimeout(function() {
       appear($(".loader"), 500);
     }, 500);
@@ -1164,7 +1348,7 @@
       $("#refresh i, #mobile-refresh-clear i").removeClass("fa-spin");
       disappear($(".loader"), 500);
       setTimeout(function() {
-        appear($(".table-row"), 500);
+        appear($(".table-row, .expansion"), 500);
       }, 500);
       insertHtml("#page-select", `
         <option value="1" selected>1</option>
@@ -1183,6 +1367,11 @@
       else
         $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").removeClass("pagination-disabled");
     }, 2500); //this delay only simulating network response
+    */
+  };
+
+  PRM.refreshAux = function() {
+    //get sa svim trenutnim parametrima, obrada response-a u novoj funkciji koja uzima za parametar koja strana je selektovana
   };
 
   var printTitle = "";
@@ -1347,6 +1536,7 @@
     }
   };
 
+  //TODO: fix pagination behavior only in this function
   PRM.selectPage = function() {
     //call api
     disappear($(".table-row"), 500);
@@ -1403,7 +1593,14 @@
           btnClass: 'btn-white-prm',
           keys: ['enter'],
           action: function() {
-            location.reload();
+            $ajaxUtils.sendGetRequest(
+              apiRoot + 'api/user/logout',
+              function(response, status) {
+                localStorage.removeItem("RGZPRMrefreshToken");
+                location.reload();
+              },
+              true, authObject.access_token
+            );
           }
         }
       }
