@@ -29,8 +29,8 @@
     });
 
     var data = {};
-    for (var e of FD.entries()) {
-      if (e[0] === 'Ime' || e[0] === 'ObracanjeKome') {
+    for (var e of FD) {
+      if ((e[0] === 'Ime' || e[0] === 'ObracanjeKome') && e[1] !== '' && e[1] !== undefined) {
         e[1] = e[1].toLowerCase();
         e[1] = (e[1].toString())[0].toUpperCase() + e[1].substr(1);
         if (e[1].indexOf(' ') !== -1)
@@ -51,13 +51,14 @@
     if (data.ObracanjeSluzbi === false)
       data.ObracanjeKome = null;
 
+    console.log(data);
     //XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=...', true);
     //XHR.send(data);
   }
 
   document.addEventListener('DOMContentLoaded', function(event) {
+    form = document.getElementById('primedba');
     var XHR = getRequestObject();
-    var FD = new FormData(form);
 
     XHR.addEventListener('load', function(event) {
       document.getElementById('loader').remove();
@@ -85,7 +86,6 @@
     XHR.open('GET', apiRoot + 'api/Sluzbe', true);
     XHR.send();
 
-    form = document.getElementById('primedba');
     form.addEventListener('submit', function (event) {
       event.preventDefault();
       sendData();
