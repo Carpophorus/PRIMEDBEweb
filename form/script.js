@@ -56,11 +56,8 @@
     for (var key in data)
       encodedData += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
     console.log(apiRoot + 'api/rgz_primedbe/post?token=testje' + encodedData);
-    //XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje', true);
-    //XHR.send();
-
-    //XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje', true);
-    //XHR.send(data);
+    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje' + encodedData, true);
+    XHR.send();
   }
 
   document.addEventListener('DOMContentLoaded', function(event) {
