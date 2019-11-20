@@ -52,9 +52,12 @@
       data.ObracanjeKome = null;
 
     console.log(data);
-    console.log(apiRoot + 'api/rgz_primedbe/post?token=testje&primedbe=' + encodeURIComponent(data));
-    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje', true);
-    XHR.send(data);
+    console.log(apiRoot + 'api/rgz_primedbe/post?token=testje&primedbe=' + encodeURIComponent(JSON.stringify(data)));
+    //XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje', true);
+    //XHR.send();
+
+    //XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje', true);
+    //XHR.send(data);
   }
 
   document.addEventListener('DOMContentLoaded', function(event) {
