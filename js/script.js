@@ -554,7 +554,7 @@
                               <option value="0" disabled selected hidden>СКН</option>
                 `;
                 for (var j = 0; j < offices.length; j++)
-                  html += `<option value="` + offices[j].Id + `">` + offices[j].Naziv + `</option>`;
+                  html += `<option value="` + offices[j].Id + `" ` + ((response.Primedbe[i].PoslednjiStatus != 'ПРИМЕДБА НИЈЕ ПРОСЛЕЂЕНА' && response.Primedbe[i].SluzbaId == offices[j].Id)? `selected` : ``) + `>` + offices[j].Naziv + `</option>`;
                 html += `
                           </select>
                         </div>
