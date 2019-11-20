@@ -466,7 +466,7 @@
                   <div class="col-2 col-md-1 ` + statusClass + `">` + statusIcon + `</div>
                   <div class="col-2 col-md-1 ` + responseClass + `">` + responseIcon + `</div>
                 </div>
-                <div id="expansion-1" class="expansion collapse">
+                <div id="expansion-` + (i + 1) + `" class="expansion collapse">
                   <div class="row">
                     <div class="expansion-info col-12 col-md-6">
                       <div class="expansion-label">бр. предмета:</div>
