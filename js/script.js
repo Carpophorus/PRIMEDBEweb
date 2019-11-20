@@ -418,7 +418,7 @@
               var responseClass = '';
               var responseString = '';
               switch (response.Primedbe[i].PoslednjiStatus) {
-                case 'ПРИМЕДБА НИЈЕ ПРОСЛЕЂЕНА':
+                case 'НЕПРОСЛЕЂЕН':
                   statusIcon = '<i class="fa fa-inbox"></i>';
                   statusClass = 'status-1';
                   statusString = 'НЕПРОСЛЕЂЕН';
@@ -500,7 +500,7 @@
                 var logStatusString = '';
                 var logResponseString = '';
                 switch (response.Primedbe[i].Logovi[j].Status) {
-                  case 'ПРИМЕДБА НИЈЕ ПРОСЛЕЂЕНА':
+                  case 'НЕПРОСЛЕЂЕН':
                     logStatusString = 'НЕПРОСЛЕЂЕН';
                     logResponseString = 'НИЈЕ ОДГОВОРЕНО';
                     break;
