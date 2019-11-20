@@ -52,7 +52,10 @@
       data.ObracanjeKome = null;
 
     console.log(data);
-    console.log(apiRoot + 'api/rgz_primedbe/post?token=testje&primedbe=' + encodeURIComponent(JSON.stringify(data)));
+    var encodedData = '';
+    for (var key in data)
+      encodedData += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+    console.log(apiRoot + 'api/rgz_primedbe/post?token=testje&primedbe=' + encodedData);
     //XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje', true);
     //XHR.send();
 
