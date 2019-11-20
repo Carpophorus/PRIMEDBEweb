@@ -494,9 +494,7 @@
               `;
               cComment = null;
               oComment = null;
-              console.log(response);
-              console.log(response.Primedbe[i]);
-              oResponse = response.Primedbe[i].Odgovor != [] ? response.Primedbe[i].Odgovor[0].Odgovor1 : '';
+              oResponse = response.Primedbe[i].Odgovor.length != 0 ? response.Primedbe[i].Odgovor[0].Odgovor1 : '';
               var answered = false;
               for (var j = 1; j < response.Primedbe[i].Logovi.length; j++) {
                 var logStatusString = '';
