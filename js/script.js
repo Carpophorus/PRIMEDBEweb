@@ -408,7 +408,7 @@
               var officeString = '';
               for (var j = 0; j < offices.length; j++)
                 if (offices[j].Id == response.Primedbe[i].SluzbaId) {
-                  officeString = offices[i].Naziv;
+                  officeString = offices[j].Naziv;
                   break;
                 }
               var statusIcon = '';
