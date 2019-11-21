@@ -874,6 +874,13 @@ header {
   margin-top: 4vh !important;
 }
 
+/* print button disabled look, delete later */
+#print, #print:hover {
+    background-color: #CC5505 !important;
+    color: white !important;
+    opacity: 0.5 !important;
+}
+
 @media (max-width: 991.5px) {
   .hidden-md-down {
     display: none;

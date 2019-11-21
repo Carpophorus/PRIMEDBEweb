@@ -1380,6 +1380,7 @@
   };
 
   PRM.print = function() {
+    return; //TODO: delete on print data establishment, redo the rest
     printTitle = "";
     $.confirm({
       title: 'ПОТВРДА',
