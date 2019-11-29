@@ -73,7 +73,6 @@
               apiRoot + 'api/Sluzbe',
               function(response, status) {
                 offices = response;
-                console.log(offices);
                 cnt = cnt + 1;
                 if (cnt == 2)
                   PRM.signInAux();
@@ -84,7 +83,6 @@
               apiRoot + 'api/rgz_primedbe/get_statusi',
               function(response, status) {
                 statuses = response;
-                console.log(statuses);
                 cnt = cnt + 1;
                 if (cnt == 2)
                   PRM.signInAux();
@@ -209,7 +207,6 @@
             apiRoot + 'api/Sluzbe',
             function(response, status) {
               offices = response;
-              console.log(offices);
               cnt = cnt + 1;
               if (cnt == 2)
                 PRM.signInAux();
@@ -220,7 +217,6 @@
             apiRoot + 'api/rgz_primedbe/get_statusi',
             function(response, status) {
               statuses = response;
-              console.log(statuses);
               cnt = cnt + 1;
               if (cnt == 2)
                 PRM.signInAux();
@@ -622,7 +618,6 @@
     insertHtml("#switchbox", html);
     disappear($(".loader"), 500);
     appear($("#switchbox"), 500);
-    console.log(cComms, oComms, oResps);
   };
 
   PRM.loadPage = function(n) {
@@ -1029,7 +1024,6 @@
       $("#mobile-refresh-clear").removeClass("shrunken");
       $("#mobile-refresh-clear i").removeClass("fa-times fa-eraser").addClass("fa-refresh");
       
-      //perform search
       PRM.refresh();
     }
   };
