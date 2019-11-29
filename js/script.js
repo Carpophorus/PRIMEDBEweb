@@ -291,6 +291,340 @@
     PRM.loadPage(n);
   };
 
+  var generateTableRowsHtml = function(response) {
+    var html = '';
+    for (var i = 0; i < response.Primedbe.length; i++) {
+      var officeString = '';
+      for (var j = 0; j < offices.length; j++)
+        if (offices[j].Id == response.Primedbe[i].SluzbaId) {
+          officeString = offices[j].Naziv;
+          break;
+        }
+      var statusIcon = '';
+      var statusClass = '';
+      var statusString = '';
+      var responseIcon = '';
+      var responseClass = '';
+      var responseString = '';
+      switch (response.Primedbe[i].PoslednjiStatus) {
+        case 'НЕПРОСЛЕЂЕН':
+          statusIcon = '<i class="fa fa-inbox"></i>';
+          statusClass = 'status-1';
+          statusString = 'НЕПРОСЛЕЂЕН';
+          responseString = 'НИЈЕ ОДГОВОРЕНО';
+          break;
+        case 'ПРОСЛЕЂЕН СЛУЖБИ':
+          statusIcon = '<i class="fa fa-share"></i>';
+          statusClass = 'status-2';
+          statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+          responseIcon = '<i class="fa fa-clock-o"></i>';
+          responseClass = 'response-2';
+          responseString = 'ЧЕКА СЕ ОДГОВОР СЛУЖБЕ';
+          break;
+        case 'НИЈЕ ОДГОВОРЕНО':
+          statusIcon = '<i class="fa fa-share"></i>';
+          statusClass = 'status-2';
+          statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+          responseIcon = '<i class="fa fa-times"></i>';
+          responseClass = 'response-4';
+          responseString = 'НИЈЕ ОДГОВОРЕНО У ПРЕДВИЂЕНОМ РОКУ';
+          break;
+        case 'ОДГОВОРЕНО':
+          statusIcon = '<i class="fa fa-share"></i>';
+          statusClass = 'status-2';
+          statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+          responseIcon = '<i class="fa fa-check"></i>';
+          responseClass = 'response-3';
+          responseString = 'ОДГОВОРЕНО';
+          break;
+        case 'ОДГОВОРЕНО КОРИСНИКУ':
+          statusIcon = '<i class="fa fa-check"></i>';
+          statusClass = 'status-3';
+          statusString = 'ОДГОВОР ПОСЛАТ ГРАЂАНИНУ';
+          responseIcon = '<i class="fa fa-check"></i>';
+          responseClass = 'response-3';
+          responseString = 'ОДГОВОРЕНО';
+          break;
+      }
+      html += `
+        <div class="table-row row" onclick="$PRM.tableRowClicked(` + (i + 1) + `, this);">
+          <div class="col-2 col-md-1">` + response.Primedbe[i].Id + `</div>
+          <div class="col-6 col-md-3">` + response.Primedbe[i].BrojPredmeta + `</div>
+          <div class="col-3 hidden-sm-down">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
+          <div class="col-3 hidden-sm-down">` + response.Primedbe[i].Ime + `</div>
+          <div class="col-2 col-md-1 ` + statusClass + `">` + statusIcon + `</div>
+          <div class="col-2 col-md-1 ` + responseClass + `">` + responseIcon + `</div>
+        </div>
+        <div id="expansion-` + (i + 1) + `" class="expansion collapse">
+          <div class="row">
+            <div class="expansion-info col-12 col-md-6">
+              <div class="expansion-label">бр. предмета:</div>
+              <div class="expansion-info-data">` + response.Primedbe[i].BrojPredmeta + `</div>
+              <div class="expansion-label">датум:</div>
+              <div class="expansion-info-data">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
+              <div class="expansion-label">име и презиме:</div>
+              <div class="expansion-info-data">` + response.Primedbe[i].Ime + `</div>
+              <div class="expansion-label">e-mail:</div>
+              <div class="expansion-info-data">` + response.Primedbe[i].Email + `</div>
+              <div class="expansion-label">телефон:</div>
+              <div class="expansion-info-data">` + response.Primedbe[i].Telefon + `</div>
+              <div class="expansion-label">служба:</div>
+              <div class="expansion-info-data">` + officeString + `</div>
+              <div class="expansion-label">претходно обраћање:</div>
+              <div class="expansion-info-data">` + (response.Primedbe[i].ObracanjeSluzbi ? `ДА` : `НЕ`) + `</div>` +
+              (response.Primedbe[i].ObracanjeSluzbi && response.Primedbe[i].ObracanjeKome != null ? `<div class="expansion-label">службеник:</div>
+              <div class="expansion-info-data">` + response.Primedbe[i].ObracanjeKome + `</div>` : ``) + `
+              <div class="expansion-label">статус:</div>
+              <div class="expansion-info-data">` + statusString + `</div>
+              <div class="expansion-label">одговор:</div>
+              <div class="expansion-info-data">` + responseString + `</div>
+              <div class="expansion-label">историја:</div>
+              <div class="expansion-info-data">
+      `;
+      cComment = null;
+      oComment = null;
+      oResponse = response.Primedbe[i].Odgovor.length != 0 ? response.Primedbe[i].Odgovor[0].Odgovor1 : '';
+      var answered = false;
+      for (var j = 1; j < response.Primedbe[i].Logovi.length; j++) {
+        var logStatusString = '';
+        var logResponseString = '';
+        switch (response.Primedbe[i].Logovi[j].Status) {
+          case 'НЕПРОСЛЕЂЕН':
+            logStatusString = 'НЕПРОСЛЕЂЕН';
+            logResponseString = 'НИЈЕ ОДГОВОРЕНО';
+            break;
+          case 'ПРОСЛЕЂЕН СЛУЖБИ':
+            logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+            logResponseString = 'ЧЕКА СЕ ОДГОВОР СЛУЖБЕ';
+            break;
+          case 'НИЈЕ ОДГОВОРЕНО':
+            logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+            logResponseString = 'НИЈЕ ОДГОВОРЕНО У ПРЕДВИЂЕНОМ РОКУ';
+            break;
+          case 'ОДГОВОРЕНО':
+            logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
+            logResponseString = 'ОДГОВОРЕНО';
+            answered = true;
+            break;
+          case 'ОДГОВОРЕНО КОРИСНИКУ':
+            logStatusString = 'ОДГОВОР ПОСЛАТ ГРАЂАНИНУ';
+            logResponseString = 'ОДГОВОРЕНО';
+            break;
+        }
+        html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == 'Kontrola' ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
+        if (response.Primedbe[i].Logovi[j].Komentar != null) {
+          if (!answered) {
+          html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
+          if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == "Kontrola")
+            cComment = response.Primedbe[i].Logovi[j].Komentar;
+          else
+            oComment = response.Primedbe[i].Logovi[j].Komentar;
+          } else {
+            html += ' уз одговор \"' + oResponse + '\"';
+            answered = false;
+          }
+        }
+        html += '<br>';
+      }
+      cComms[i] = cComment ? cComment : '';
+      oComms[i] = oComment ? oComment : '';
+      oResps[i] = oResponse;
+      html += `
+              </div>
+            </div>
+            <div class="expansion-response col-12 col-md-6">
+      `;
+      if (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4]) {
+        html += `
+              <div id="forward-label" class="expansion-label">прослеђивање:</div>
+              <div id="forward-container" class="row">
+                <div id="forward-select-container" class="col-12 col-md-9">
+                  <select id="forward" onchange="$PRM.expansionSelectChanged(this);">
+                      <option value="0" disabled selected hidden>СКН</option>
+        `;
+        for (var j = 0; j < offices.length; j++)
+          html += `<option value="` + offices[j].Id + `" ` + ((response.Primedbe[i].PoslednjiStatus != 'НЕПРОСЛЕЂЕН' && response.Primedbe[i].SluzbaId == offices[j].Id)? `selected` : ``) + `>` + offices[j].Naziv + `</option>`;
+        html += `
+                  </select>
+                </div>
+                <div id="forward-button-container" class="col-12 col-md-3">
+                  <div class="loader gone">
+                    <div class="loader-inner"></div>
+                  </div>
+                  <button onclick="$PRM.forward(` + response.Primedbe[i].Id + `, this);"><i class="fa fa-share"></i></button>
+                </div>
+              </div>
+        `;
+      }
+      html += `
+              <div class="expansion-label">примедба:</div>
+              <div class="divtextarea" spellcheck="false">` + response.Primedbe[i].OpisPrimedbe + `</div>
+              <div class="expansion-label">коментар контролора:</div>
+              <div id="controller-comment" onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);" onblur="$PRM.crChanged(1, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `contenteditable="true"` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</div>
+              <div class="expansion-label">коментар службеника:</div>
+              <div id="office-comment" onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</div>
+              <div class="expansion-label">одговор службе:</div>
+              <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + oResponse + `</div>
+              ` + (authObject.sluzba != "Kontrola" && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
+              <div class="row">
+                <div class="hidden-sm-down col-md-9"></div>
+                <div id="save-button-container" class="col-12 col-md-3">
+                  <div class="loader gone">
+                    <div class="loader-inner"></div>
+                  </div>
+                  <button onclick="$PRM.save(` + response.Primedbe[i].Id + `, this, ` + i + `);"><i class="fa fa-save"></i></button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="hidden-sm-down col-md-9"></div>
+                <div id="check-button-container" class="col-12 col-md-3">
+                  <div class="loader gone">
+                    <div class="loader-inner"></div>
+                  </div>
+                  <button onclick="$PRM.check(` + response.Primedbe[i].Id + `, this, ` + i + `);"><i class="fa fa-check"></i></button>
+                </div>
+              </div>
+              `) + `
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    return html;
+  };
+
+  var processComplaints = function(response, pageNum) {
+    var html = `
+      <div id="searchbar" class="row hidden-md-down">
+      <div id="search-criteria" class="col-11">
+        <img src="img/favicons/favicon.ico" onload="$PRM.dateInit();">
+        <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
+        <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
+        <div class="col-ninth ` + (authObject.sluzba == "Kontrola" ? "" : "col-ninth-double") + `"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+      `;
+      if (authObject.sluzba == "Kontrola") {
+        html += `
+          <div class="col-ninth">
+            <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
+                <option value="0" disabled selected hidden>служба</option>
+        `;
+        for (var i = 0; i < offices.length; i++)
+          html += `<option value="` + offices[i].Id + `">` + offices[i].Naziv + `</option>`;
+        html += `
+            </select>
+          </div>
+        `;
+      }
+      html += `
+        <div class="col-ninth col-ninth-double">
+          <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
+              <option value="0" disabled selected hidden>статус / одговор</option>
+              <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
+              <option value="ПРОСЛЕЂЕН СЛУЖБИ">ПРОСЛЕЂЕНИ / НА ЧЕКАЊУ</option>
+              <option value="НИЈЕ ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / НИЈЕ ОДГОВОРЕНО</option>
+              <option value="ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / ОДГОВОРЕНО</option>
+              <option value="ОДГОВОРЕНО КОРИСНИКУ">ОДГОВОР ПОСЛАТ ГРАЂАНИНУ / ОДГОВОРЕНО</option>
+            </select>
+        </div>
+        <div class="col-outertwelvthhalf">
+          <button id="clear-searchboxes" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-times"></i></button>
+        </div>
+      </div>
+      <div id="two-buttons" class="col-11">
+        <div class="col-outertwelvth">
+          <button id="print" onclick="$PRM.print();"><i class="fa fa-print"></i></button>
+        </div>
+        <div class="col-outertwelvth">
+          <button id="refresh" onclick="$PRM.refresh();"><i class="fa fa-refresh"></i></button>
+        </div>
+      </div>
+      <div id="search-button-container" class="col-1">
+        <button id="search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+      </div>
+    </div>
+    <div id="searchbar" class="row hidden-lg-up">
+      <div id="mobile-buttons-container" class="row">
+        <div class="col-4 col-md-6"></div>
+        <div id="mobile-refresh-clear-button-container" class="col-4 col-md-3">
+          <button id="mobile-refresh-clear" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-refresh"></i></button>
+        </div>
+        <div id="mobile-search-button-container" class="col-4 col-md-3">
+          <button id="mobile-search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
+      <div id="mobile-searchboxes" class="collapse row">
+        <div class="col-12"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-12 col-md-6"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
+        <div class="col-12 col-md-6"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
+        <div class="col-12 col-md-6"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-12 col-md-6"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-12 col-md-6"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        `;
+        if (authObject.sluzba == "Kontrola") {
+          html += `
+            <div class="col-12 col-md-6">
+              <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
+                  <option value="0" disabled selected hidden>служба</option>
+          `;
+          for (var i = 0; i < offices.length; i++)
+            html += `<option value="` + offices[i].Id + `">` + offices[i].Naziv + `</option>`;
+          html += `
+              </select>
+            </div>
+          `;
+        }
+        html += `
+        <div class="col-12 col-md-6">
+          <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
+            <option value="0" disabled selected hidden>статус / одговор</option>
+            <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
+            <option value="ПРОСЛЕЂЕН СЛУЖБИ">ПРОСЛЕЂЕНИ / НА ЧЕКАЊУ</option>
+            <option value="НИЈЕ ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / НИЈЕ ОДГОВОРЕНО</option>
+            <option value="ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / ОДГОВОРЕНО</option>
+            <option value="ОДГОВОРЕНО КОРИСНИКУ">ОДГОВОР ПОСЛАТ ГРАЂАНИНУ / ОДГОВОРЕНО</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="table">
+      <div id="table-header" class="row">
+        <div class="col-2 col-md-1">р.б.</div>
+        <div class="col-6 col-md-3">бр. предмета</div>
+        <div class="col-3 hidden-sm-down">датум</div>
+        <div class="col-3 hidden-sm-down">име и презиме</div>
+        <div class="col-2 col-md-1"><span class="hidden-sm-down">статус</span><i class="hidden-md-up fa fa-info-circle"></i></div>
+        <div class="col-2 col-md-1"><span class="hidden-sm-down">одговор</span><i class="hidden-md-up fa fa-comments"></i></div>
+      </div>
+    `;
+    html += generateTableRowsHtml(response);
+    html += `
+      </div>
+      <div id="pagination">
+        <div>
+          <div onclick="$PRM.firstPage(this);" class="pagination-disabled"><i class="fa fa-angle-double-left"></i></div>
+          <div onclick="$PRM.previousPage(this);" class="pagination-disabled"><i class="fa fa-angle-left"></i></div>
+          <div>
+            <select id="page-select" onchange="$PRM.selectPage();" onclick="$PRM.promptDirty();">
+    `;
+    for (var i = 0; i < (response.UkupnoPrimedbi < 10 ? 1 : Math.ceil(response.UkupnoPrimedbi / 10)); i++)
+      html += `<option value="` + (i + 1) + `" ` + (i == 0 ? `selected` : ``) + `>` + (i + 1) + `</option>`;
+    html += `
+            </select>
+          </div>
+          <div onclick="$PRM.nextPage(this);" ` + (response.UkupnoPrimedbi < 10 ? `class="pagination-disabled"` : ``) + `><i class="fa fa-angle-right"></i></div>
+          <div onclick="$PRM.lastPage(this);" ` + (response.UkupnoPrimedbi < 10 ? `class="pagination-disabled"` : ``) + `><i class="fa fa-angle-double-right"></i></div>
+        </div>
+      </div>
+    `;
+    insertHtml("#switchbox", html);
+    disappear($(".loader"), 500);
+    appear($("#switchbox"), 500);
+    console.log(cComms, oComms, oResps);
+  };
+
   PRM.loadPage = function(n) {
     disappear($("#switchbox"), 500);
     if (n == 1) {
@@ -299,331 +633,7 @@
         $ajaxUtils.sendGetRequest(
           apiRoot + 'api/rgz_primedbe/get' + '?page=1',
           function(response, status) {
-            var html = `
-              <div id="searchbar" class="row hidden-md-down">
-              <div id="search-criteria" class="col-11">
-                <img src="img/favicons/favicon.ico" onload="$PRM.dateInit();">
-                <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-                <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
-                <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
-                <div class="col-ninth ` + (authObject.sluzba == "Kontrola" ? "" : "col-ninth-double") + `"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-                <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-                <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-              `;
-              if (authObject.sluzba == "Kontrola") {
-                html += `
-                  <div class="col-ninth">
-                    <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
-                        <option value="0" disabled selected hidden>служба</option>
-                `;
-                for (var i = 0; i < offices.length; i++)
-                  html += `<option value="` + offices[i].Id + `">` + offices[i].Naziv + `</option>`;
-                html += `
-                    </select>
-                  </div>
-                `;
-              }
-              html += `
-                <div class="col-ninth col-ninth-double">
-                  <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
-                      <option value="0" disabled selected hidden>статус / одговор</option>
-                      <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
-                      <option value="ПРОСЛЕЂЕН СЛУЖБИ">ПРОСЛЕЂЕНИ / НА ЧЕКАЊУ</option>
-                      <option value="НИЈЕ ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / НИЈЕ ОДГОВОРЕНО</option>
-                      <option value="ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / ОДГОВОРЕНО</option>
-                      <option value="ОДГОВОРЕНО КОРИСНИКУ">ОДГОВОР ПОСЛАТ ГРАЂАНИНУ / ОДГОВОРЕНО</option>
-                    </select>
-                </div>
-                <div class="col-outertwelvthhalf">
-                  <button id="clear-searchboxes" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-times"></i></button>
-                </div>
-              </div>
-              <div id="two-buttons" class="col-11">
-                <div class="col-outertwelvth">
-                  <button id="print" onclick="$PRM.print();"><i class="fa fa-print"></i></button>
-                </div>
-                <div class="col-outertwelvth">
-                  <button id="refresh" onclick="$PRM.refresh();"><i class="fa fa-refresh"></i></button>
-                </div>
-              </div>
-              <div id="search-button-container" class="col-1">
-                <button id="search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
-              </div>
-            </div>
-            <div id="searchbar" class="row hidden-lg-up">
-              <div id="mobile-buttons-container" class="row">
-                <div class="col-4 col-md-6"></div>
-                <div id="mobile-refresh-clear-button-container" class="col-4 col-md-3">
-                  <button id="mobile-refresh-clear" onclick="$PRM.clearRefreshButtonClicked();"><i class="fa fa-refresh"></i></button>
-                </div>
-                <div id="mobile-search-button-container" class="col-4 col-md-3">
-                  <button id="mobile-search" onclick="$PRM.searchButtonClicked();"><i class="fa fa-search"></i></button>
-                </div>
-              </div>
-              <div id="mobile-searchboxes" class="collapse row">
-                <div class="col-12"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-                <div class="col-12 col-md-6"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
-                <div class="col-12 col-md-6"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
-                <div class="col-12 col-md-6"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-                <div class="col-12 col-md-6"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-                <div class="col-12 col-md-6"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
-                `;
-                if (authObject.sluzba == "Kontrola") {
-                  html += `
-                    <div class="col-12 col-md-6">
-                      <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
-                          <option value="0" disabled selected hidden>служба</option>
-                  `;
-                  for (var i = 0; i < offices.length; i++)
-                    html += `<option value="` + offices[i].Id + `">` + offices[i].Naziv + `</option>`;
-                  html += `
-                      </select>
-                    </div>
-                  `;
-                }
-                html += `
-                <div class="col-12 col-md-6">
-                  <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
-                    <option value="0" disabled selected hidden>статус / одговор</option>
-                    <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
-                    <option value="ПРОСЛЕЂЕН СЛУЖБИ">ПРОСЛЕЂЕНИ / НА ЧЕКАЊУ</option>
-                    <option value="НИЈЕ ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / НИЈЕ ОДГОВОРЕНО</option>
-                    <option value="ОДГОВОРЕНО">ПРОСЛЕЂЕНИ / ОДГОВОРЕНО</option>
-                    <option value="ОДГОВОРЕНО КОРИСНИКУ">ОДГОВОР ПОСЛАТ ГРАЂАНИНУ / ОДГОВОРЕНО</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div id="table">
-              <div id="table-header" class="row">
-                <div class="col-2 col-md-1">р.б.</div>
-                <div class="col-6 col-md-3">бр. предмета</div>
-                <div class="col-3 hidden-sm-down">датум</div>
-                <div class="col-3 hidden-sm-down">име и презиме</div>
-                <div class="col-2 col-md-1"><span class="hidden-sm-down">статус</span><i class="hidden-md-up fa fa-info-circle"></i></div>
-                <div class="col-2 col-md-1"><span class="hidden-sm-down">одговор</span><i class="hidden-md-up fa fa-comments"></i></div>
-              </div>
-            `;
-            for (var i = 0; i < response.Primedbe.length; i++) {
-              var officeString = '';
-              for (var j = 0; j < offices.length; j++)
-                if (offices[j].Id == response.Primedbe[i].SluzbaId) {
-                  officeString = offices[j].Naziv;
-                  break;
-                }
-              var statusIcon = '';
-              var statusClass = '';
-              var statusString = '';
-              var responseIcon = '';
-              var responseClass = '';
-              var responseString = '';
-              switch (response.Primedbe[i].PoslednjiStatus) {
-                case 'НЕПРОСЛЕЂЕН':
-                  statusIcon = '<i class="fa fa-inbox"></i>';
-                  statusClass = 'status-1';
-                  statusString = 'НЕПРОСЛЕЂЕН';
-                  responseString = 'НИЈЕ ОДГОВОРЕНО';
-                  break;
-                case 'ПРОСЛЕЂЕН СЛУЖБИ':
-                  statusIcon = '<i class="fa fa-share"></i>';
-                  statusClass = 'status-2';
-                  statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
-                  responseIcon = '<i class="fa fa-clock-o"></i>';
-                  responseClass = 'response-2';
-                  responseString = 'ЧЕКА СЕ ОДГОВОР СЛУЖБЕ';
-                  break;
-                case 'НИЈЕ ОДГОВОРЕНО':
-                  statusIcon = '<i class="fa fa-share"></i>';
-                  statusClass = 'status-2';
-                  statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
-                  responseIcon = '<i class="fa fa-times"></i>';
-                  responseClass = 'response-4';
-                  responseString = 'НИЈЕ ОДГОВОРЕНО У ПРЕДВИЂЕНОМ РОКУ';
-                  break;
-                case 'ОДГОВОРЕНО':
-                  statusIcon = '<i class="fa fa-share"></i>';
-                  statusClass = 'status-2';
-                  statusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
-                  responseIcon = '<i class="fa fa-check"></i>';
-                  responseClass = 'response-3';
-                  responseString = 'ОДГОВОРЕНО';
-                  break;
-                case 'ОДГОВОРЕНО КОРИСНИКУ':
-                  statusIcon = '<i class="fa fa-check"></i>';
-                  statusClass = 'status-3';
-                  statusString = 'ОДГОВОР ПОСЛАТ ГРАЂАНИНУ';
-                  responseIcon = '<i class="fa fa-check"></i>';
-                  responseClass = 'response-3';
-                  responseString = 'ОДГОВОРЕНО';
-                  break;
-              }
-              html += `
-                <div class="table-row row" onclick="$PRM.tableRowClicked(` + (i + 1) + `, this);">
-                  <div class="col-2 col-md-1">` + response.Primedbe[i].Id + `</div>
-                  <div class="col-6 col-md-3">` + response.Primedbe[i].BrojPredmeta + `</div>
-                  <div class="col-3 hidden-sm-down">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
-                  <div class="col-3 hidden-sm-down">` + response.Primedbe[i].Ime + `</div>
-                  <div class="col-2 col-md-1 ` + statusClass + `">` + statusIcon + `</div>
-                  <div class="col-2 col-md-1 ` + responseClass + `">` + responseIcon + `</div>
-                </div>
-                <div id="expansion-` + (i + 1) + `" class="expansion collapse">
-                  <div class="row">
-                    <div class="expansion-info col-12 col-md-6">
-                      <div class="expansion-label">бр. предмета:</div>
-                      <div class="expansion-info-data">` + response.Primedbe[i].BrojPredmeta + `</div>
-                      <div class="expansion-label">датум:</div>
-                      <div class="expansion-info-data">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
-                      <div class="expansion-label">име и презиме:</div>
-                      <div class="expansion-info-data">` + response.Primedbe[i].Ime + `</div>
-                      <div class="expansion-label">e-mail:</div>
-                      <div class="expansion-info-data">` + response.Primedbe[i].Email + `</div>
-                      <div class="expansion-label">телефон:</div>
-                      <div class="expansion-info-data">` + response.Primedbe[i].Telefon + `</div>
-                      <div class="expansion-label">служба:</div>
-                      <div class="expansion-info-data">` + officeString + `</div>
-                      <div class="expansion-label">претходно обраћање:</div>
-                      <div class="expansion-info-data">` + (response.Primedbe[i].ObracanjeSluzbi ? `ДА` : `НЕ`) + `</div>` +
-                      (response.Primedbe[i].ObracanjeSluzbi && response.Primedbe[i].ObracanjeKome != null ? `<div class="expansion-label">службеник:</div>
-                      <div class="expansion-info-data">` + response.Primedbe[i].ObracanjeKome + `</div>` : ``) + `
-                      <div class="expansion-label">статус:</div>
-                      <div class="expansion-info-data">` + statusString + `</div>
-                      <div class="expansion-label">одговор:</div>
-                      <div class="expansion-info-data">` + responseString + `</div>
-                      <div class="expansion-label">историја:</div>
-                      <div class="expansion-info-data">
-              `;
-              cComment = null;
-              oComment = null;
-              oResponse = response.Primedbe[i].Odgovor.length != 0 ? response.Primedbe[i].Odgovor[0].Odgovor1 : '';
-              var answered = false;
-              for (var j = 1; j < response.Primedbe[i].Logovi.length; j++) {
-                var logStatusString = '';
-                var logResponseString = '';
-                switch (response.Primedbe[i].Logovi[j].Status) {
-                  case 'НЕПРОСЛЕЂЕН':
-                    logStatusString = 'НЕПРОСЛЕЂЕН';
-                    logResponseString = 'НИЈЕ ОДГОВОРЕНО';
-                    break;
-                  case 'ПРОСЛЕЂЕН СЛУЖБИ':
-                    logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
-                    logResponseString = 'ЧЕКА СЕ ОДГОВОР СЛУЖБЕ';
-                    break;
-                  case 'НИЈЕ ОДГОВОРЕНО':
-                    logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
-                    logResponseString = 'НИЈЕ ОДГОВОРЕНО У ПРЕДВИЂЕНОМ РОКУ';
-                    break;
-                  case 'ОДГОВОРЕНО':
-                    logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
-                    logResponseString = 'ОДГОВОРЕНО';
-                    answered = true;
-                    break;
-                  case 'ОДГОВОРЕНО КОРИСНИКУ':
-                    logStatusString = 'ОДГОВОР ПОСЛАТ ГРАЂАНИНУ';
-                    logResponseString = 'ОДГОВОРЕНО';
-                    break;
-                }
-                html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == 'Kontrola' ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
-                if (response.Primedbe[i].Logovi[j].Komentar != null) {
-                  if (!answered) {
-                  html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
-                  if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == "Kontrola")
-                    cComment = response.Primedbe[i].Logovi[j].Komentar;
-                  else
-                    oComment = response.Primedbe[i].Logovi[j].Komentar;
-                  } else {
-                    html += ' уз одговор \"' + oResponse + '\"';
-                    answered = false;
-                  }
-                }
-                html += '<br>';
-              }
-              cComms[i] = cComment ? cComment : '';
-              oComms[i] = oComment ? oComment : '';
-              oResps[i] = oResponse;
-              html += `
-                      </div>
-                    </div>
-                    <div class="expansion-response col-12 col-md-6">
-              `;
-              if (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4]) {
-                html += `
-                      <div id="forward-label" class="expansion-label">прослеђивање:</div>
-                      <div id="forward-container" class="row">
-                        <div id="forward-select-container" class="col-12 col-md-9">
-                          <select id="forward" onchange="$PRM.expansionSelectChanged(this);">
-                              <option value="0" disabled selected hidden>СКН</option>
-                `;
-                for (var j = 0; j < offices.length; j++)
-                  html += `<option value="` + offices[j].Id + `" ` + ((response.Primedbe[i].PoslednjiStatus != 'НЕПРОСЛЕЂЕН' && response.Primedbe[i].SluzbaId == offices[j].Id)? `selected` : ``) + `>` + offices[j].Naziv + `</option>`;
-                html += `
-                          </select>
-                        </div>
-                        <div id="forward-button-container" class="col-12 col-md-3">
-                          <div class="loader gone">
-                            <div class="loader-inner"></div>
-                          </div>
-                          <button onclick="$PRM.forward(` + response.Primedbe[i].Id + `, this);"><i class="fa fa-share"></i></button>
-                        </div>
-                      </div>
-                `;
-              }
-              html += `
-                      <div class="expansion-label">примедба:</div>
-                      <div class="divtextarea" spellcheck="false">` + response.Primedbe[i].OpisPrimedbe + `</div>
-                      <div class="expansion-label">коментар контролора:</div>
-                      <div id="controller-comment" onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);" onblur="$PRM.crChanged(1, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `contenteditable="true"` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</div>
-                      <div class="expansion-label">коментар службеника:</div>
-                      <div id="office-comment" onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</div>
-                      <div class="expansion-label">одговор службе:</div>
-                      <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + oResponse + `</div>
-                      ` + (authObject.sluzba != "Kontrola" && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
-                      <div class="row">
-                        <div class="hidden-sm-down col-md-9"></div>
-                        <div id="save-button-container" class="col-12 col-md-3">
-                          <div class="loader gone">
-                            <div class="loader-inner"></div>
-                          </div>
-                          <button onclick="$PRM.save(` + response.Primedbe[i].Id + `, this, ` + i + `);"><i class="fa fa-save"></i></button>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="hidden-sm-down col-md-9"></div>
-                        <div id="check-button-container" class="col-12 col-md-3">
-                          <div class="loader gone">
-                            <div class="loader-inner"></div>
-                          </div>
-                          <button onclick="$PRM.check(` + response.Primedbe[i].Id + `, this, ` + i + `);"><i class="fa fa-check"></i></button>
-                        </div>
-                      </div>
-                      `) + `
-                    </div>
-                  </div>
-                </div>
-              `;
-            }
-            html += `
-              </div>
-              <div id="pagination">
-                <div>
-                  <div onclick="$PRM.firstPage();" class="pagination-disabled"><i class="fa fa-angle-double-left"></i></div>
-                  <div onclick="$PRM.previousPage();" class="pagination-disabled"><i class="fa fa-angle-left"></i></div>
-                  <div>
-                    <select id="page-select" onchange="$PRM.selectPage();">
-            `;
-            for (var i = 0; i < (response.UkupnoPrimedbi < 10 ? 1 : Math.ceil(response.UkupnoPrimedbi / 10)); i++)
-              html += `<option value="` + (i + 1) + `" ` + (i == 0 ? `selected` : ``) + `>` + (i + 1) + `</option>`;
-            html += `
-                      </select>
-                  </div>
-                  <div onclick="$PRM.nextPage();" ` + (response.UkupnoPrimedbi < 10 ? `class="pagination-disabled"` : ``) + `><i class="fa fa-angle-right"></i></div>
-                  <div onclick="$PRM.lastPage();" ` + (response.UkupnoPrimedbi < 10 ? `class="pagination-disabled"` : ``) + `><i class="fa fa-angle-double-right"></i></div>
-                </div>
-              </div>
-            `;
-            insertHtml("#switchbox", html);
-            disappear($(".loader"), 500);
-            appear($("#switchbox"), 500);
-            console.log(cComms, oComms, oResps);
+            processComplaints(response, 1);
           },
           true, authObject.access_token
         );
@@ -959,7 +969,7 @@
     if ($(e).val() != "") {
       $("#clear-searchboxes i, #mobile-refresh-clear i").addClass("fa-eraser").removeClass("fa-times");
       $("." + $(e).attr("class")).val($(e).val());
-    } else if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0)
+    } else if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 /*&& $("#response option:selected").attr("value") == 0*/)
       $("#clear-searchboxes i, #mobile-refresh-clear i").removeClass("fa-eraser").addClass("fa-times");
   };
 
@@ -985,12 +995,12 @@
       $("#mobile-searchboxes").collapse("show");
       $("#mobile-refresh-clear").addClass("shrunken");
       $("#mobile-refresh-clear i").removeClass("fa-refresh");
-      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0)
+      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 /*&& $("#response option:selected").attr("value") == 0*/)
         $("#mobile-refresh-clear i").addClass("fa-times");
       else
         $("#mobile-refresh-clear i").addClass("fa-eraser");
     } else if ($("#search-criteria").width() >= (window.innerWidth - window.innerHeight / 100) * 11 / 12 - 20) {
-      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 && $("#response option:selected").attr("value") == 0) {
+      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 /*&& $("#response option:selected").attr("value") == 0*/) {
         $.confirm({
           title: 'ГРЕШКА!',
           content: 'Барем једно од поља за критеријуме претраге мора имати вредност.',
@@ -1018,8 +1028,9 @@
       $("#mobile-searchboxes").collapse("hide");
       $("#mobile-refresh-clear").removeClass("shrunken");
       $("#mobile-refresh-clear i").removeClass("fa-times fa-eraser").addClass("fa-refresh");
-      //TODO: perform search
-      PRM.refresh(); //maybe
+      
+      //perform search
+      PRM.refresh();
     }
   };
 
@@ -1370,8 +1381,39 @@
     */
   };
 
+  var updatePagination = function(n) {
+    if (n == 0 || n == $("#page-select option").length) return;
+    for (var i = $("#page-select option").length; i <= n; i++)
+      $("#page-select").append(html += `<option value="` + i + `">` + i + `</option>`);
+  };
+
   PRM.refreshAux = function() {
-    //get sa svim trenutnim parametrima, obrada response-a u novoj funkciji koja uzima za parametar koja strana je selektovana
+    disappear($(".table-row"), 10);
+    setTimeout(function() {
+      appear($(".loader"), 10);
+    }, 20);
+    setTimeout(function() {
+      var pageNum = $("#page-select").prop("selectedIndex") + 1;
+      $ajaxUtils.sendGetRequest(
+        apiRoot + 'api/rgz_primedbe/get' + '?page=' + pageNum +
+          (($("#file-number").val() != "") ? ('&br_pr=' + encodeURIComponent($("#file-number").val())) : '') +
+          (($("#date-from").val() != "") ? ('&d_od=' + encodeURIComponent($("#date-from").datepicker('getUTCDate'))) : '') +
+          (($("#date-to").val() != "") ? ('&d_do=' + encodeURIComponent($("#date-to").datepicker('getUTCDate'))) : '') +
+          (($("#client-name").val() != "") ? ('&ime=' + encodeURIComponent($("#client-name").val())) : '') +
+          (($("#client-mail").val() != "") ? ('&email=' + encodeURIComponent($("#client-mail").val())) : '') +
+          (($("#client-phone").val() != "") ? ('&tel=' + encodeURIComponent($("#client-phone").val())) : '') +
+          ((authObject.sluzba == "Kontrola") ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
+          (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
+        function(response, status) {
+          var html = generateTableRowsHtml(response);
+          $(".table-row").remove();
+          $("#table").append(html);
+          updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
+          disappear($(".loader"), 10);
+        },
+        true, authObject.access_token
+      );
+    }, 30);
   };
 
   var printTitle = "";
@@ -1522,56 +1564,207 @@
       $(".stats-date-from").datepicker('setEndDate', $(e).val());
   };
 
-  PRM.firstPage = function() {
-    if ($("#page-select").prop("selectedIndex") != 0) {
-      $("#page-select option").prop("selected", false);
-      $("#page-select option:first-child").prop("selected", true);
-      PRM.selectPage();
+  PRM.promptDirty = function() {
+    if ($(".dirty").length > 0) {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Постоје измене над најмање једном примедбом. Уколико промените страну, одбацићете ове измене.',
+        theme: 'supervan',
+        backgroundDismiss: 'false',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
     }
   };
 
-  PRM.previousPage = function() {
-    if ($("#page-select").prop("selectedIndex") != 0) {
-      var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") - 1);
-      PRM.selectPage();
+  PRM.firstPage = function(e) {
+    if ($(".dirty").length > 0 && !($(e).hasClass("pagination-disabled"))) {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Постоје измене над најмање једном примедбом. Да ли желите да одбаците ове измене и да наставите са учитавањем?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {
+              if ($("#page-select").prop("selectedIndex") != 0) {
+                $("#page-select option").prop("selected", false);
+                $("#page-select option:first-child").prop("selected", true);
+                PRM.selectPage();
+              }
+            }
+          }
+        }
+      });
+    } else {
+      if ($("#page-select").prop("selectedIndex") != 0) {
+        $("#page-select option").prop("selected", false);
+        $("#page-select option:first-child").prop("selected", true);
+        PRM.selectPage();
+      }
     }
   };
 
-  //TODO: fix pagination behavior only in this function
+  PRM.previousPage = function(e) {
+    if ($(".dirty").length > 0 && !($(e).hasClass("pagination-disabled"))) {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Постоје измене над најмање једном примедбом. Да ли желите да одбаците ове измене и да наставите са учитавањем?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {
+              if ($("#page-select").prop("selectedIndex") != 0) {
+                var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") - 1);
+                PRM.selectPage();
+              }
+            }
+          }
+        }
+      });
+    } else {
+      if ($("#page-select").prop("selectedIndex") != 0) {
+        var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") - 1);
+        PRM.selectPage();
+      }
+    }
+  };
+
   PRM.selectPage = function() {
-    //call api
-    disappear($(".table-row"), 500);
+    disappear($(".table-row"), 10);
     setTimeout(function() {
-      appear($(".loader"), 500);
-    }, 500);
+      appear($(".loader"), 10);
+    }, 20);
     setTimeout(function() {
-      disappear($(".loader"), 500);
-      setTimeout(function() {
-        appear($(".table-row"), 500);
-      }, 500);
-    }, 2000); //this delay only simulating network response
-    if ($("#page-select").prop("selectedIndex") == 0)
-      $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").addClass("pagination-disabled");
-    else
-      $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").removeClass("pagination-disabled");
-    if ($("#page-select").prop("selectedIndex") == $("#page-select option").length - 1)
-      $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").addClass("pagination-disabled");
-    else
-      $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").removeClass("pagination-disabled");
+      var pageNum = $("#page-select").prop("selectedIndex") + 1;
+      $ajaxUtils.sendGetRequest(
+        apiRoot + 'api/rgz_primedbe/get' + '?page=' + pageNum +
+          (($("#file-number").val() != "") ? ('&br_pr=' + encodeURIComponent($("#file-number").val())) : '') +
+          (($("#date-from").val() != "") ? ('&d_od=' + encodeURIComponent($("#date-from").datepicker('getUTCDate'))) : '') +
+          (($("#date-to").val() != "") ? ('&d_do=' + encodeURIComponent($("#date-to").datepicker('getUTCDate'))) : '') +
+          (($("#client-name").val() != "") ? ('&ime=' + encodeURIComponent($("#client-name").val())) : '') +
+          (($("#client-mail").val() != "") ? ('&email=' + encodeURIComponent($("#client-mail").val())) : '') +
+          (($("#client-phone").val() != "") ? ('&tel=' + encodeURIComponent($("#client-phone").val())) : '') +
+          ((authObject.sluzba == "Kontrola") ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
+          (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
+        function(response, status) {
+          var html = generateTableRowsHtml(response);
+          $(".table-row").remove();
+          $("#table").append(html);
+          updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
+          disappear($(".loader"), 10);
+          if ($("#page-select").prop("selectedIndex") == 0)
+            $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").addClass("pagination-disabled");
+          else
+            $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").removeClass("pagination-disabled");
+          if ($("#page-select").prop("selectedIndex") == $("#page-select option").length - 1)
+            $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").addClass("pagination-disabled");
+          else
+            $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").removeClass("pagination-disabled");
+        },
+        true, authObject.access_token
+      );
+    }, 30);
   };
 
-  PRM.nextPage = function() {
-    if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
-      var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") + 1);
-      PRM.selectPage();
+  PRM.nextPage = function(e) {
+    if ($(".dirty").length > 0 && !($(e).hasClass("pagination-disabled"))) {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Постоје измене над најмање једном примедбом. Да ли желите да одбаците ове измене и да наставите са учитавањем?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {
+              if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
+                var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") + 1);
+                PRM.selectPage();
+              }
+            }
+          }
+        }
+      });
+    } else {
+      if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
+        var i = $("#page-select").prop("selectedIndex", $("#page-select").prop("selectedIndex") + 1);
+        PRM.selectPage();
+      }
     }
   };
 
-  PRM.lastPage = function() {
-    if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
-      $("#page-select option").prop("selected", false);
-      $("#page-select option:last-child").prop("selected", true);
-      PRM.selectPage();
+  PRM.lastPage = function(e) {
+    if ($(".dirty").length > 0 && !($(e).hasClass("pagination-disabled"))) {
+      $.confirm({
+        title: 'ПАЖЊА!',
+        content: 'Постоје измене над најмање једном примедбом. Да ли желите да одбаците ове измене и да наставите са учитавањем?',
+        theme: 'supervan',
+        backgroundDismiss: 'true',
+        autoClose: 'no|10000',
+        buttons: {
+          no: {
+            text: 'НЕ',
+            btnClass: 'btn-white-prm',
+            keys: ['esc'],
+            action: function() {}
+          },
+          yes: {
+            text: 'ДА',
+            btnClass: 'btn-white-prm',
+            keys: ['enter'],
+            action: function() {
+              if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
+                $("#page-select option").prop("selected", false);
+                $("#page-select option:last-child").prop("selected", true);
+                PRM.selectPage();
+              }
+            }
+          }
+        }
+      });
+    } else {
+      if ($("#page-select").prop("selectedIndex") != $("#page-select option").length - 1) {
+        $("#page-select option").prop("selected", false);
+        $("#page-select option:last-child").prop("selected", true);
+        PRM.selectPage();
+      }
     }
   };
 
