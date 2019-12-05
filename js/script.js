@@ -1378,7 +1378,13 @@
   var updatePagination = function(n) {
     if (n == 0 || n == $("#page-select option").length) return;
     for (var i = $("#page-select option").length; i <= n; i++)
-      $("#page-select").append(html += `<option value="` + i + `">` + i + `</option>`);
+      $("#page-select").append(`<option value="` + i + `">` + i + `</option>`);
+    if (n < $("#page-select option").length) {
+      var html = '';
+      for (var i = 0; i < n; i++)
+        html += `<option value="` + i + `">` + i + `</option>`;
+      $("#page-select").html(html);
+    }
   };
 
   PRM.refreshAux = function() {
