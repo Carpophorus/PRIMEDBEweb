@@ -3,6 +3,42 @@
   var apiRoot = 'http://10.0.1.251:8090/';
   var form = null;
 
+  var appear = function(selector, interval) {
+    /*$(selector).removeClass("gone");
+    setTimeout(function() {
+      $(selector).css({
+        "opacity": 1,
+        "-webkit-transition": "opacity " + Number(interval) / 1000 + "s ease",
+        "-moz-transition": "opacity " + Number(interval) / 1000 + "s ease",
+        "transition": "opacity " + Number(interval) / 1000 + "s ease"
+      });
+    }, 10);*/
+    var e = document.getElementById(selector);
+    e.classList.remove("gone");
+    setTimeout(function() {
+      e.style.opacity = 1;
+      e.style.transition = "opacity " + Number(interval) / 1000 + "s ease";
+    }, 10);
+  };
+
+  var disappear = function(selector, interval) {
+    /*$(selector).css({
+      "opacity": 0,
+      "-webkit-transition": "opacity " + Number(interval) / 1000 + "s ease",
+      "-moz-transition": "opacity " + Number(interval) / 1000 + "s ease",
+      "transition": "opacity " + Number(interval) / 1000 + "s ease"
+    });
+    setTimeout(function() {
+      $(selector).addClass("gone");
+    }, Number(interval) + 10);*/
+    var e = document.getElementById(selector);
+    e.style.opacity = 0;
+    e.style.transition = "opacity " + Number(interval) / 1000 + "s ease";
+    setTimeout(function() {
+      e.classList.add("gone");
+    }, Number(interval) + 10);
+  };
+
   getRequestObject = function() {
     if (window.XMLHttpRequest) {
       return new XMLHttpRequest();
@@ -14,17 +50,28 @@
     }
   };
 
-  function sendData() {
+  global.recaptchaCallback = function(token) {
+    //disappear form, appear loader
+    sendData(token);
+  };
+
+  function sendData(token) {
     var XHR = getRequestObject();
     var FD = new FormData(form);
 
     // Define what happens on successful data submission
     XHR.addEventListener('load', function(event) {
+      form.disabled = false;
+      form.reset();
+      //appear form, disappear loader
       alert(event.target.responseText);
+      //confirm dialogue?
     });
 
     // Define what happens in case of error
     XHR.addEventListener('error', function(event) {
+      form.disabled = false;
+      //confirm dialogue?
       alert('Oops! Something went wrong.');
     });
 
@@ -51,12 +98,10 @@
     if (data.ObracanjeSluzbi === false)
       data.ObracanjeKome = null;
 
-    console.log(data);
     var encodedData = '';
     for (var key in data)
       encodedData += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-    console.log(apiRoot + 'api/rgz_primedbe/post?token=testje' + encodedData);
-    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=testje' + encodedData, true);
+    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=' + encodeURIComponent(token) + encodedData, true);
     XHR.send();
   }
 
@@ -65,7 +110,12 @@
     var XHR = getRequestObject();
 
     XHR.addEventListener('load', function(event) {
-      document.getElementById('loader').remove();
+      setTimeout(function() {
+        disappear("loader", 500);
+        setTimeout(function() {
+          appear("form-container", 500);
+        }, 500);
+      }, 1000);
       var sel = document.getElementById('sluzba-id');
       var optX = document.createElement('option');
       optX.value = -1;
@@ -92,7 +142,9 @@
 
     form.addEventListener('submit', function (event) {
       event.preventDefault();
-      sendData();
+      //sendData();
+      form.disabled = true;
+      grecaptcha.execute();
 
       //document.getElementById('primedba').reset();
       //document.getElementById('sluzba-id').children[0].selected = true;

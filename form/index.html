@@ -9,6 +9,12 @@
   <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed:400,700" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
   <script src="./script.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script>
+    function onSubmit(token) {
+      $PRM.recaptchaCallback(token);
+    }
+  </script>
 </head>
 
 <body>
@@ -24,7 +30,7 @@
     <div class="loader-inner"></div>
   </div>
 
-  <div id="form-container">
+  <div id="form-container" class="gone">
     <div id="naslov">ПРИМЕДБА НА РАД СЛУЖБЕ</div>
     <form id="primedba">
       <label for="Ime">Име и презиме:</label>
@@ -121,6 +127,8 @@
       НАПОМЕНА: Поља која су обавезна биће означена симболом <img src="./red.svg"> уколико нису попуњена или ако нису попуњена у одговарајућем формату. Уколико су таква поља исправно попуњена, појавиће се симбол <img src="./green.svg">. Није могуће мешати ћирилицу и латиницу у оквиру појединачних поља (са изузетком описа примедбе). Иако је унос описа примедбе произвољан, молимо да будете што детаљнији приликом попуњавања овог поља како би примедба била усвојена и ефикасно размотрена. Није могуће поднети примедбу у вези другостепених предмета. Примедбе које нису поднете у име подносиоца предмета или примедбе са непостојећим бројем предмета се неће узимати у разматрање.
     </div>
   </div>
+
+  <div id="recaptcha" class="g-recaptcha" data-sitekey="6LfwyjYUAAAAAFRNVQ7w4LQjP3wQp4PwUG0ef19r" data-callback="onSubmit" data-size="invisible" data-badge="bottomleft" data-theme="dark"></div>
 
 </body>
 

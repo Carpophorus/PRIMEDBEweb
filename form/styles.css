@@ -71,6 +71,7 @@ label {
     margin: auto;
     padding-top: 200px;
     z-index: 1;
+    opacity: 0;
 }
 
 .field {
