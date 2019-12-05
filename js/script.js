@@ -1382,7 +1382,7 @@
   };
 
   PRM.refreshAux = function() {
-    disappear($(".table-row"), 10);
+    disappear($(".table-row, .expansion"), 10);
     setTimeout(function() {
       appear($(".loader"), 10);
     }, 20);
@@ -1400,7 +1400,7 @@
           (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
         function(response, status) {
           var html = generateTableRowsHtml(response);
-          $(".table-row").remove();
+          $(".table-row, .expansion").remove();
           $("#table").append(html);
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
@@ -1652,7 +1652,7 @@
   };
 
   PRM.selectPage = function() {
-    disappear($(".table-row"), 10);
+    disappear($(".table-row, .expansion"), 10);
     setTimeout(function() {
       appear($(".loader"), 10);
     }, 20);
@@ -1670,7 +1670,7 @@
           (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
         function(response, status) {
           var html = generateTableRowsHtml(response);
-          $(".table-row").remove();
+          $(".table-row, .expansion").remove();
           $("#table").append(html);
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
