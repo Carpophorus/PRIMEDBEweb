@@ -1387,6 +1387,14 @@
         html += `<option value="` + (i + 1) + `" ` + (i + 1 == si ? `selected` : ``) + `>` + (i + 1) + `</option>`;
       insertHtml("#page-select", html);
     }
+    if ($("#page-select").prop("selectedIndex") == 0)
+      $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").addClass("pagination-disabled");
+    else
+      $("#pagination>div>div:nth-child(1), #pagination>div>div:nth-child(2)").removeClass("pagination-disabled");
+    if ($("#page-select").prop("selectedIndex") == $("#page-select option").length - 1)
+      $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").addClass("pagination-disabled");
+    else
+      $("#pagination>div>div:nth-last-child(1), #pagination>div>div:nth-last-child(2)").removeClass("pagination-disabled");
   };
 
   PRM.refreshAux = function() {
