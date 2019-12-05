@@ -1385,7 +1385,7 @@
       var si = $("#page-select").prop("selectedIndex") + 1;
       for (var i = 0; i < n; i++)
         html += `<option value="` + (i + 1) + `" ` + (i + 1 == si ? `selected` : ``) + `>` + (i + 1) + `</option>`;
-      $("#page-select").insertHtml(html);
+      insertHtml("#page-select", html);
     }
   };
 
