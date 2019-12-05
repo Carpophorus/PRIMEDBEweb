@@ -1377,13 +1377,15 @@
 
   var updatePagination = function(n) {
     if (n == 0 || n == $("#page-select option").length) return;
-    for (var i = $("#page-select option").length; i <= n; i++)
-      $("#page-select").append(`<option value="` + i + `">` + i + `</option>`);
-    if (n < $("#page-select option").length) {
+    if (n > $("#page-select option").length)
+      for (var i = $("#page-select option").length; i <= n; i++)
+        $("#page-select").append(`<option value="` + i + `">` + i + `</option>`);
+    else if (n < $("#page-select option").length) {
       var html = '';
+      var si = $("#page-select").prop("selectedIndex") + 1;
       for (var i = 0; i < n; i++)
-        html += `<option value="` + i + `">` + i + `</option>`;
-      $("#page-select").html(html);
+        html += `<option value="` + (i + 1) + `" ` + (i + 1 == si ? `selected` : ``) + `>` + (i + 1) + `</option>`;
+      $("#page-select").insertHtml(html);
     }
   };
 
