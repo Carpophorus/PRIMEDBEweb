@@ -12,7 +12,7 @@
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script>
     function onSubmit(token) {
-      $PRM.recaptchaCallback(token);
+      global.recaptchaCallback(token);
     }
   </script>
 </head>

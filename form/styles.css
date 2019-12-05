@@ -87,6 +87,7 @@ label {
     background-size: auto 18px;
     background-position: 98.5% 8px;
     transition: background-image 0.5s ease;
+    font-family: 'Fira Sans Extra Condensed', sans-serif;
 }
 
 select.field {

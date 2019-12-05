@@ -144,6 +144,7 @@
       event.preventDefault();
       //sendData();
       form.disabled = true;
+      //grecaptcha.reset();
       grecaptcha.execute();
 
       //document.getElementById('primedba').reset();
