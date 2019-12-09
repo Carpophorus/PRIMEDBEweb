@@ -6,6 +6,8 @@
   var offices = null;
   var statuses = null;
 
+  const control = 'centar';
+
   // OLD:
   // var apiRoot = 'http://10.0.1.251:8090/';
 
@@ -411,11 +413,11 @@
             logResponseString = 'ОДГОВОРЕНО';
             break;
         }
-        html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == 'Kontrola' ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
+        html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
         if (response.Primedbe[i].Logovi[j].Komentar != null) {
           if (!answered) {
           html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
-          if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == "Kontrola")
+          if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control)
             cComment = response.Primedbe[i].Logovi[j].Komentar;
           else
             oComment = response.Primedbe[i].Logovi[j].Komentar;
@@ -434,7 +436,7 @@
             </div>
             <div class="expansion-response col-12 col-md-6">
       `;
-      if (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4]) {
+      if (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus != statuses[4]) {
         html += `
               <div id="forward-label" class="expansion-label">прослеђивање:</div>
               <div id="forward-container" class="row">
@@ -460,12 +462,12 @@
               <div class="expansion-label">примедба:</div>
               <div class="divtextarea" spellcheck="false">` + response.Primedbe[i].OpisPrimedbe + `</div>
               <div class="expansion-label">коментар контролора:</div>
-              <div id="controller-comment" onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);" onblur="$PRM.crChanged(1, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `contenteditable="true"` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</div>
+              <div id="controller-comment" onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);" onblur="$PRM.crChanged(1, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `contenteditable="true"` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</div>
               <div class="expansion-label">коментар службеника:</div>
-              <div id="office-comment" onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</div>
+              <div id="office-comment" onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</div>
               <div class="expansion-label">одговор службе:</div>
-              <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == "Kontrola" || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + oResponse + `</div>
-              ` + (authObject.sluzba != "Kontrola" && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
+              <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + oResponse + `</div>
+              ` + (authObject.sluzba != control && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
               <div class="row">
                 <div class="hidden-sm-down col-md-9"></div>
                 <div id="save-button-container" class="col-12 col-md-3">
@@ -501,11 +503,11 @@
         <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
         <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
-        <div class="col-ninth ` + (authObject.sluzba == "Kontrola" ? "" : "col-ninth-double") + `"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-ninth ` + (authObject.sluzba == control ? "" : "col-ninth-double") + `"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
       `;
-      if (authObject.sluzba == "Kontrola") {
+      if (authObject.sluzba == control) {
         html += `
           <div class="col-ninth">
             <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
@@ -563,7 +565,7 @@
         <div class="col-12 col-md-6"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         <div class="col-12 col-md-6"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         `;
-        if (authObject.sluzba == "Kontrola") {
+        if (authObject.sluzba == control) {
           html += `
             <div class="col-12 col-md-6">
               <select id="office" class="office" onchange="$PRM.searchbarSelectChanged(this);">
@@ -642,12 +644,12 @@
         var html = `
           <div class="row" id="statsparams">
             <img src="img/favicons/favicon.ico" onload="$PRM.statsDateInit();">
-            ` + (authObject.sluzba == "Kontrola" ? `<div class="col-7 hidden-md-down"></div>` : `<div class="col-9 hidden-md-down"></div>`) + `
+            ` + (authObject.sluzba == control ? `<div class="col-7 hidden-md-down"></div>` : `<div class="col-9 hidden-md-down"></div>`) + `
             <div class="col-8 col-md-9 hidden-lg-up"></div>
             <div class="col-4 col-md-3 hidden-lg-up"><button id="search" onclick="$PRM.statsSearchButtonClicked();"><i class="fa fa-search"></i></button></div>
             <div class="col-12 col-md-6 col-lg-1"><input id="stats-date-from" class="stats-date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.statsDateFromChanged(this);"></div>
             <div class="col-12 col-md-6 col-lg-1"><input id="stats-date-to" class="stats-date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.statsDateToChanged(this);"></div>
-            ` + (authObject.sluzba == "Kontrola" ? `<div class="col-12 col-lg-2"><input id="stats-offices" class="stats-offices" type="text" placeholder="службе" onfocus="this.placeholder = ''" onblur="this.placeholder = 'службе'" onkeydown="return false" onclick="$PRM.statsOfficesClicked();"></div>` : ``) + `
+            ` + (authObject.sluzba == control ? `<div class="col-12 col-lg-2"><input id="stats-offices" class="stats-offices" type="text" placeholder="службе" onfocus="this.placeholder = ''" onblur="this.placeholder = 'службе'" onkeydown="return false" onclick="$PRM.statsOfficesClicked();"></div>` : ``) + `
             <div class="col-1 hidden-md-down"><button id="search" onclick="$PRM.statsSearchButtonClicked();"><i class="fa fa-search"></i></button></div>
           </div>
           <div class="row" id="statsdata"></div>
@@ -660,7 +662,7 @@
         var html = `
           <div id="profile-picture"><i class="fa fa-user-circle-o"></i></div>
           <div id="profile-name">` + authObject.name + `</div>
-          <div id="profile-position">` + (authObject.sluzba == 'Kontrola' ? 'КОНТРОЛОР' : 'СЛУЖБЕНИК') + `</div>
+          <div id="profile-position">` + (authObject.sluzba == control ? 'КОНТРОЛОР' : 'СЛУЖБЕНИК') + `</div>
           <div id="profile-container" class="row">
             <div class="col-2 col-md-4"></div>
             <div id="profile-content" class="col-8 col-md-4">
@@ -691,7 +693,7 @@
   };
 
   PRM.statsSearchButtonClicked = function() {
-    if ($("#stats-date-from").val() == "" || $("#stats-date-to").val() == "" || $("#stats-offices").val() == "" && authObject.sluzba == "Kontrola") {
+    if ($("#stats-date-from").val() == "" || $("#stats-date-to").val() == "" || $("#stats-offices").val() == "" && authObject.sluzba == control) {
       $.confirm({
         title: 'ГРЕШКА!',
         content: 'Морате унети све параметре за претрагу.',
@@ -713,7 +715,7 @@
     var dateFrom = $('#stats-date-from').datepicker('getDate');
     var dateTo = $('#stats-date-to').datepicker('getDate');
     $ajaxUtils.sendGetRequest(
-      apiRoot + 'api/statistika/get' + '?pocetak=' + encodeURIComponent(dateFrom.getFullYear() + '-' + (dateFrom.getMonth() + 1) + '-' + dateFrom.getDate() + ' 00:00:00') + '&kraj=' + encodeURIComponent(dateTo.getFullYear() + '-' + (dateTo.getMonth() + 1) + '-' + dateTo.getDate() + ' 00:00:00') + (authObject.sluzba == "Kontrola" ? '&sluzbe=' + encodeURIComponent(officesArray) : ''),
+      apiRoot + 'api/statistika/get' + '?pocetak=' + encodeURIComponent(dateFrom.getFullYear() + '-' + (dateFrom.getMonth() + 1) + '-' + dateFrom.getDate() + ' 00:00:00') + '&kraj=' + encodeURIComponent(dateTo.getFullYear() + '-' + (dateTo.getMonth() + 1) + '-' + dateTo.getDate() + ' 00:00:00') + (authObject.sluzba == control ? '&sluzbe=' + encodeURIComponent(officesArray) : ''),
       function(response, status) {
         disappear($(".loader"), 500);
 
@@ -757,7 +759,7 @@
           });
 
           var html = `
-            <div class="col-12" id="statstitle">Статистика за ` + (authObject.sluzba != "Kontrola" ? authObject.sluzba : (officesArray.length == 1 ? $('#stats-offices').val() : `одабране СКН`)) + ` за период од ` + $('#stats-date-from').val() + ` до ` + $('#stats-date-to').val() + `</div>
+            <div class="col-12" id="statstitle">Статистика за ` + (authObject.sluzba != control ? authObject.sluzba : (officesArray.length == 1 ? $('#stats-offices').val() : `одабране СКН`)) + ` за период од ` + $('#stats-date-from').val() + ` до ` + $('#stats-date-to').val() + `</div>
             <div class="col-lg-6 col-12" id="chart">
               <div id="chart-inner"></div>
             </div>
@@ -1131,7 +1133,7 @@
   };
 
   PRM.save = function(pID, e, i) {
-    if ($(e).parent().parent().parent().find(authObject.sluzba == "Kontrola" ? "#controller-comment" : "#office-comment").hasClass("dirty")) {
+    if ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty")) {
       $.confirm({
         title: 'ПАЖЊА!',
         content: 'Да ли сте сигурни да желите да сачувате измењени коментар?',
@@ -1156,7 +1158,7 @@
               }, 500);
               setTimeout(function() {
                 $ajaxUtils.sendPutRequest(
-                  apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == "Kontrola" ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == "Kontrola" ? "#controller-comment" : "#office-comment").html()),
+                  apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()),
                   function(response, status) {
                     $.confirm({
                       title: 'ПОТВРДА',
@@ -1172,7 +1174,7 @@
                         }
                       }
                     });
-                    if (authObject.sluzba == "Kontrola") {
+                    if (authObject.sluzba == control) {
                       $(e).parent().parent().parent().find("#controller-comment").removeClass('dirty');
                       cComms[i] = $(e).parent().parent().parent().find("#controller-comment").html();
                     } else {
@@ -1212,11 +1214,11 @@
   };
 
   PRM.check = function(pID, e, i) {
-    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') || $(e).parent().parent().parent().find("#office-response").html() != '' && authObject.sluzba == "Kontrola") {
+    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') || $(e).parent().parent().parent().find("#office-response").html() != '' && authObject.sluzba == control) {
       if ($(e).parent().parent().parent().find("#controller-comment").hasClass('dirty') || $(e).parent().parent().parent().find("#office-coment").hasClass('dirty')) {
         $.confirm({
           title: 'ПАЖЊА!',
-          content: 'Да ли желите да ' + (authObject.sluzba == "Kontrola" ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + ', а да претходно нисте сачували постојеће измене коментара?',
+          content: 'Да ли желите да ' + (authObject.sluzba == control ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + ', а да претходно нисте сачували постојеће измене коментара?',
           theme: 'supervan',
           backgroundDismiss: 'true',
           autoClose: 'no|15000',
@@ -1262,7 +1264,7 @@
   PRM.checkAux = function(pID, e, i) {
     $.confirm({
       title: 'ПАЖЊА!',
-      content: 'Да ли желите да ' + (authObject.sluzba == "Kontrola" ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + '?<br><br><br><span>Измене над овом примедбом неће бити могуће након ове акције.</span>',
+      content: 'Да ли желите да ' + (authObject.sluzba == control ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + '?<br><br><br><span>Измене над овом примедбом неће бити могуће након ове акције.</span>',
       theme: 'supervan',
       backgroundDismiss: 'true',
       autoClose: 'no|15000',
@@ -1284,11 +1286,11 @@
             }, 500);
             setTimeout(function() {
               $ajaxUtils.sendPutRequest(
-                apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == "Kontrola" ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html()),
+                apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html()),
                 function(response, status) {
                   $.confirm({
                     title: 'ПОТВРДА',
-                    content: (authObject.sluzba == "Kontrola" ? 'Примедба ' + pID + ' успешно закључена и означена као прослеђена грађанину.' : 'Одговор на примедбу ' + pID + ' успешно евидентиран и прослеђен контролорима.'),
+                    content: (authObject.sluzba == control ? 'Примедба ' + pID + ' успешно закључена и означена као прослеђена грађанину.' : 'Одговор на примедбу ' + pID + ' успешно евидентиран и прослеђен контролорима.'),
                     theme: 'supervan',
                     backgroundDismiss: 'true',
                     buttons: {
@@ -1416,7 +1418,7 @@
           (($("#client-name").val() != "") ? ('&ime=' + encodeURIComponent($("#client-name").val())) : '') +
           (($("#client-mail").val() != "") ? ('&email=' + encodeURIComponent($("#client-mail").val())) : '') +
           (($("#client-phone").val() != "") ? ('&tel=' + encodeURIComponent($("#client-phone").val())) : '') +
-          ((authObject.sluzba == "Kontrola") ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
+          ((authObject.sluzba == control) ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
           (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
         function(response, status) {
           var html = generateTableRowsHtml(response);
@@ -1686,7 +1688,7 @@
           (($("#client-name").val() != "") ? ('&ime=' + encodeURIComponent($("#client-name").val())) : '') +
           (($("#client-mail").val() != "") ? ('&email=' + encodeURIComponent($("#client-mail").val())) : '') +
           (($("#client-phone").val() != "") ? ('&tel=' + encodeURIComponent($("#client-phone").val())) : '') +
-          ((authObject.sluzba == "Kontrola") ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
+          ((authObject.sluzba == control) ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
           (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
         function(response, status) {
           var html = generateTableRowsHtml(response);
