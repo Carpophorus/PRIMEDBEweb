@@ -9,10 +9,13 @@
   const control = 'centar';
 
   // OLD:
-  // var apiRoot = 'http://10.0.1.251:8090/';
+  var apiRoot = 'http://10.0.1.251:8091/';
 
   // AD TEST:
-  var apiRoot = 'http://10.0.13.42:8091/';
+  //var apiRoot = 'http://10.0.13.42:8091/';
+
+  //RGZ TEST:
+  //var apiRoot = 'http://93.87.56.76:8090/';
 
   var authObject = null;
 

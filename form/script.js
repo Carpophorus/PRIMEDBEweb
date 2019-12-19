@@ -1,6 +1,7 @@
 (function(global) {
 
-  var apiRoot = 'http://10.0.1.251:8090/';
+  var apiRoot = 'http://10.0.1.251:8091/';
+  //var apiRoot = 'http://93.87.56.76:8090/';
   var form = null;
 
   var appear = function(selector, interval) {
@@ -64,7 +65,7 @@
       form.disabled = false;
       form.reset();
       //appear form, disappear loader
-      alert(event.target.responseText);
+      alert('Успешно сте послали примедбу.'/*event.target.responseText*/);
       //confirm dialogue?
     });
 
@@ -72,7 +73,7 @@
     XHR.addEventListener('error', function(event) {
       form.disabled = false;
       //confirm dialogue?
-      alert('Oops! Something went wrong.');
+      alert('Десила се грешка, покушајте поново.');
     });
 
     var data = {};
