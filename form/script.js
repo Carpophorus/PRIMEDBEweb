@@ -1,6 +1,6 @@
 (function(global) {
 
-  // OLD:
+  // DBS TEST:
   var apiRoot = 'http://10.0.1.251:8090/';
   
   // RGZ TEST:

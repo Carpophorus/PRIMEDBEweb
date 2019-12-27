@@ -6,14 +6,13 @@
   var offices = null;
   var statuses = null;
 
-  //const control = 'centar';
-  const control = 'kn-grupa';
-
-  // OLD:
+  // DBS TEST:
   var apiRoot = 'http://10.0.1.251:8090/';
+  const control = 'centar';
 
   // RGZ TEST:
   //var apiRoot = 'http://93.87.56.76:8090/';
+  //const control = 'kn-grupa';
 
   var authObject = null;
 
