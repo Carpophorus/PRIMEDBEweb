@@ -467,7 +467,7 @@
               <div class="expansion-label">коментар службеника:</div>
               <div id="office-comment" onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</div>
               <div class="expansion-label">одговор службе:</div>
-              <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + oResponse + `</div>
+              <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + /*(authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`)*/ (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus == statuses[3] || authObject.sluzba != control && (response.Primedbe[i].PoslednjiStatus == statuses[1] || response.Primedbe[i].PoslednjiStatus == statuses[2]) ? `contenteditable="true"` : ``) + ` spellcheck="false">` + oResponse + `</div>
               ` + (authObject.sluzba != control && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
               <div class="row">
                 <div class="hidden-sm-down col-md-9"></div>
@@ -1160,7 +1160,7 @@
               }, 500);
               setTimeout(function() {
                 $ajaxUtils.sendPutRequest(
-                  apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()),
+                  apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe' + '?primedbaId=' + pID + '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()),
                   function(response, status) {
                     $.confirm({
                       title: 'ПОТВРДА',
