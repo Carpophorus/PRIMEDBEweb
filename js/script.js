@@ -6,15 +6,13 @@
   var offices = null;
   var statuses = null;
 
-  const control = 'centar';
+  //const control = 'centar';
+  const control = 'kn-grupa';
 
   // OLD:
   var apiRoot = 'http://10.0.1.251:8090/';
 
-  // AD TEST:
-  //var apiRoot = 'http://10.0.13.42:8091/';
-
-  //RGZ TEST:
+  // RGZ TEST:
   //var apiRoot = 'http://93.87.56.76:8090/';
 
   var authObject = null;
@@ -354,9 +352,10 @@
       html += `
         <div class="table-row row" onclick="$PRM.tableRowClicked(` + (i + 1) + `, this);">
           <div class="col-2 col-md-1">` + response.Primedbe[i].Id + `</div>
-          <div class="col-6 col-md-3">` + response.Primedbe[i].BrojPredmeta + `</div>
-          <div class="col-3 hidden-sm-down">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
+          <div class="col-6 col-md-2">` + response.Primedbe[i].BrojPredmeta + `</div>
           <div class="col-3 hidden-sm-down">` + response.Primedbe[i].Ime + `</div>
+          <div class="col-2 hidden-sm-down">` + officeString + `</div>
+          <div class="col-2 hidden-sm-down">` + response.Primedbe[i].DatumPrijema.substring(8, 10) + '.' + response.Primedbe[i].DatumPrijema.substring(5, 7) + '.' + response.Primedbe[i].DatumPrijema.substring(0, 4) + '. ' + response.Primedbe[i].DatumPrijema.substring(11, 13) + ':' + response.Primedbe[i].DatumPrijema.substring(14, 16) + `</div>
           <div class="col-2 col-md-1 ` + statusClass + `">` + statusIcon + `</div>
           <div class="col-2 col-md-1 ` + responseClass + `">` + responseIcon + `</div>
         </div>
@@ -597,9 +596,10 @@
     <div id="table">
       <div id="table-header" class="row">
         <div class="col-2 col-md-1">р.б.</div>
-        <div class="col-6 col-md-3">бр. предмета</div>
-        <div class="col-3 hidden-sm-down">датум</div>
+        <div class="col-6 col-md-2">бр. предмета</div>
         <div class="col-3 hidden-sm-down">име и презиме</div>
+        <div class="col-2 hidden-sm-down">служба</div>
+        <div class="col-2 hidden-sm-down">датум</div>
         <div class="col-2 col-md-1"><span class="hidden-sm-down">статус</span><i class="hidden-md-up fa fa-info-circle"></i></div>
         <div class="col-2 col-md-1"><span class="hidden-sm-down">одговор</span><i class="hidden-md-up fa fa-comments"></i></div>
       </div>
