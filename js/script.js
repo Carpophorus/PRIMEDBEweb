@@ -1135,10 +1135,10 @@
   };
 
   PRM.save = function(pID, e, i) {
-    if ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty")) {
+    if ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") || $(e).parent().parent().parent().find("#office-response").hasClass('dirty')) {
       $.confirm({
         title: 'ПАЖЊА!',
-        content: 'Да ли сте сигурни да желите да сачувате измењени коментар?',
+        content: 'Да ли сте сигурни да желите да сачувате измењена поља?',
         theme: 'supervan',
         backgroundDismiss: 'true',
         autoClose: 'no|10000',
@@ -1160,7 +1160,10 @@
               }, 500);
               setTimeout(function() {
                 $ajaxUtils.sendPutRequest(
-                  apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe' + '?primedbaId=' + pID + '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()),
+                  apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe'
+                    + '?primedbaId=' + pID
+                    + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()) : "")
+                    + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html()) : ""),
                   function(response, status) {
                     $.confirm({
                       title: 'ПОТВРДА',
@@ -1182,6 +1185,10 @@
                     } else {
                       $(e).parent().parent().parent().find("#office-comment").removeClass('dirty');
                       oComms[i] = $(e).parent().parent().parent().find("#office-comment").html();
+                    }
+                    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty')) {
+                      $(e).parent().parent().parent().find("#office-response").removeClass('dirty');
+                      oResps[i] = $(e).parent().parent().parent().find("#office-response").html();
                     }
                     //TODO: add history item
                     disappear($(e).parent().find(".loader"), 500);
