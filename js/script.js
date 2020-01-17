@@ -7,8 +7,8 @@
   var statuses = null;
 
   // DBS TEST:
-  // // var apiRoot = 'http://10.0.1.251:8090/';
-  var apiRoot = 'https://10.0.1.251:443/';
+  var apiRoot = 'http://10.0.1.251:8090/';
+  //var apiRoot = 'https://10.0.1.251:443/';
   const control = 'centar';
 
   // RGZ TEST:
