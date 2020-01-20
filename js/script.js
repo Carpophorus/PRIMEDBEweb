@@ -418,11 +418,11 @@
         html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
         if (response.Primedbe[i].Logovi[j].Komentar != null) {
           if (!answered) {
-          html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
-          if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control)
-            cComment = response.Primedbe[i].Logovi[j].Komentar;
-          else
-            oComment = response.Primedbe[i].Logovi[j].Komentar;
+            html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
+            if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control)
+              cComment = response.Primedbe[i].Logovi[j].Komentar;
+            else
+              oComment = response.Primedbe[i].Logovi[j].Komentar;
           } else {
             html += ' уз одговор \"' + oResponse + '\"';
             answered = false;
@@ -1163,6 +1163,7 @@
                 $ajaxUtils.sendPutRequest(
                   apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe'
                     + '?primedbaId=' + pID
+                    + '&promeniStatus=0'
                     + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()) : "")
                     + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html()) : ""),
                   function(response, status) {
@@ -1224,11 +1225,11 @@
   };
 
   PRM.check = function(pID, e, i) {
-    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') || $(e).parent().parent().parent().find("#office-response").html() != '' && authObject.sluzba == control) {
+    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') || $(e).parent().parent().parent().find("#office-response").html() != ''/* && authObject.sluzba == control*/) {
       if ($(e).parent().parent().parent().find("#controller-comment").hasClass('dirty') || $(e).parent().parent().parent().find("#office-coment").hasClass('dirty')) {
         $.confirm({
           title: 'ПАЖЊА!',
-          content: 'Да ли желите да ' + (authObject.sluzba == control ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + ', а да претходно нисте сачували постојеће измене коментара?',
+          content: 'Да ли желите да ' + (authObject.sluzba == control ? "одговор проследите грађанину" : "завршите обраду примедбе и проследите је контролору") + ', а да претходно нисте проверили и сачували постојеће измене коментара?',
           theme: 'supervan',
           backgroundDismiss: 'true',
           autoClose: 'no|15000',
@@ -1255,7 +1256,7 @@
     } else {
       $.confirm({
         title: 'ГРЕШКА!',
-        content: 'Морате прво изменити одговор пре него што сачувате измене одговора.',
+        content: 'Морате прво изменити одговор пре него што завршите обраду. Одговор не може да буде празан.',
         theme: 'supervan',
         backgroundDismiss: 'true',
         buttons: {
@@ -1296,7 +1297,11 @@
             }, 500);
             setTimeout(function() {
               $ajaxUtils.sendPutRequest(
-                apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe') + '?primedbaId=' + pID + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html()),
+                apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')
+                  + '?primedbaId=' + pID
+                  + (authObject.sluzba == control ? '' : '&promeniStatus=1')
+                  + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html())
+                  + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()) : ""),
                 function(response, status) {
                   $.confirm({
                     title: 'ПОТВРДА',
@@ -1315,7 +1320,10 @@
                   //TODO: add history item
                   $(e).parent().parent().parent().find("#office-response").removeClass('dirty');
                   oResps[i] = $(e).parent().parent().parent().find("#office-response").html();
+                  $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").removeClass("dirty");
                   disappear($(e).parent().find(".loader"), 500);
+                  cComms[i] = $(e).parent().parent().parent().find("#controller-comment").html();
+                  oComms[i] = $(e).parent().parent().parent().find("#office-comment").html();
                   setTimeout(function() {
                     appear(e, 500);
                   }, 500);
