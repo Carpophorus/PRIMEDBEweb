@@ -382,13 +382,12 @@
               <div class="expansion-info-data">` + statusString + `</div>
               <div class="expansion-label">одговор:</div>
               <div class="expansion-info-data">` + responseString + `</div>
-              <div class="expansion-label">историја:</div>
+              <div class="expansion-label">историја статуса:</div>
               <div class="expansion-info-data">
       `;
       cComment = null;
       oComment = null;
       oResponse = response.Primedbe[i].Odgovor.length != 0 ? response.Primedbe[i].Odgovor[response.Primedbe[i].Odgovor.length - 1].Odgovor1 : '';
-      var answered = false;
       for (var j = 1; j < response.Primedbe[i].Logovi.length; j++) {
         var logStatusString = '';
         var logResponseString = '';
@@ -408,7 +407,6 @@
           case 'ОДГОВОРЕНО':
             logStatusString = 'ПРИМЕДБА ПРОСЛЕЂЕНА СЛУЖБИ';
             logResponseString = 'ОДГОВОРЕНО';
-            answered = true;
             break;
           case 'ОДГОВОРЕНО КОРИСНИКУ':
             logStatusString = 'ОДГОВОР ПОСЛАТ ГРАЂАНИНУ';
@@ -417,22 +415,24 @@
         }
         html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
         if (response.Primedbe[i].Logovi[j].Komentar != null) {
-          if (!answered) {
-            html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
-            if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control)
-              cComment = response.Primedbe[i].Logovi[j].Komentar;
-            else
-              oComment = response.Primedbe[i].Logovi[j].Komentar;
-          } else {
-            html += ' уз одговор \"' + oResponse + '\"';
-            answered = false;
-          }
+          html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
+          if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control)
+            cComment = response.Primedbe[i].Logovi[j].Komentar;
+          else
+            oComment = response.Primedbe[i].Logovi[j].Komentar;
         }
         html += '<br>';
       }
       cComms[i] = cComment ? cComment : '';
       oComms[i] = oComment ? oComment : '';
       oResps[i] = oResponse;
+      html += `
+              </div>
+              <div class="expansion-label">историја одговора:</div>
+              <div class="expansion-info-data">
+      `;
+      for (var j = 0; j < response.Primedbe[i].Odgovor.length; j++)
+        html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(8, 10) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(5, 7) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(0, 4) + '. ' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(11, 13) + ':' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Odgovor[j].SluzbaId == 1 ? 'контролор ' : 'оператер ') + response.Primedbe[i].Odgovor[j].Sluzbenik + ' променио/-ла одговор у \"' + response.Primedbe[i].Odgovor[j].Odgovor1 + '\"<br>';
       html += `
               </div>
             </div>
