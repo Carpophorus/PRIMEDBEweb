@@ -414,7 +414,7 @@
             break;
         }
         html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
-        if (response.Primedbe[i].Logovi[j].Komentar != null) {
+        if (response.Primedbe[i].Logovi[j].Komentar != null && response.Primedbe[i].Logovi[j].Komentar != "") {
           html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
           if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control)
             cComment = response.Primedbe[i].Logovi[j].Komentar;
