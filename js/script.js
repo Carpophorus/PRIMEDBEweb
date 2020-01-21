@@ -864,7 +864,7 @@
             }
           });
           var chartInner = new Chartist.Pie("#chart-inner", {
-            series: [0, 0, 0, 0, 0, multiple, total - multiple],
+            series: [0, 0, 0, 0, 0, total - multiple, multiple],
             labels: [0, 0, 0, 0, 0, 0, 0]
           }, {
             donut: true,
@@ -1087,7 +1087,7 @@
     if ($(e).parent().parent().find("#forward option:selected").val() == 0) {
       $.confirm({
         title: 'ГРЕШКА!',
-        content: 'Морате изабрати оператера којем се примедба прослеђује.',
+        content: 'Морате изабрати службу којој се примедба прослеђује.',
         theme: 'supervan',
         backgroundDismiss: 'true',
         buttons: {

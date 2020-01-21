@@ -229,19 +229,19 @@
 }
 
 .ct-series-f .ct-bar, .ct-series-f .ct-line, .ct-series-f .ct-point, .ct-series-f .ct-slice-donut {
-  stroke: #FFF
-}
-
-.ct-series-f .ct-area, .ct-series-f .ct-slice-donut-solid, .ct-series-f .ct-slice-pie {
-  fill: #FFF
-}
-
-.ct-series-g .ct-bar, .ct-series-g .ct-line, .ct-series-g .ct-point, .ct-series-g .ct-slice-donut {
   stroke: transparent
 }
 
-.ct-series-g .ct-area, .ct-series-g .ct-slice-donut-solid, .ct-series-g .ct-slice-pie {
+.ct-series-f .ct-area, .ct-series-f .ct-slice-donut-solid, .ct-series-f .ct-slice-pie {
   fill: transparent
+}
+
+.ct-series-g .ct-bar, .ct-series-g .ct-line, .ct-series-g .ct-point, .ct-series-g .ct-slice-donut {
+  stroke: #FFF
+}
+
+.ct-series-g .ct-area, .ct-series-g .ct-slice-donut-solid, .ct-series-g .ct-slice-pie {
+  fill: #FFF
 }
 
 .ct-series-h .ct-bar, .ct-series-h .ct-line, .ct-series-h .ct-point, .ct-series-h .ct-slice-donut {
