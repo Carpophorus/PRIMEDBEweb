@@ -13,7 +13,7 @@
 
   // RGZ TEST:
   //var apiRoot = 'http://93.87.56.76:8090/';
-  //const control = 'kn-grupa';
+  //const control = 'Sektor za katastar nepokretnosti';
 
   var authObject = null;
 
@@ -444,10 +444,14 @@
               <div id="forward-container" class="row">
                 <div id="forward-select-container" class="col-12 col-md-9">
                   <select id="forward" onchange="$PRM.expansionSelectChanged(this);">
-                      <option value="0" disabled selected hidden>СКН</option>
+                      <!--<option value="0" disabled selected hidden>СКН</option>-->
         `;
-        for (var j = 0; j < offices.length; j++)
-          html += `<option value="` + offices[j].Id + `" ` + ((response.Primedbe[i].PoslednjiStatus != 'НЕПРОСЛЕЂЕН' && /*response.Primedbe[i].SluzbaId == offices[j].Id*/ response.Primedbe[i].Logovi[response.Primedbe[i].Logovi.length - 1].SluzbaId == offices[j].Id)? `selected` : ``) + `>` + offices[j].Naziv + `</option>`;
+        for (var j = 0; j < offices.length; j++) {
+          var tempArray = response.Primedbe[i].Logovi.filter(e => e.SluzbaId != 1);
+          var tempCheck = response.Primedbe[i].PoslednjiStatus != 'НЕПРОСЛЕЂЕН' && tempArray[tempArray.length - 1].SluzbaId == offices[j].Id || response.Primedbe[i].PoslednjiStatus == 'НЕПРОСЛЕЂЕН' && response.Primedbe[i].SluzbaId == offices[j].Id;
+          html += `<option value="` + offices[j].Id + `" ` + ((tempCheck) ? `selected` : ``) + `>` + offices[j].Naziv + `</option>`;
+          //html += `<option value="` + offices[j].Id + `" ` + ((response.Primedbe[i].PoslednjiStatus != 'НЕПРОСЛЕЂЕН' && /*response.Primedbe[i].SluzbaId == offices[j].Id*/ response.Primedbe[i].Logovi[response.Primedbe[i].Logovi.length - 1].SluzbaId == offices[j].Id)? `selected` : ``) + `>` + offices[j].Naziv + `</option>`;
+        }
         html += `
                   </select>
                 </div>
