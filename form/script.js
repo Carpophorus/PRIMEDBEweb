@@ -68,16 +68,24 @@
     XHR.addEventListener('load', function(event) {
       form.disabled = false;
       form.reset();
-      //appear form, disappear loader
-      alert('Успешно сте послали примедбу.'/*event.target.responseText*/);
-      //confirm dialogue?
+      //appear form, disappear loader?
+      if (event.target.status >= 400) {
+        if (event.target.status == 400)
+          alert('\nГРЕШКА!\n\n' + JSON.parse(event.target.responseText).Message);
+        else
+          alert('\nГРЕШКА!\n\nДесила се грешка, покушајте поново.');
+      } else {
+        alert('\nУспешно сте послали примедбу.');
+      }
+      //confirm dialogue instead of alerts?
     });
 
     // Define what happens in case of error
     XHR.addEventListener('error', function(event) {
       form.disabled = false;
-      //confirm dialogue?
-      alert('Десила се грешка, покушајте поново.');
+      //disappear form, appear loader?
+      alert('\nГРЕШКА!\n\nДесила се грешка, покушајте поново.');
+      //confirm dialogue instead of alert?
     });
 
     var data = {};
@@ -139,7 +147,7 @@
     });
 
     XHR.addEventListener('error', function(event) {
-      alert('Oops! Something went wrong.');
+      alert('\nГРЕШКА!\n\nДесила се грешка, покушајте поново.');
     });
 
     XHR.open('GET', apiRoot + 'api/Sluzbe', true);

@@ -109,7 +109,7 @@
           responseHandler(JSON.parse(request.status === 204 || request.responseText === '' ? null : request.responseText), request.status);
         else
           responseHandler(request.status === 204 || request.responseText === '' ? null : request.responseText, request.status);
-      } else if (request.status === 400 || request.status >= 500) {
+      } else if (request.status === 400 || request.status === 401 || request.status >= 500) {
         var errorText = JSON.parse(request.responseText).error;
         setTimeout(function() {
           disappear($(".loader"), 500);
@@ -123,13 +123,17 @@
           title: 'ГРЕШКА!',
           content: errorText,
           theme: 'supervan',
-          backgroundDismiss: 'true',
+          backgroundDismiss: 'false',
           buttons: {
             ok: {
               text: 'ОК',
               btnClass: 'btn-white-prm',
               keys: ['enter'],
-              action: function() {}
+              action: function() {
+                if (localStorage.getItem("RGZPRMrefreshToken") != null)
+                  localStorage.removeItem("RGZPRMrefreshToken");
+                location.reload();
+              }
             }
           }
         });
@@ -146,7 +150,7 @@
           title: 'ГРЕШКА!',
           content: 'Десила се грешка у систему, покушајте поново касније.',
           theme: 'supervan',
-          backgroundDismiss: 'true',
+          backgroundDismiss: 'false',
           buttons: {
             ok: {
               text: 'ОК',
