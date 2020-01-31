@@ -109,7 +109,11 @@
           responseHandler(JSON.parse(request.status === 204 || request.responseText === '' ? null : request.responseText), request.status);
         else
           responseHandler(request.status === 204 || request.responseText === '' ? null : request.responseText, request.status);
-      } else if (request.status === 400 || request.status === 401 || request.status >= 500) {
+      } else if (request.status === 401) {
+        if (localStorage.getItem("RGZPRMrefreshToken") != null)
+          localStorage.removeItem("RGZPRMrefreshToken");
+        location.reload();
+      } else if (request.status === 400 || request.status >= 500) {
         var errorText = JSON.parse(request.responseText).error;
         setTimeout(function() {
           disappear($(".loader"), 500);
@@ -123,17 +127,13 @@
           title: 'ГРЕШКА!',
           content: errorText,
           theme: 'supervan',
-          backgroundDismiss: 'false',
+          backgroundDismiss: 'true',
           buttons: {
             ok: {
               text: 'ОК',
               btnClass: 'btn-white-prm',
               keys: ['enter'],
-              action: function() {
-                if (localStorage.getItem("RGZPRMrefreshToken") != null)
-                  localStorage.removeItem("RGZPRMrefreshToken");
-                location.reload();
-              }
+              action: function() {}
             }
           }
         });
