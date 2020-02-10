@@ -294,6 +294,41 @@
     PRM.loadPage(n);
   };
 
+  var setContenteditableListeners = function() {
+    $('div[contenteditable="true"]').keypress(function(event) {
+
+      if (event.which != 13)
+        return true;
+    
+      var docFragment = document.createDocumentFragment();
+    
+      //add a new line
+      //var newEle = document.createTextNode('\n');
+      //docFragment.appendChild(newEle);
+    
+      //add the br
+      newEle = document.createElement('br');
+      docFragment.appendChild(newEle);
+    
+      //make the br replace selection
+      var range = window.getSelection().getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(docFragment);
+    
+      //create a new range
+      range = document.createRange();
+      range.setStartAfter(newEle);
+      range.collapse(true);
+    
+      //make the cursor there
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    
+      return false;
+    });
+  };
+
   var generateTableRowsHtml = function(response) {
     var html = '';
     for (var i = 0; i < response.Primedbe.length; i++) {
@@ -387,7 +422,7 @@
       `;
       cComment = null;
       oComment = null;
-      oResponse = response.Primedbe[i].Odgovor.length != 0 ? response.Primedbe[i].Odgovor[response.Primedbe[i].Odgovor.length - 1].Odgovor1 : '';
+      oResponse = response.Primedbe[i].Odgovor.length != 0 ? response.Primedbe[i].Odgovor[response.Primedbe[i].Odgovor.length - 1].Odgovor1.replace(/\n/g, "<br>") : '';
       for (var j = 1; j < response.Primedbe[i].Logovi.length; j++) {
         var logStatusString = '';
         var logResponseString = '';
@@ -415,11 +450,11 @@
         }
         html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Logovi[j].Datum.substring(8, 10) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(5, 7) + '.' + response.Primedbe[i].Logovi[j].Datum.substring(0, 4) + '. ' + response.Primedbe[i].Logovi[j].Datum.substring(11, 13) + ':' + response.Primedbe[i].Logovi[j].Datum.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Logovi[j].Sluzbenik != 'servis' ? (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control ? 'контролор ' : 'оператер ') + response.Primedbe[i].Logovi[j].Sluzbenik + ' променио/-ла статус и стање одговора у ' + logStatusString + ' / ' + logResponseString : 'статус и стање одговора аутоматски промењени на ' + logStatusString + ' / ' + logResponseString);
         if (response.Primedbe[i].Logovi[j].Komentar != null && response.Primedbe[i].Logovi[j].Komentar != "") {
-          html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar + '\"';
+          html += ' уз коментар \"' + response.Primedbe[i].Logovi[j].Komentar.replace(/\n/g, " ") + '\"';
           if (response.Primedbe[i].Logovi[j].sluzbenikSluzba == control)
-            cComment = response.Primedbe[i].Logovi[j].Komentar;
+            cComment = response.Primedbe[i].Logovi[j].Komentar.replace(/\n/g, "<br>");
           else
-            oComment = response.Primedbe[i].Logovi[j].Komentar;
+            oComment = response.Primedbe[i].Logovi[j].Komentar.replace(/\n/g, "<br>");
         }
         html += '<br>';
       }
@@ -432,7 +467,7 @@
               <div class="expansion-info-data">
       `;
       for (var j = 0; j < response.Primedbe[i].Odgovor.length; j++)
-        html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(8, 10) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(5, 7) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(0, 4) + '. ' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(11, 13) + ':' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Odgovor[j].SluzbaId == 1 ? 'контролор ' : 'оператер ') + response.Primedbe[i].Odgovor[j].Sluzbenik + ' променио/-ла одговор у \"' + response.Primedbe[i].Odgovor[j].Odgovor1 + '\"<br>';
+        html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(8, 10) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(5, 7) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(0, 4) + '. ' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(11, 13) + ':' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Odgovor[j].SluzbaId == 1 ? 'контролор ' : 'оператер ') + response.Primedbe[i].Odgovor[j].Sluzbenik + ' променио/-ла одговор у \"' + response.Primedbe[i].Odgovor[j].Odgovor1.replace(/\n/g, " ") + '\"<br>';
       html += `
               </div>
             </div>
@@ -629,6 +664,7 @@
       </div>
     `;
     insertHtml("#switchbox", html);
+    setContenteditableListeners();
     disappear($(".loader"), 500);
     appear($("#switchbox"), 500);
   };
@@ -1168,8 +1204,8 @@
                   apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe'
                     + '?primedbaId=' + pID
                     + '&promeniStatus=0'
-                    + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()) : "")
-                    + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html()) : ""),
+                    + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n")) : "")
+                    + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n")) : ""),
                   function(response, status) {
                     $.confirm({
                       title: 'ПОТВРДА',
@@ -1304,8 +1340,8 @@
                 apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')
                   + '?primedbaId=' + pID
                   + (authObject.sluzba == control ? '' : '&promeniStatus=1')
-                  + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html())
-                  + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html()) : ""),
+                  + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n"))
+                  + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n")) : ""),
                 function(response, status) {
                   $.confirm({
                     title: 'ПОТВРДА',
@@ -1446,6 +1482,7 @@
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
           $("#table").append(html);
+          setContenteditableListeners();
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
         },
@@ -1716,6 +1753,7 @@
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
           $("#table").append(html);
+          setContenteditableListeners();
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
           if ($("#page-select").prop("selectedIndex") == 0)
