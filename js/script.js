@@ -1204,8 +1204,8 @@
                   apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe'
                     + '?primedbaId=' + pID
                     + '&promeniStatus=0'
-                    + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n")) : "")
-                    + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n")) : ""),
+                    + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "")
+                    + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : ""),
                   function(response, status) {
                     $.confirm({
                       title: 'ПОТВРДА',
@@ -1340,8 +1340,8 @@
                 apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')
                   + '?primedbaId=' + pID
                   + (authObject.sluzba == control ? '' : '&promeniStatus=1')
-                  + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n"))
-                  + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n")) : ""),
+                  + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " "))
+                  + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : ""),
                 function(response, status) {
                   $.confirm({
                     title: 'ПОТВРДА',
