@@ -111,11 +111,12 @@
     if (data.ObracanjeSluzbi === false)
       data.ObracanjeKome = null;
 
-    var encodedData = '';
+    /*var encodedData = '';
     for (var key in data)
-      encodedData += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=' + encodeURIComponent(token) + encodedData, true);
-    XHR.send();
+      encodedData += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);*/
+    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=' + encodeURIComponent(token) /*+ encodedData*/, true);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    XHR.send(JSON.stringify(data));
   }
 
   document.addEventListener('DOMContentLoaded', function(event) {
