@@ -683,6 +683,7 @@ header {
 .expansion-response>.divtextarea, .expansion-response>.divtextarea:hover, .expansion-response>.divtextarea:focus {
   padding: 1.5vh 2vh;
   line-height: 1.5;
+  overflow-wrap: break-word;
   background-color: #393939;
   border: 1px solid transparent;
   outline: 0;
