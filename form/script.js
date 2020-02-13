@@ -115,7 +115,7 @@
     for (var key in data)
       encodedData += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);*/
     XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=' + encodeURIComponent(token) /*+ encodedData*/, true);
-    xhr.setRequestHeader('Content-type', 'application/json');
+    XHR.setRequestHeader('Content-type', 'application/json');
     XHR.send(JSON.stringify(data));
   }
 
