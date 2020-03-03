@@ -1201,8 +1201,8 @@
               }, 500);
               setTimeout(function() {
                 var data = {};
-                data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "");
-                data.odgovor = ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "");
+                data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
+                data.odgovor = ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? $(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
                 $ajaxUtils.sendPutRequestWithData(
                   apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe'
                     + '?primedbaId=' + pID
@@ -1340,8 +1340,8 @@
             }, 500);
             setTimeout(function() {
               var data = {};
-              data.odgovor = encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " "));
-              data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "")
+              data.odgovor = $(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ");
+              data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
               $ajaxUtils.sendPutRequestWithData(
                 apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')
                   + '?primedbaId=' + pID
