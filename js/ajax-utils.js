@@ -95,8 +95,8 @@
     };
     request.open("PUT", requestUrl, true);
     if (bearer !== null) request.setRequestHeader('Authorization', 'Bearer ' + bearer);
-    // request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-    request.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
+    request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+    // request.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
     request.send(data);
   };
 

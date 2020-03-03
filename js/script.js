@@ -1200,12 +1200,15 @@
                 appear($(e).parent().find(".loader"), 500);
               }, 500);
               setTimeout(function() {
-                $ajaxUtils.sendPutRequest(
+                var data = {};
+                data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "");
+                data.odgovor = ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "");
+                $ajaxUtils.sendPutRequestWithData(
                   apiRoot + 'api/rgz_primedbe/' + /*(authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')*/ 'odgovor_sluzbe'
                     + '?primedbaId=' + pID
                     + '&promeniStatus=0'
-                    + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "")
-                    + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : ""),
+                    /*+ ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "")
+                    + ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? "&odgovor=" + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "")*/,
                   function(response, status) {
                     $.confirm({
                       title: 'ПОТВРДА',
@@ -1238,7 +1241,7 @@
                       appear(e, 500);
                     }, 500);
                   },
-                  true, authObject.access_token
+                  true, JSON.stringify(data), authObject.access_token
                 );
               }, 510);
             }
@@ -1336,12 +1339,15 @@
               appear($(e).parent().find(".loader"), 500);
             }, 500);
             setTimeout(function() {
-              $ajaxUtils.sendPutRequest(
+              var data = {};
+              data.odgovor = encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " "));
+              data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "")
+              $ajaxUtils.sendPutRequestWithData(
                 apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')
                   + '?primedbaId=' + pID
                   + (authObject.sluzba == control ? '' : '&promeniStatus=1')
-                  + '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " "))
-                  + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : ""),
+                  /*+ '&odgovor=' + encodeURIComponent($(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " "))
+                  + ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? '&komentar=' + encodeURIComponent($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ")) : "")*/,
                 function(response, status) {
                   $.confirm({
                     title: 'ПОТВРДА',
@@ -1368,7 +1374,7 @@
                     appear(e, 500);
                   }, 500);
                 },
-                true, authObject.access_token
+                true, JSON.stringify(data), authObject.access_token
               );
             }, 510);
           }
