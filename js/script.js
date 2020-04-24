@@ -295,6 +295,7 @@
   };
 
   var setContenteditableListeners = function() {
+    /*
     $('div[contenteditable="true"]').keypress(function(event) {
 
       if (event.which != 13)
@@ -327,6 +328,7 @@
     
       return false;
     });
+    */
   };
 
   var generateTableRowsHtml = function(response) {
