@@ -7,11 +7,15 @@
   var statuses = null;
 
   // DBS TEST:
-  var apiRoot = 'http://10.0.1.251:8090/';
+  //var apiRoot = 'http://10.0.1.251:8090/';
   //var apiRoot = 'https://10.0.1.251:443/';
-  const control = 'centar';
+  //const control = 'centar';
 
   // RGZ TEST:
+  var apiRoot = 'http://93.87.56.76:8095/';
+  const control = 'Sektor za katastar nepokretnosti';
+
+  // RGZ LIVE:
   //var apiRoot = 'http://93.87.56.76:8090/';
   //const control = 'Sektor za katastar nepokretnosti';
 
