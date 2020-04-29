@@ -681,8 +681,11 @@ header {
 }
 
 .expansion-response>.divtextarea, .expansion-response>.divtextarea:hover, .expansion-response>.divtextarea:focus {
+  color: white !important;
+  width: 100%;
   max-height: 80vh;
   overflow-y: auto;
+  resize: none;
   display: inline-block;
   padding: 1.5vh 2vh;
   line-height: 1.5;
