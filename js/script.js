@@ -69,8 +69,8 @@
   };
 
   $(window).resize(function() {
-    $(".divtextarea").each(function(e) {
-      adjustHeight($(e));
+    $(".divtextarea").each(function() {
+      adjustHeight($(this));
     });
   });
 
@@ -677,8 +677,8 @@
     `;
     insertHtml("#switchbox", html);
     //setContenteditableListeners();
-    $(".divtextarea").each(function(e) {
-      adjustHeight($(e));
+    $(".divtextarea").each(function() {
+      adjustHeight($(this));
     });
     disappear($(".loader"), 500);
     appear($("#switchbox"), 500);
@@ -1510,8 +1510,8 @@
           $(".table-row, .expansion").remove();
           $("#table").append(html);
           //setContenteditableListeners();
-          $(".divtextarea").each(function(e) {
-            adjustHeight($(e));
+          $(".divtextarea").each(function() {
+            adjustHeight($(this));
           });
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
@@ -1784,8 +1784,8 @@
           $(".table-row, .expansion").remove();
           $("#table").append(html);
           //setContenteditableListeners();
-          $(".divtextarea").each(function(e) {
-            adjustHeight($(e));
+          $(".divtextarea").each(function() {
+            adjustHeight($(this));
           });
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
