@@ -70,7 +70,7 @@
 
   $(window).resize(function() {
     $(".divtextarea").each(function(e) {
-      adjustHeight($(e))
+      adjustHeight($(e));
     });
   });
 
@@ -513,7 +513,7 @@
       }
       html += `
               <div class="expansion-label">примедба:</div>
-              <div class="divtextarea" spellcheck="false">` + response.Primedbe[i].OpisPrimedbe + `</div>
+              <textarea class="divtextarea" spellcheck="false" readonly>` + response.Primedbe[i].OpisPrimedbe + `</textarea>
               <div class="expansion-label">коментар контролора:</div>
               <textarea id="controller-comment" oninput="$PRM.crChanged(1, ` + i + `, this);"` + /*` onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);"`*/ + ` onblur="$PRM.crChanged(1, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `readonly` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</textarea>
               <div class="expansion-label">коментар службеника:</div>
@@ -676,7 +676,10 @@
       </div>
     `;
     insertHtml("#switchbox", html);
-    setContenteditableListeners();
+    //setContenteditableListeners();
+    $(".divtextarea").each(function(e) {
+      adjustHeight($(e));
+    });
     disappear($(".loader"), 500);
     appear($("#switchbox"), 500);
   };
@@ -1506,7 +1509,10 @@
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
           $("#table").append(html);
-          setContenteditableListeners();
+          //setContenteditableListeners();
+          $(".divtextarea").each(function(e) {
+            adjustHeight($(e));
+          });
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
         },
@@ -1777,7 +1783,10 @@
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
           $("#table").append(html);
-          setContenteditableListeners();
+          //setContenteditableListeners();
+          $(".divtextarea").each(function(e) {
+            adjustHeight($(e));
+          });
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
           if ($("#page-select").prop("selectedIndex") == 0)
