@@ -744,12 +744,12 @@
 
   var adjustHeight = function(e) {
     $(e).css("height", 0);
-    $(e).css("height", Math.ceil(Math.max(window.innerHeight * 0.0715, $(e).prop("scrollHeight")) + window.innerHeight * 0.0015) + "px");
+    $(e).css("height", Math.ceil(Math.max(window.innerHeight * 0.07, $(e).prop("scrollHeight")) + window.innerHeight * 0.005) + "px");
   };
 
   PRM.crChanged = function(type, i, e) {
     var ref = type == 1 ? cComms : type == 2 ? oComms : oResps;
-    if ($(e).html() != ref[i])
+    if ($(e).val() != ref[i])
       $(e).addClass('dirty');
     else
       $(e).removeClass('dirty');
