@@ -744,7 +744,7 @@
 
   var adjustHeight = function(e) {
     $(e).css("height", 0);
-    $(e).css("height", Math.ceil(Math.max(window.innerHeight * 0.07, $(e).prop("scrollHeight")) /*+ window.innerHeight * 0.015*/) + "px");
+    $(e).css("height", Math.ceil(Math.max(window.innerHeight * 0.0715, $(e).prop("scrollHeight")) + window.innerHeight * 0.0015) + "px");
   };
 
   PRM.crChanged = function(type, i, e) {
