@@ -683,7 +683,7 @@ header {
 .expansion-response>.divtextarea, .expansion-response>.divtextarea:hover, .expansion-response>.divtextarea:focus {
   color: white !important;
   width: 100%;
-  max-height: 80vh;
+  max-height: 70vh;
   overflow-y: auto;
   resize: none;
   display: inline-block;

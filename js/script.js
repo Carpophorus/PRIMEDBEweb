@@ -743,11 +743,8 @@
   };
 
   var adjustHeight = function(e) {
-    console.log($(e));
-    //e.style.height = 0;
     $(e).css("height", 0);
-    //e.style.height = Math.ceil(Math.max(window.innerHeight * 0.04, e.scrollHeight) + window.innerHeight * 0.015) + 'px';
-    $(e).css("height", Math.ceil(Math.max(window.innerHeight * 0.04, $(e).prop("scrollHeight")) + window.innerHeight * 0.015) + "px");
+    $(e).css("height", Math.ceil(Math.max(window.innerHeight * 0.07, $(e).prop("scrollHeight")) /*+ window.innerHeight * 0.015*/) + "px");
   };
 
   PRM.crChanged = function(type, i, e) {
