@@ -68,6 +68,12 @@
     }, Number(interval) + 10);
   };
 
+  $(window).resize(function() {
+    $(".divtextarea").each(function(e) {
+      adjustHeight($(e))
+    });
+  });
+
   document.addEventListener("DOMContentLoaded", function(event) {
     if (localStorage.getItem("RGZPRMrefreshToken") !== null) {
       disappear($(".login-screen"), 500);
@@ -509,11 +515,11 @@
               <div class="expansion-label">примедба:</div>
               <div class="divtextarea" spellcheck="false">` + response.Primedbe[i].OpisPrimedbe + `</div>
               <div class="expansion-label">коментар контролора:</div>
-              <div id="controller-comment" onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);" onblur="$PRM.crChanged(1, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `contenteditable="true"` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</div>
+              <textarea id="controller-comment" oninput="$PRM.crChanged(1, ` + i + `, this);"` + /*` onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);"`*/ + ` onblur="$PRM.crChanged(1, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `readonly` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</textarea>
               <div class="expansion-label">коментар службеника:</div>
-              <div id="office-comment" onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</div>
+              <textarea id="office-comment" oninput="$PRM.crChanged(2, ` + i + `, this);"` + /*` onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);"`*/ + ` onblur="$PRM.crChanged(2, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `readonly`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</textarea>
               <div class="expansion-label">одговор службе:</div>
-              <div id="office-response" onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" class="divtextarea" ` + /*(authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`)*/ (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus == statuses[3] || authObject.sluzba != control && (response.Primedbe[i].PoslednjiStatus == statuses[1] || response.Primedbe[i].PoslednjiStatus == statuses[2]) ? `contenteditable="true"` : ``) + ` spellcheck="false">` + oResponse + `</div>
+              <textarea id="office-response" oninput="$PRM.crChanged(3, ` + i + `, this);"` + /*` onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);"`*/ + ` onblur="$PRM.crChanged(3, ` + i + `, this);" rows="1" class="divtextarea" ` + /*(authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`)*/ (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus == statuses[3] || authObject.sluzba != control && (response.Primedbe[i].PoslednjiStatus == statuses[1] || response.Primedbe[i].PoslednjiStatus == statuses[2]) ? `readonly` : ``) + ` spellcheck="false">` + oResponse + `</textarea>
               ` + (authObject.sluzba != control && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
               <div class="row">
                 <div class="hidden-sm-down col-md-9"></div>
@@ -733,12 +739,18 @@
     }
   };
 
+  var adjustHeight = function(e) {
+    e.style.height = 0;
+    e.style.height = Math.ceil(Math.max(window.innerHeight * 0.04, e.scrollHeight) + window.innerHeight * 0.015) + 'px';
+  };
+
   PRM.crChanged = function(type, i, e) {
     var ref = type == 1 ? cComms : type == 2 ? oComms : oResps;
     if ($(e).html() != ref[i])
       $(e).addClass('dirty');
     else
       $(e).removeClass('dirty');
+    adjustHeight($(e));
   };
 
   PRM.statsSearchButtonClicked = function() {
