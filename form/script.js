@@ -54,6 +54,7 @@
       form.disabled = false;
       form.reset();
       document.getElementById('sluzba-id').children[0].selected = true;
+      document.getElementById('ime-sluzbenika-container').style.maxHeight = 0;
       //appear form, disappear loader?
       if (event.target.status >= 400) {
         if (event.target.status == 400)
@@ -139,6 +140,9 @@
 
     form.addEventListener('submit', function (event) {
       event.preventDefault();
+      //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+      //jquery if field invalid or skn value == -1
+      //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
       form.disabled = true;
       grecaptcha.execute();
     });

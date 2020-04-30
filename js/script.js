@@ -695,7 +695,7 @@
 
   PRM.crChanged = function(type, i, e) {
     var ref = type == 1 ? cComms : type == 2 ? oComms : oResps;
-    if ($(e).val() != ref[i])
+    if ($(e).val().trim() != ref[i].trim())
       $(e).addClass('dirty');
     else
       $(e).removeClass('dirty');
@@ -1171,8 +1171,8 @@
               }, 500);
               setTimeout(function() {
                 var data = {};
-                data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
-                data.odgovor = ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? $(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
+                data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").val().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
+                data.odgovor = ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') ? $(e).parent().parent().parent().find("#office-response").val().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
                 $ajaxUtils.sendPutRequestWithData(
                   apiRoot + 'api/rgz_primedbe/odgovor_sluzbe'
                     + '?primedbaId=' + pID
@@ -1194,14 +1194,14 @@
                     });
                     if (authObject.sluzba == control) {
                       $(e).parent().parent().parent().find("#controller-comment").removeClass('dirty');
-                      cComms[i] = $(e).parent().parent().parent().find("#controller-comment").html();
+                      cComms[i] = $(e).parent().parent().parent().find("#controller-comment").val();
                     } else {
                       $(e).parent().parent().parent().find("#office-comment").removeClass('dirty');
-                      oComms[i] = $(e).parent().parent().parent().find("#office-comment").html();
+                      oComms[i] = $(e).parent().parent().parent().find("#office-comment").val();
                     }
                     if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty')) {
                       $(e).parent().parent().parent().find("#office-response").removeClass('dirty');
-                      oResps[i] = $(e).parent().parent().parent().find("#office-response").html();
+                      oResps[i] = $(e).parent().parent().parent().find("#office-response").val();
                     }
                     //TODO: add history item
                     disappear($(e).parent().find(".loader"), 500);
@@ -1236,7 +1236,7 @@
   };
 
   PRM.check = function(pID, e, i) {
-    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') || $(e).parent().parent().parent().find("#office-response").html() != ''/* && authObject.sluzba == control*/) {
+    if ($(e).parent().parent().parent().find("#office-response").hasClass('dirty') || $(e).parent().parent().parent().find("#office-response").val() != '') {
       if ($(e).parent().parent().parent().find("#controller-comment").hasClass('dirty') || $(e).parent().parent().parent().find("#office-coment").hasClass('dirty')) {
         $.confirm({
           title: 'ПАЖЊА!',
@@ -1308,8 +1308,8 @@
             }, 500);
             setTimeout(function() {
               var data = {};
-              data.odgovor = $(e).parent().parent().parent().find("#office-response").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ");
-              data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").html().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
+              data.odgovor = $(e).parent().parent().parent().find("#office-response").val().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ");
+              data.komentar = ($(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").hasClass("dirty") ? $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").val().replace(/<br>/g, "\n").replace(/&nbsp;/g, " ").replace(/ +/g, " ") : "");
               $ajaxUtils.sendPutRequestWithData(
                 apiRoot + 'api/rgz_primedbe/' + (authObject.sluzba == control ? 'odgovor_korisniku' : 'odgovor_sluzbe')
                   + '?primedbaId=' + pID
@@ -1331,11 +1331,11 @@
                   });
                   //TODO: add history item
                   $(e).parent().parent().parent().find("#office-response").removeClass('dirty');
-                  oResps[i] = $(e).parent().parent().parent().find("#office-response").html();
+                  oResps[i] = $(e).parent().parent().parent().find("#office-response").val();
                   $(e).parent().parent().parent().find(authObject.sluzba == control ? "#controller-comment" : "#office-comment").removeClass("dirty");
                   disappear($(e).parent().find(".loader"), 500);
-                  cComms[i] = $(e).parent().parent().parent().find("#controller-comment").html();
-                  oComms[i] = $(e).parent().parent().parent().find("#office-comment").html();
+                  cComms[i] = $(e).parent().parent().parent().find("#controller-comment").val();
+                  oComms[i] = $(e).parent().parent().parent().find("#office-comment").val();
                   setTimeout(function() {
                     appear(e, 500);
                   }, 500);
