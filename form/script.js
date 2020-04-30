@@ -87,7 +87,7 @@
       else if (e[0] === 'Email')
         e[1] = e[1].toLowerCase();
       else if (e[0] === 'OpisPrimedbe')
-        e[1] = e[1].replace(/\s+/g,' ').trim();
+        e[1] = e[1].trim();
       else if (e[0] === 'SluzbaId')
         e[1] = Number(e[1]);
       else if (e[0] === 'ObracanjeSluzbi')
