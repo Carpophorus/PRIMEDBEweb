@@ -304,43 +304,6 @@
     PRM.loadPage(n);
   };
 
-  var setContenteditableListeners = function() {
-    /*
-    $('div[contenteditable="true"]').keypress(function(event) {
-
-      if (event.which != 13)
-        return true;
-    
-      var docFragment = document.createDocumentFragment();
-    
-      //add a new line
-      //var newEle = document.createTextNode('\n');
-      //docFragment.appendChild(newEle);
-    
-      //add the br
-      newEle = document.createElement('br');
-      docFragment.appendChild(newEle);
-    
-      //make the br replace selection
-      var range = window.getSelection().getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(docFragment);
-    
-      //create a new range
-      range = document.createRange();
-      range.setStartAfter(newEle);
-      range.collapse(true);
-    
-      //make the cursor there
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    
-      return false;
-    });
-    */
-  };
-
   var generateTableRowsHtml = function(response) {
     var html = '';
     for (var i = 0; i < response.Primedbe.length; i++) {
@@ -515,11 +478,11 @@
               <div class="expansion-label">примедба:</div>
               <textarea class="divtextarea" spellcheck="false" readonly>` + response.Primedbe[i].OpisPrimedbe + `</textarea>
               <div class="expansion-label">коментар контролора:</div>
-              <textarea id="controller-comment" oninput="$PRM.crChanged(1, ` + i + `, this);"` + /*` onkeydown="$PRM.crChanged(1, ` + i + `, this);" onkeyup="$PRM.crChanged(1, ` + i + `, this);"`*/ + ` onblur="$PRM.crChanged(1, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `readonly` : ``) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</textarea>
+              <textarea id="controller-comment" oninput="$PRM.crChanged(1, ` + i + `, this);" onblur="$PRM.crChanged(1, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus != statuses[4] ? `` : `readonly`) + ` spellcheck="false">` + (cComment != null && cComment != '' ? cComment : '') + `</textarea>
               <div class="expansion-label">коментар службеника:</div>
-              <textarea id="office-comment" oninput="$PRM.crChanged(2, ` + i + `, this);"` + /*` onkeydown="$PRM.crChanged(2, ` + i + `, this);" onkeyup="$PRM.crChanged(2, ` + i + `, this);"`*/ + ` onblur="$PRM.crChanged(2, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `readonly`) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</textarea>
+              <textarea id="office-comment" oninput="$PRM.crChanged(2, ` + i + `, this);" onblur="$PRM.crChanged(2, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `readonly` : ``) + ` spellcheck="false">` + (oComment != null && oComment != '' ? oComment : '') + `</textarea>
               <div class="expansion-label">одговор службе:</div>
-              <textarea id="office-response" oninput="$PRM.crChanged(3, ` + i + `, this);"` + /*` onkeydown="$PRM.crChanged(3, ` + i + `, this);" onkeyup="$PRM.crChanged(3, ` + i + `, this);"`*/ + ` onblur="$PRM.crChanged(3, ` + i + `, this);" rows="1" class="divtextarea" ` + /*(authObject.sluzba == control || response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `contenteditable="true"`)*/ (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus == statuses[3] || authObject.sluzba != control && (response.Primedbe[i].PoslednjiStatus == statuses[1] || response.Primedbe[i].PoslednjiStatus == statuses[2]) ? `readonly` : ``) + ` spellcheck="false">` + oResponse + `</textarea>
+              <textarea id="office-response" oninput="$PRM.crChanged(3, ` + i + `, this);" onblur="$PRM.crChanged(3, ` + i + `, this);" rows="1" class="divtextarea" ` + (authObject.sluzba == control && response.Primedbe[i].PoslednjiStatus == statuses[3] || authObject.sluzba != control && (response.Primedbe[i].PoslednjiStatus == statuses[1] || response.Primedbe[i].PoslednjiStatus == statuses[2]) ? `` : `readonly`) + ` spellcheck="false">` + oResponse + `</textarea>
               ` + (authObject.sluzba != control && response.Primedbe[i].PoslednjiStatus == statuses[3] || response.Primedbe[i].PoslednjiStatus == statuses[4] ? `` : `
               <div class="row">
                 <div class="hidden-sm-down col-md-9"></div>
@@ -676,10 +639,6 @@
       </div>
     `;
     insertHtml("#switchbox", html);
-    //setContenteditableListeners();
-    /*$(".divtextarea").each(function() {
-      adjustHeight($(this));
-    });*/
     disappear($(".loader"), 500);
     appear($("#switchbox"), 500);
   };
@@ -1512,10 +1471,6 @@
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
           $("#table").append(html);
-          //setContenteditableListeners();
-          /*$(".divtextarea").each(function() {
-            adjustHeight($(this));
-          });*/
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
         },
@@ -1786,10 +1741,6 @@
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
           $("#table").append(html);
-          //setContenteditableListeners();
-          /*$(".divtextarea").each(function() {
-            adjustHeight($(this));
-          });*/
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
           if ($("#page-select").prop("selectedIndex") == 0)
