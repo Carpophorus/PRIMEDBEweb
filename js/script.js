@@ -677,9 +677,9 @@
     `;
     insertHtml("#switchbox", html);
     //setContenteditableListeners();
-    $(".divtextarea").each(function() {
+    /*$(".divtextarea").each(function() {
       adjustHeight($(this));
-    });
+    });*/
     disappear($(".loader"), 500);
     appear($("#switchbox"), 500);
   };
@@ -1135,6 +1135,9 @@
     } else {
       $(e).addClass("expanded");
       $("#expansion-" + n).collapse('show');
+      $("#expansion-" + n + " .divtextarea").each(function() {
+        adjustHeight($(this));
+      });
     }
   };
 
@@ -1510,9 +1513,9 @@
           $(".table-row, .expansion").remove();
           $("#table").append(html);
           //setContenteditableListeners();
-          $(".divtextarea").each(function() {
+          /*$(".divtextarea").each(function() {
             adjustHeight($(this));
-          });
+          });*/
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
         },
@@ -1784,9 +1787,9 @@
           $(".table-row, .expansion").remove();
           $("#table").append(html);
           //setContenteditableListeners();
-          $(".divtextarea").each(function() {
+          /*$(".divtextarea").each(function() {
             adjustHeight($(this));
-          });
+          });*/
           updatePagination(Math.ceil(response.UkupnoPrimedbi / 10));
           disappear($(".loader"), 10);
           if ($("#page-select").prop("selectedIndex") == 0)
