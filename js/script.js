@@ -26,19 +26,6 @@
   var oComms = [];
   var oResps = [];
 
-  var groupByProperty = function(collection, property) {
-    const groupedCollection = collection.reduce((previous, current) => {
-      if (!previous[current[property]]) {
-        previous[current[property]] = [current];
-      } else {
-        previous[current[property]].push(current);
-      }
-      return previous;
-    }, {});
-    // this will return an array of objects, each object containing a group of objects
-    return Object.keys(groupedCollection).map(key => ({ key, value: groupedCollection[key] }));
-  }
-
   var insertHtml = function(selector, html) {
     var targetElem = document.querySelector(selector);
     targetElem.innerHTML = html;

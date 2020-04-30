@@ -12,15 +12,6 @@
   var form = null;
 
   var appear = function(selector, interval) {
-    /*$(selector).removeClass("gone");
-    setTimeout(function() {
-      $(selector).css({
-        "opacity": 1,
-        "-webkit-transition": "opacity " + Number(interval) / 1000 + "s ease",
-        "-moz-transition": "opacity " + Number(interval) / 1000 + "s ease",
-        "transition": "opacity " + Number(interval) / 1000 + "s ease"
-      });
-    }, 10);*/
     var e = document.getElementById(selector);
     e.classList.remove("gone");
     setTimeout(function() {
@@ -30,15 +21,6 @@
   };
 
   var disappear = function(selector, interval) {
-    /*$(selector).css({
-      "opacity": 0,
-      "-webkit-transition": "opacity " + Number(interval) / 1000 + "s ease",
-      "-moz-transition": "opacity " + Number(interval) / 1000 + "s ease",
-      "transition": "opacity " + Number(interval) / 1000 + "s ease"
-    });
-    setTimeout(function() {
-      $(selector).addClass("gone");
-    }, Number(interval) + 10);*/
     var e = document.getElementById(selector);
     e.style.opacity = 0;
     e.style.transition = "opacity " + Number(interval) / 1000 + "s ease";
@@ -71,6 +53,7 @@
     XHR.addEventListener('load', function(event) {
       form.disabled = false;
       form.reset();
+      document.getElementById('sluzba-id').children[0].selected = true;
       //appear form, disappear loader?
       if (event.target.status >= 400) {
         if (event.target.status == 400)
@@ -114,10 +97,7 @@
     if (data.ObracanjeSluzbi === false)
       data.ObracanjeKome = null;
 
-    /*var encodedData = '';
-    for (var key in data)
-      encodedData += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);*/
-    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=' + encodeURIComponent(token) /*+ encodedData*/, true);
+    XHR.open('POST', apiRoot + 'api/rgz_primedbe/post?token=' + encodeURIComponent(token), true);
     XHR.setRequestHeader('Content-type', 'application/json');
     XHR.send(JSON.stringify(data));
   }
@@ -159,13 +139,8 @@
 
     form.addEventListener('submit', function (event) {
       event.preventDefault();
-      //sendData();
       form.disabled = true;
-      //grecaptcha.reset();
       grecaptcha.execute();
-
-      //document.getElementById('primedba').reset();
-      //document.getElementById('sluzba-id').children[0].selected = true;
     });
   });
 
