@@ -148,4 +148,16 @@
     });
   });
 
+  global.toggleHelp = function(e) {
+    var expanded = e.classList.contains('toggled');
+    var expandedOnes = document.getElementsByClassName('toggled');
+    for (var x in expandedOnes) {
+      x.classList.toggle('toggled');
+      x.nextElementSibling.style.maxHeight = 0;
+    }
+    if (!expanded)
+      e.classList.toggle('toggled');
+    e.nextElementSibling.style.maxHeight = ((!expanded) ? e.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0');
+  };
+
 })(window);

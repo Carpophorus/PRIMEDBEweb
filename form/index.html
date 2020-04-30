@@ -36,7 +36,7 @@
       <label for="Ime">Име и презиме:</label>
       <div class="help-container">
         <input type="text" spellcheck="false" name="Ime" class="field" pattern="^(?:([A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)\s([A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?)|([\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)\s([\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?))$" required>
-        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+        <div class="help-toggle" onclick="window.toggleHelp(this);">
           <div></div>
           <img src="./question.svg">
         </div>
@@ -49,7 +49,7 @@
       <label for="Email">e-mail:</label>
       <div class="help-container">
         <input type="email" spellcheck="false" name="Email" class="field" required><br>
-        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+        <div class="help-toggle" onclick="window.toggleHelp(this);">
           <div></div>
           <img src="./question.svg">
         </div>
@@ -62,7 +62,7 @@
       <label for="Telefon">Телефон:</label>
       <div class="help-container">
         <input type="text" spellcheck="false" name="Telefon" class="field" pattern="^(\u002B381|0)(1[0-9]|2(?:[0-9]|30|80|90)|3(?:[0-9]|90)|6(?:0|1|2|3|4|5|6|77|78|8|9))(\d{6,7})$" required>
-        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+        <div class="help-toggle" onclick="window.toggleHelp(this);">
           <div></div>
           <img src="./question.svg">
         </div>
@@ -75,7 +75,7 @@
       <label for="SluzbaId">Служба код које је предмет заведен:</label>
       <div class="help-container">
         <select name="SluzbaId" id="sluzba-id" class="field" required></select><br>
-        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+        <div class="help-toggle" onclick="window.toggleHelp(this);">
           <div></div>
           <img src="./question.svg">
         </div>
@@ -88,7 +88,7 @@
       <label for="BrojPredmeta">Број предмета:</label>
       <div class="help-container">
         <input type="text" spellcheck="false" name="BrojPredmeta" class="field" pattern="^952-02-(0?(?:[1-9]|1[0-9]|2[0-1]))-(\d+|\d+-\d+)\/((?:19|20)?(?:\d{2}))$" required> <!-- pattern needs update -->
-        <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0')">
+        <div class="help-toggle" onclick="window.toggleHelp(this);">
           <div></div>
           <img src="./question.svg">
         </div>
@@ -106,7 +106,7 @@
           <label for="ObracanjeKome">Име особе којој сте се обратили у надлежној служби:</label>
           <div class="help-container">
             <input type="text" spellcheck="false" name="ObracanjeKome" class="field" pattern="((^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+$))|((^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?$))|(^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+\s[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+\s[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?$)|(^$)">
-            <div class="help-toggle" onclick="this.classList.toggle('toggled'); this.nextElementSibling.style.maxHeight = ((this.classList.contains('toggled')) ? this.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0'); document.getElementById('ime-sluzbenika-container').style.maxHeight = document.getElementById('ime-sluzbenika').scrollHeight + 15 + ((this.classList.contains('toggled')) ? document.getElementById('ime-sluzbenika-footnote').scrollHeight + 10 : 0) + 'px'">
+            <div class="help-toggle" onclick="window.toggleHelp(this);">
               <div></div>
               <img src="./question.svg">
             </div>
