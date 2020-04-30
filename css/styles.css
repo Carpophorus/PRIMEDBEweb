@@ -942,6 +942,12 @@ header {
   }
 }
 
+@media (min-width: 767.5px) {
+  .expansion-info {
+    padding-right: 4vh !important;
+  }
+}
+
 @media (max-width: 767.5px) {
   .hidden-sm-down {
     display: none;

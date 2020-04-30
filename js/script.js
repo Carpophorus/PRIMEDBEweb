@@ -429,7 +429,8 @@
               <div class="expansion-info-data">
       `;
       for (var j = 0; j < response.Primedbe[i].Odgovor.length; j++)
-        html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(8, 10) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(5, 7) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(0, 4) + '. ' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(11, 13) + ':' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Odgovor[j].SluzbaId == 1 ? 'контролор ' : 'оператер ') + response.Primedbe[i].Odgovor[j].Sluzbenik + ' променио/-ла одговор у<br>\"' + response.Primedbe[i].Odgovor[j].Odgovor1.replace(/\n/g, "<br>") + '\"<br>';
+        if (response.Primedbe[i].Odgovor[j].Odgovor1 != null && response.Primedbe[i].Odgovor[j].Odgovor1 != 'null' && response.Primedbe[i].Odgovor[j].Odgovor1 != '')
+          html += '&bull; <span style="color: #CC5505 !important; font-weight: 700">' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(8, 10) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(5, 7) + '.' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(0, 4) + '. ' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(11, 13) + ':' + response.Primedbe[i].Odgovor[j].DatumOdgovora.substring(14, 16) + '</span> &bull; ' + (response.Primedbe[i].Odgovor[j].SluzbaId == 1 ? 'контролор ' : 'оператер ') + response.Primedbe[i].Odgovor[j].Sluzbenik + ' променио/-ла одговор у<br>\"' + response.Primedbe[i].Odgovor[j].Odgovor1.replace(/\n/g, "<br>") + '\"<br>';
       html += `
               </div>
             </div>
