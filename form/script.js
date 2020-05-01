@@ -41,7 +41,18 @@
   };
 
   global.recaptchaCallback = function(token) {
-    //disappear form, appear loader
+    $.confirm({
+      title: 'МОЛИМО САЧЕКАЈТЕ',
+      content: 'Обрада Вашег захтева је у току...',
+      theme: 'supervan',
+      buttons: {
+        ok: {
+          text: 'ОК',
+          btnClass: 'gone',
+          action: function() {}
+        }
+      }
+    });
     sendData(token);
   };
 
@@ -49,30 +60,73 @@
     var XHR = getRequestObject();
     var FD = new FormData(form);
 
-    // Define what happens on successful data submission
     XHR.addEventListener('load', function(event) {
       form.disabled = false;
       form.reset();
       document.getElementById('sluzba-id').children[0].selected = true;
       document.getElementById('ime-sluzbenika-container').style.maxHeight = 0;
-      //appear form, disappear loader?
+      $('.jconfirm').remove();
       if (event.target.status >= 400) {
         if (event.target.status == 400)
-          alert('\nГРЕШКА!\n\n' + JSON.parse(event.target.responseText).Message);
+          $.confirm({
+            title: 'ГРЕШКА!',
+            content: '' + JSON.parse(event.target.responseText).Message,
+            theme: 'supervan',
+            buttons: {
+              ok: {
+                text: 'ОК',
+                btnClass: 'btn-white-rgz',
+                keys: ['enter'],
+                action: function() {}
+              }
+            }
+          });
         else
-          alert('\nГРЕШКА!\n\nДесила се грешка, покушајте поново.');
-      } else {
-        alert('\nУспешно сте послали примедбу.');
-      }
-      //confirm dialogue instead of alerts?
+          $.confirm({
+            title: 'ГРЕШКА!',
+            content: 'Десила се грешка, покушајте поново.',
+            theme: 'supervan',
+            buttons: {
+              ok: {
+                text: 'ОК',
+                btnClass: 'btn-white-rgz',
+                keys: ['enter'],
+                action: function() {}
+              }
+            }
+          });
+      } else
+        $.confirm({
+          title: 'ПОТВРДА СЛАЊА',
+          content: 'Успешно сте послали примедбу.',
+          theme: 'supervan',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-rgz',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
     });
 
-    // Define what happens in case of error
     XHR.addEventListener('error', function(event) {
       form.disabled = false;
-      //disappear form, appear loader?
-      alert('\nГРЕШКА!\n\nДесила се грешка, покушајте поново.');
-      //confirm dialogue instead of alert?
+      $('.jconfirm').remove();
+      $.confirm({
+        title: 'ГРЕШКА!',
+        content: 'Десила се грешка, покушајте поново.',
+        theme: 'supervan',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-rgz',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
     });
 
     var data = {};
@@ -132,7 +186,20 @@
     });
 
     XHR.addEventListener('error', function(event) {
-      alert('\nГРЕШКА!\n\nДесила се грешка, покушајте поново.');
+      $('.jconfirm').remove();
+      $.confirm({
+        title: 'ГРЕШКА!',
+        content: 'Десила се грешка, покушајте поново.',
+        theme: 'supervan',
+        buttons: {
+          ok: {
+            text: 'ОК',
+            btnClass: 'btn-white-rgz',
+            keys: ['enter'],
+            action: function() {}
+          }
+        }
+      });
     });
 
     XHR.open('GET', apiRoot + 'api/Sluzbe', true);
@@ -140,9 +207,22 @@
 
     form.addEventListener('submit', function (event) {
       event.preventDefault();
-      //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-      //jquery if field invalid or skn value == -1
-      //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+      if ($('input:invalid, textarea:invalid').length > 0 || $("#sluzba-id option:selected").attr("value") == -1) {
+        $.confirm({
+          title: 'ГРЕШКА!',
+          content: 'Морате да одаберете Службу у којој је заведен Ваш предмет.',
+          theme: 'supervan',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-rgz',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
+        return;
+      }
       form.disabled = true;
       grecaptcha.execute();
     });
