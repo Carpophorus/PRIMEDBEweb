@@ -148,16 +148,26 @@
     });
   });
 
-  global.toggleHelp = function(e) {
-    var expanded = e.classList.contains('toggled');
-    var expandedOnes = document.getElementsByClassName('toggled');
-    for (var x in expandedOnes) {
-      x.classList.toggle('toggled');
-      x.nextElementSibling.style.maxHeight = 0;
+  $(window).resize(function() {
+    var e = $('.toggled');
+    if (e.length > 0) {
+      $(e).parent().find('.help-footnote-container').css('max-height', $(e).parent().find('.help-footnote').prop('scrollHeight') + 'px');
+      if ($(e).hasClass('ime-sluzbenika-help'))
+        $('#ime-sluzbenika-container').css('max-height', (($("input:radio[name='ObracanjeSluzbi']:checked").val() == "true") ? $('#ime-sluzbenika').prop('scrollHeight') + 16 + $('#ime-sluzbenika-footnote').prop('scrollHeight') + 10 : 0));
     }
-    if (!expanded)
-      e.classList.toggle('toggled');
-    e.nextElementSibling.style.maxHeight = ((!expanded) ? e.nextElementSibling.firstChild.nextSibling.scrollHeight + 'px' : '0');
+  });
+
+  global.toggleHelp = function(e) {
+    var expanded = $(e).hasClass('toggled');
+    $('.help-toggle').removeClass('toggled');
+    $('.help-footnote-container').css('max-height', 0);
+    $('#ime-sluzbenika-container').css('max-height', (($("input:radio[name='ObracanjeSluzbi']:checked").val() == "true") ? $('#ime-sluzbenika').prop('scrollHeight') + 16 : 0));
+    if (!expanded) {
+      $(e).addClass('toggled');
+      $(e).parent().find('.help-footnote-container').css('max-height', $(e).parent().find('.help-footnote').prop('scrollHeight') + 'px');
+      if ($(e).hasClass('ime-sluzbenika-help'))
+        $('#ime-sluzbenika-container').css('max-height', $('#ime-sluzbenika').prop('scrollHeight') + 16 + $('#ime-sluzbenika-footnote').prop('scrollHeight') + 10);
+    }
   };
 
 })(window);

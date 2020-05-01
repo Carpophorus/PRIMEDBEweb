@@ -7,7 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>РГЗ еПримедбе</title>
   <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="../css/jquery-confirm.css">
   <link rel="stylesheet" href="./styles.css">
+  <script src="../js/jquery-3.2.1.min.js"></script>
+  <script src="../js/jquery-confirm.min.js"></script>
   <script src="./script.js"></script>
   <script src="https://www.google.com/recaptcha/api.js?hl=sr" async defer></script>
   <script>
@@ -99,14 +102,14 @@
         </div>
       </div>
       <label for="ObracanjeSluzbi">Да ли сте се претходно обратили надлежној служби?</label>
-      <input type="radio" name="ObracanjeSluzbi" value="true" onchange="document.getElementById('ime-sluzbenika-container').style.maxHeight = document.getElementById('ime-sluzbenika').scrollHeight + 15 + 'px'" required>&nbsp;ДА&nbsp;&nbsp;&nbsp;
+      <input type="radio" name="ObracanjeSluzbi" value="true" onchange="document.getElementById('ime-sluzbenika-container').style.maxHeight = document.getElementById('ime-sluzbenika').scrollHeight + 16 + 'px'" required>&nbsp;ДА&nbsp;&nbsp;&nbsp;
       <input type="radio" name="ObracanjeSluzbi" value="false" onchange="document.getElementById('ime-sluzbenika-container').style.maxHeight = 0" checked required>&nbsp;НЕ<br>
       <div id="ime-sluzbenika-container">
         <div id="ime-sluzbenika">
           <label for="ObracanjeKome">Име особе којој сте се обратили у надлежној служби:</label>
           <div class="help-container">
             <input type="text" spellcheck="false" name="ObracanjeKome" class="field" pattern="((^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+$))|((^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?$))|(^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+\s[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+(?:-[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e]+)?$)|(^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+\s[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+(?:-[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f]+)?$)|(^$)">
-            <div class="help-toggle" onclick="window.toggleHelp(this);">
+            <div class="help-toggle ime-sluzbenika-help" onclick="window.toggleHelp(this);">
               <div></div>
               <img src="./question.svg">
             </div>
