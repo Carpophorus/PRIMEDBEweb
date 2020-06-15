@@ -11,7 +11,7 @@
   const control = 'Sektor za katastar nepokretnosti';
 
   //RGZ LIVE:
-  //var apiRoot = 'https://93.87.56.76:8090/';
+  //var apiRoot = 'http://93.87.56.76:8090/';
   //const control = 'Sektor za katastar nepokretnosti';
 
   var authObject = null;
