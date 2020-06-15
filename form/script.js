@@ -1,9 +1,9 @@
 (function(global) {
 
-  // RGZ TEST:
+  //RGZ TEST:
   var apiRoot = 'http://93.87.56.76:8095/';
 
-  // RGZ LIVE:
+  //RGZ LIVE:
   //var apiRoot = 'https://93.87.56.76:8090/';
   
   var form = null;
