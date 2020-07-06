@@ -212,13 +212,13 @@
         function(response, status) {
           authObject = response;
           localStorage.setItem("RGZPRMrefreshToken", authObject.refresh_token);
-          var cnt = 0;
+          var cnt = 3;
           $ajaxUtils.sendGetRequest(
             apiRoot + 'api/Sluzbe',
             function(response, status) {
               offices = response;
-              cnt = cnt + 1;
-              if (cnt == 2)
+              cnt = cnt - 1;
+              if (cnt == 0)
                 PRM.signInAux();
             },
             true, authObject.access_token
@@ -227,8 +227,18 @@
             apiRoot + 'api/rgz_primedbe/get_statusi',
             function(response, status) {
               statuses = response;
-              cnt = cnt + 1;
-              if (cnt == 2)
+              cnt = cnt - 1;
+              if (cnt == 0)
+                PRM.signInAux();
+            },
+            true, authObject.access_token
+          );
+          $ajaxUtils.sendGetRequest(
+            apiRoot + 'api/Kategorije',
+            function(response, status) {
+              categories = response;
+              cnt = cnt - 1;
+              if (cnt == 0)
                 PRM.signInAux();
             },
             true, authObject.access_token
@@ -602,7 +612,7 @@
           `;
         }
         html += `
-          <div class="col-12 ` + (authObject.sluzba == control ? "" : "col-md-6") + `">
+          <div class="col-12 col-md-6">
             <select id="category" class="category" onchange="$PRM.searchbarSelectChanged(this);">
                 <option value="0" disabled selected hidden>врста примедбе</option>
         `;
@@ -613,7 +623,7 @@
           </div>
         `;
         html += `
-        <div class="col-12 col-md-6">
+        <div class="col-12 ` + (authObject.sluzba == control ? "col-md-6" : "") + `">
           <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
             <option value="0" disabled selected hidden>статус / одговор</option>
             <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
