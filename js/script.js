@@ -1052,7 +1052,7 @@
       else
         $("#mobile-refresh-clear i").addClass("fa-eraser");
     } else if ($("#search-criteria").width() >= (window.innerWidth - window.innerHeight / 100) * 11 / 12 - 20) {
-      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 /*&& $("#response option:selected").attr("value") == 0*/) {
+      if ($("#file-number").val() == "" && $("#date-from").val() == "" && $("#date-to").val() == "" && $("#client-name").val() == "" && $("#client-mail").val() == "" && $("#client-phone").val() == "" && $("#office option:selected").attr("value") == 0 && $("#category option:selected").attr("value") == 0 && $("#status option:selected").attr("value") == 0 /*&& $("#response option:selected").attr("value") == 0*/) {
         $.confirm({
           title: 'ГРЕШКА!',
           content: 'Барем једно од поља за критеријуме претраге мора имати вредност.',
