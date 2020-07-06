@@ -5,6 +5,7 @@
   var officesArray = [];
   var offices = null;
   var statuses = null;
+  var categories = null;
 
   //RGZ TEST:
   var apiRoot = 'http://93.87.56.76:8095/';
@@ -67,13 +68,13 @@
           function(response, status) {
             authObject = response;
             localStorage.setItem("RGZPRMrefreshToken", authObject.refresh_token);
-            var cnt = 0;
+            var cnt = 3;
             $ajaxUtils.sendGetRequest(
               apiRoot + 'api/Sluzbe',
               function(response, status) {
                 offices = response;
-                cnt = cnt + 1;
-                if (cnt == 2)
+                cnt = cnt - 1;
+                if (cnt == 0)
                   PRM.signInAux();
               },
               true, authObject.access_token
@@ -82,8 +83,18 @@
               apiRoot + 'api/rgz_primedbe/get_statusi',
               function(response, status) {
                 statuses = response;
-                cnt = cnt + 1;
-                if (cnt == 2)
+                cnt = cnt - 1;
+                if (cnt == 0)
+                  PRM.signInAux();
+              },
+              true, authObject.access_token
+            );
+            $ajaxUtils.sendGetRequest(
+              apiRoot + 'api/Kategorije',
+              function(response, status) {
+                categories = response;
+                cnt = cnt - 1;
+                if (cnt == 0)
                   PRM.signInAux();
               },
               true, authObject.access_token
@@ -370,6 +381,8 @@
               <div class="expansion-info-data">` + (response.Primedbe[i].ObracanjeSluzbi ? `ДА` : `НЕ`) + `</div>` +
               (response.Primedbe[i].ObracanjeSluzbi && response.Primedbe[i].ObracanjeKome != null ? `<div class="expansion-label">службеник:</div>
               <div class="expansion-info-data">` + response.Primedbe[i].ObracanjeKome + `</div>` : ``) + `
+              <div class="expansion-label">врста примедбе:</div>
+              <div class="expansion-info-data">` + categories.find(c => c.Id == response.Primedbe[i].IdKategorija).Kategorija + `</div>
               <div class="expansion-label">статус:</div>
               <div class="expansion-info-data">` + statusString + `</div>
               <div class="expansion-label">одговор:</div>
@@ -502,7 +515,7 @@
         <div class="col-ninth"><input id="file-number" class="file-number" type="text" placeholder="бр. предмета" onfocus="this.placeholder = ''" onblur="this.placeholder = 'бр. предмета'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         <div class="col-ninth"><input id="date-from" class="date-from" type="text" placeholder="датум од" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум од'" onkeydown="return false" onchange="$PRM.dateFromChanged(this);"></div>
         <div class="col-ninth"><input id="date-to" class="date-to" type="text" placeholder="датум до" onfocus="this.placeholder = ''" onblur="this.placeholder = 'датум до'" onkeydown="return false" onchange="$PRM.dateToChanged(this);"></div>
-        <div class="col-ninth ` + (authObject.sluzba == control ? "" : "col-ninth-double") + `"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
+        <div class="col-ninth"><input id="client-name" class="client-name" type="text" placeholder="име и презиме" onfocus="this.placeholder = ''" onblur="this.placeholder = 'име и презиме'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         <div class="col-ninth"><input id="client-mail" class="client-mail" type="text" placeholder="e-mail" onfocus="this.placeholder = ''" onblur="this.placeholder = 'e-mail'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
         <div class="col-ninth"><input id="client-phone" class="client-phone" type="text" placeholder="телефон" onfocus="this.placeholder = ''" onblur="this.placeholder = 'телефон'" onkeyup="$PRM.searchbarInputChanged(this);"></div>
       `;
@@ -520,7 +533,18 @@
         `;
       }
       html += `
-        <div class="col-ninth col-ninth-double">
+        <div class="col-ninth">
+          <select id="category" class="category" onchange="$PRM.searchbarSelectChanged(this);">
+              <option value="0" disabled selected hidden>врста примедбе</option>
+      `;
+      for (var i = 0; i < categories.length; i++)
+        html += `<option value="` + categories[i].Id + `">` + categories[i].Kategorija + `</option>`;
+      html += `
+          </select>
+        </div>
+      `;
+      html += `
+        <div class="col-ninth ` + (authObject.sluzba == control ? "" : "col-ninth-double") + `">
           <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
               <option value="0" disabled selected hidden>статус / одговор</option>
               <option value="НЕПРОСЛЕЂЕН">НЕПРОСЛЕЂЕНИ</option>
@@ -577,6 +601,17 @@
             </div>
           `;
         }
+        html += `
+          <div class="col-12 ` + (authObject.sluzba == control ? "" : "col-md-6") + `">
+            <select id="category" class="category" onchange="$PRM.searchbarSelectChanged(this);">
+                <option value="0" disabled selected hidden>врста примедбе</option>
+        `;
+        for (var i = 0; i < categories.length; i++)
+          html += `<option value="` + categories[i].Id + `">` + categories[i].Kategorija + `</option>`;
+        html += `
+            </select>
+          </div>
+        `;
         html += `
         <div class="col-12 col-md-6">
           <select id="status" class="status" onchange="$PRM.searchbarSelectChanged(this);">
@@ -1445,7 +1480,8 @@
           (($("#client-mail").val() != "") ? ('&email=' + encodeURIComponent($("#client-mail").val())) : '') +
           (($("#client-phone").val() != "") ? ('&tel=' + encodeURIComponent($("#client-phone").val())) : '') +
           ((authObject.sluzba == control) ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
-          (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
+          (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : '') +
+          (($("#category option:selected").attr("value") != 0) ? ('&kategorijaId=' + encodeURIComponent($("#category option:selected").attr("value"))) : ''),
         function(response, status) {
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
@@ -1715,7 +1751,8 @@
           (($("#client-mail").val() != "") ? ('&email=' + encodeURIComponent($("#client-mail").val())) : '') +
           (($("#client-phone").val() != "") ? ('&tel=' + encodeURIComponent($("#client-phone").val())) : '') +
           ((authObject.sluzba == control) ? (($("#office option:selected").attr("value") != 0) ? ('&sluzbaId=' + $("#office option:selected").attr("value")) : '') : '') +
-          (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : ''),
+          (($("#status option:selected").attr("value") != 0) ? ('&status=' + encodeURIComponent($("#status option:selected").attr("value"))) : '') +
+          (($("#category option:selected").attr("value") != 0) ? ('&kategorijaId=' + encodeURIComponent($("#category option:selected").attr("value"))) : ''),
         function(response, status) {
           var html = generateTableRowsHtml(response);
           $(".table-row, .expansion").remove();
