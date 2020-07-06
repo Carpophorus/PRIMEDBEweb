@@ -61,6 +61,7 @@
       form.disabled = false;
       form.reset();
       document.getElementById('sluzba-id').children[0].selected = true;
+      document.getElementById('kategorija-id').children[0].selected = true;
       document.getElementById('ime-sluzbenika-container').style.maxHeight = 0;
       $('.jconfirm').remove();
       if (event.target.status >= 400) {
@@ -144,6 +145,8 @@
         e[1] = Number(e[1]);
       else if (e[0] === 'ObracanjeSluzbi')
         e[1] = JSON.parse(e[1]);
+      else if (e[0] === 'IdKategorija')
+        e[1] = Number(e[1]);
       data[e[0]] = e[1];
     }
     if (data.ObracanjeSluzbi === false)
@@ -154,17 +157,14 @@
     XHR.send(JSON.stringify(data));
   }
 
+  var XHR;
+  var XHR1;
+
   document.addEventListener('DOMContentLoaded', function(event) {
     form = document.getElementById('primedba');
-    var XHR = getRequestObject();
+    XHR = getRequestObject();
 
     XHR.addEventListener('load', function(event) {
-      setTimeout(function() {
-        disappear("loader", 500);
-        setTimeout(function() {
-          appear("form-container", 500);
-        }, 500);
-      }, 1000);
       var sel = document.getElementById('sluzba-id');
       var optX = document.createElement('option');
       optX.value = -1;
@@ -180,10 +180,58 @@
         opt.appendChild(document.createTextNode(array[i].Naziv));
         sel.appendChild(opt);
       }
+
+      XHR1 = getRequestObject();
+
+      XHR1.addEventListener('load', function(event) {
+        setTimeout(function() {
+          disappear("loader", 500);
+          setTimeout(function() {
+            appear("form-container", 500);
+          }, 500);
+        }, 1000);
+        var sel = document.getElementById('kategorija-id');
+        var optX = document.createElement('option');
+        optX.value = -1;
+        optX.selected = true;
+        optX.disabled = true;
+        optX.hidden = true;
+        optX.appendChild(document.createTextNode(''));
+        sel.appendChild(optX);
+        array = JSON.parse(event.target.responseText);
+        for (var i = 0; i < array.length; i++) {
+          var opt = document.createElement('option');
+          opt.value = array[i].Id;
+          opt.appendChild(document.createTextNode(array[i].Kategorija));
+          sel.appendChild(opt);
+        }
+      });
+
+      XHR1.addEventListener('error', function(event) {
+        $('.jconfirm').remove();
+        disappear("loader", 500);
+        $.confirm({
+          title: 'ГРЕШКА!',
+          content: 'Десила се грешка, покушајте поново.',
+          theme: 'supervan',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-rgz',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
+      });
+
+      XHR1.open('GET', apiRoot + 'api/Kategorije', true);
+      XHR1.send();
     });
 
     XHR.addEventListener('error', function(event) {
       $('.jconfirm').remove();
+      disappear("loader", 500);
       $.confirm({
         title: 'ГРЕШКА!',
         content: 'Десила се грешка, покушајте поново.',
@@ -208,6 +256,22 @@
         $.confirm({
           title: 'ГРЕШКА!',
           content: 'Морате да одаберете Службу у којој је заведен Ваш предмет.',
+          theme: 'supervan',
+          buttons: {
+            ok: {
+              text: 'ОК',
+              btnClass: 'btn-white-rgz',
+              keys: ['enter'],
+              action: function() {}
+            }
+          }
+        });
+        return;
+      }
+      if ($("#kategorija-id option:selected").attr("value") == -1) {
+        $.confirm({
+          title: 'ГРЕШКА!',
+          content: 'Морате да одаберете врсту Ваше примедбе.',
           theme: 'supervan',
           buttons: {
             ok: {

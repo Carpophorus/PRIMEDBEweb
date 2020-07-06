@@ -121,6 +121,19 @@
           </div>
         </div>
       </div>
+      <label for="IdKategorija">Врста примедбе:</label>
+      <div class="help-container">
+        <select name="IdKategorija" id="kategorija-id" class="field" required></select><br>
+        <div class="help-toggle" onclick="window.toggleHelp(this);">
+          <div></div>
+          <img src="./question.svg">
+        </div>
+        <div class="help-footnote-container">
+          <div class="help-footnote">
+            Из падајуће листе одаберите врсту примедбе која најприближније одговара Вашем случају.
+          </div>
+        </div>
+      </div>
       <label for="OpisPrimedbe">Опис примедбе:</label>
       <textarea spellcheck="false" name="OpisPrimedbe" style="resize: none" rows="7" class="field" required></textarea><br>
       <!-- pattern="(?:^[A-Za-z\u0106\u0107\u010c\u010d\u0110\u0111\u0160\u0161\u017d\u017e\s\u0021-\u0040]+$)|(?:^[\u0410-\u0418\u041A-\u0428\u0402\u0408-\u040b\u040f\u0430-\u0438\u043a-\u0448\u0452\u0458-\u045b\u045f\s\u0021-\u0040]+$)" -->
